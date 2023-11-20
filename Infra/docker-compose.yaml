@@ -1,0 +1,40 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:8.0
+    ports: ["3306:3306"]
+    command:
+      [
+        mysqld,
+        --default-authentication-plugin=mysql_native_password,
+        --log-bin-trust-function-creators=1,
+      ]
+    volumes: ["index:/var/lib/mysql:Z"]
+    environment:
+      MYSQL_PASSWORD: foo
+      MYSQL_USER: test-user
+      MYSQL_DATABASE: orthanc
+      MYSQL_ROOT_PASSWORD: foo-root
+
+    restart: unless-stopped
+  orthanc:
+    image: osimis/orthanc:23.11.0
+    depends_on: [db]
+    ports: 
+      - "8042:8042"
+      - "4242:4242"
+    environment:
+      ORTHANC__MYSQL__HOST: db
+      ORTHANC__MYSQL__USERNAME: test-user
+      ORTHANC__MYSQL__DATABASE: orthanc
+      ORTHANC__MYSQL__PASSWORD: foo
+      # ORTHANC__REGISTERED_USERS: |
+      #   {"demo": "demo"}
+      ORTHANC__AUTHENTICATION_ENABLED: "false"
+      VERBOSE_ENABLED: "true"
+    # OSIMIS_WEB_VIEWER1_PLUGIN_ENABLED: "false"
+
+volumes:
+  storage:
+  index:
