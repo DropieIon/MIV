@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
-import { 
-  Text,
+import {
   View,
   StyleSheet,
-  Button,
-  TouchableOpacity,
   Image
 } from 'react-native';
 global.Buffer = global.Buffer || require('buffer').Buffer;
-import {getViewerImages, getAllPatients} from './Data';
+import {getViewerImages, getAllPatients} from './Components/Data';
+import StudiesList from './Components/StudiesList';
+import SearchBar from './Components/Search/SearchBar';
+import { StatusBar } from 'expo-status-bar';
+
+import DefaultViewDoc from './Components/Doctor/DefaultViewDoc';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,11 +40,14 @@ class App extends Component {
     });
   };
   componentDidMount(): void {
+    // console.log("Merge");
+    
     getAllPatients().then( (patient_list) => {
       patient_list.forEach((patient_id) => {
         getViewerImages(patient_id).then((all_data) => {
           this.all_data = all_data;
           this.setState({loading: false});
+          this.forceUpdate();
         })
       });
     });
@@ -50,7 +55,7 @@ class App extends Component {
   
   render(): React.ReactNode {
     // console.log(this.img_data);
-    let images: Element[] = [];
+    let images: React.JSX.Element[] = [];
     if(!this.state.loading)
     {
       let key_id = 0;
@@ -61,15 +66,18 @@ class App extends Component {
     // console.log(images);
     return (
       <View style={styles.container}>
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
         style={styles.button}
         onPress={this.apasat}
         >
           <Text>Click me!</Text>
-        </TouchableOpacity>
-        {this.state.loading && <Text>loading...</Text>}
-        {images}
-        <Text>You clicked {this.state.count} times!</Text>
+        </TouchableOpacity> */}
+        {/* <StatusBar style='auto'></StatusBar> */}
+        {/* {this.state.loading && <Text>loading...</Text>} */}
+        {/* {images} */}
+        {/* <StudiesList></StudiesList> */}
+        <DefaultViewDoc />
+        {/* <Text>You clicked {this.state.count} times!</Text> */}
       </View>
     );
   }

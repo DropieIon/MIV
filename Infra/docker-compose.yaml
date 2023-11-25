@@ -16,8 +16,6 @@ services:
       MYSQL_USER: test-user
       MYSQL_DATABASE: orthanc
       MYSQL_ROOT_PASSWORD: foo-root
-
-    restart: unless-stopped
   orthanc:
     image: osimis/orthanc:23.11.0
     depends_on: [db]
