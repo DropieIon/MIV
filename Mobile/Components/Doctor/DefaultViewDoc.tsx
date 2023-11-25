@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import SearchBar from '../Search/SearchBar';
+import FilterAge from '../Search/FilterAge';
+import FilterSex from '../Search/FilterSex';
 
 const styles = StyleSheet.create({
     container: {
@@ -42,24 +44,21 @@ class DefaultViewDoc extends Component {
             }}
             >
               <View style={{
-                flex: 2.7,
+                flex: 4,
                 width:"100%",
                 backgroundColor: "red"
               }}>
               </View>
               <View style={{
-                flex: 4,
+                flex: 32.4,
                 width:"100%",
-                backgroundColor: "blue"
+                backgroundColor: "blue",
               }}>
+                {/* Search, filter and patients View */}
                 <SearchBar/>
+                <FilterAge/>
+                <FilterSex/>
               </View>
-              <View style={{
-                flex: 30,
-                width:"100%",
-                backgroundColor: "green"
-              }}></View>
-              {/* <SearchBar/> */}
 
             </View>
         );

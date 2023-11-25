@@ -7,9 +7,9 @@ import {
 
 const styles = StyleSheet.create({
     searchBox: {
-      height: "50%",
+      height: "7%",
       width: "60%",
-      position: "relative",
+      position: "absolute",
       backgroundColor: "yellow",
       borderColor: "black",
       borderWidth: 2,
@@ -33,7 +33,9 @@ class SearchBar extends Component {
             <View
               style={styles.searchBox}
             >
-            <TextInput>Test</TextInput>
+            <TextInput
+            placeholder={this.state.search_for}
+            ></TextInput>
 
             </View>
         );

@@ -6,11 +6,12 @@ import {
 } from 'react-native';
 
 const styles = StyleSheet.create({
-    searchBox: {
-      height: "50%",
-      width: "60%",
-      position: "relative",
-      backgroundColor: "yellow",
+    FilterAge: {
+      height: "7%",
+      width: "20%",
+      left: "60%",
+      position: "absolute",
+      backgroundColor: "orange",
       borderColor: "black",
       borderWidth: 2,
       borderRadius: 5,
@@ -31,9 +32,12 @@ class FilterAge extends Component {
     render(): React.ReactNode {
         return (
             <View
-              style={styles.searchBox}
+              style={styles.FilterAge}
             >
-            <TextInput>Test_filter</TextInput>
+            <TextInput
+            placeholder='Age'
+            keyboardType='numeric'
+            ></TextInput>
 
             </View>
         );
