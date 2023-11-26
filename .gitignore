@@ -189,3 +189,4 @@ buck-out/
 *.jsbundle
 
 delete_this*
+.expo/

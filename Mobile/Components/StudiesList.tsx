@@ -37,7 +37,7 @@ class StudiesList extends Component {
     componentDidMount(): void {
     }
     render(): React.ReactNode {
-        let images: Element[] = [];
+        let images: React.JSX.Element[] = [];
         let key_id = 0;
         if (!this.state.loading) {
             images = this.state.studies_list.map((data) => {

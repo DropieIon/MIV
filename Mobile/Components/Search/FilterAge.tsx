@@ -7,7 +7,7 @@ import {
 
 const styles = StyleSheet.create({
     FilterAge: {
-      height: "7%",
+      height: "100%",
       width: "20%",
       left: "60%",
       position: "absolute",

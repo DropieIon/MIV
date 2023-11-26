@@ -1,25 +1,35 @@
 import React, {Component} from 'react';
 import {
   View,
+  Text,
   StyleSheet,
 } from 'react-native';
-global.Buffer = global.Buffer || require('buffer').Buffer;
 import SearchBar from '../Search/SearchBar';
 import FilterAge from '../Search/FilterAge';
 import FilterSex from '../Search/FilterSex';
+import List from '../List/List';
+import AccountInfo from '../AccountInfo';
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    button: {
-      alignItems: 'center',
-      backgroundColor: '#DDDDDD',
-      padding: 10,
-      marginBottom: 10,
-    },
+  view: {
+    flex:1,
+    width: "100%",
+  },
+  view_account: {
+    flex: 4.5,
+    width: "100%",
+    backgroundColor: "red"
+  },
+  view_search: {
+    flex: 2.8,
+    width: "100%",
+    backgroundColor: "blue",
+  },
+  view_list: {
+    flex: 30,
+    width: "100%",
+    backgroundColor: "green"
+  }
   });
 
 class DefaultViewDoc extends Component {
@@ -35,29 +45,30 @@ class DefaultViewDoc extends Component {
     }
     render(): React.ReactNode {
         return (
-            <View
-              style={{
-                // flexDirection: 'row',
-                flex:1,
-                width: "100%",
-                // backgroundColor: "red"
-            }}
-            >
-              <View style={{
-                flex: 4,
-                width:"100%",
-                backgroundColor: "red"
-              }}>
+          <View
+            style={styles.view}
+          >
+              <View
+                style={styles.view_account}
+              >
+                <AccountInfo/>
               </View>
-              <View style={{
-                flex: 32.4,
-                width:"100%",
-                backgroundColor: "blue",
-              }}>
+              <View
+                style={styles.view_search}
+              >
                 {/* Search, filter and patients View */}
                 <SearchBar/>
                 <FilterAge/>
                 <FilterSex/>
+              </View>
+              <View
+                style={styles.view_list}
+              >
+                {/*/ Patients / Studies list */}
+                <List
+                  items={["test", "test1", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a","a", "a", "a", "b"]}
+                // items={[]}
+                ></List>
               </View>
 
             </View>

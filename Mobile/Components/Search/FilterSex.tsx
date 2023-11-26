@@ -12,7 +12,7 @@ import {Picker} from '@react-native-picker/picker';
 
 const styles = StyleSheet.create({
     FilterSex: {
-      height: "7%",
+      height: "100%",
       width: "20%",
       left: "80%",
       position: "absolute",
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     dropdown: {
         position: "absolute",
         // backgroundColor: "black",
-        top: -5,
+        // top: -5,
         left: 0,
         right: 0,
         bottom: 0,
@@ -48,6 +48,7 @@ class FilterSex extends Component {
               style={styles.FilterSex}
             >
                 <Picker
+                    mode='dialog'
                     selectedValue={this.state.selectedSex}
                     onValueChange={(selectedSex, itemIndex) =>
                         this.setState({
