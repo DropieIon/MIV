@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
       width: "20%",
       left: "60%",
       position: "absolute",
-      backgroundColor: "orange",
+      // backgroundColor: "orange",
       borderColor: "black",
       borderWidth: 2,
       borderRadius: 5,

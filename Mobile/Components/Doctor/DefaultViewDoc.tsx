@@ -18,17 +18,17 @@ const styles = StyleSheet.create({
   view_account: {
     flex: 4.5,
     width: "100%",
-    backgroundColor: "red"
+    // backgroundColor: "red"
   },
   view_search: {
     flex: 2.8,
     width: "100%",
-    backgroundColor: "blue",
+    // backgroundColor: "blue",
   },
   view_list: {
     flex: 30,
     width: "100%",
-    backgroundColor: "green"
+    // backgroundColor: "green"
   }
   });
 

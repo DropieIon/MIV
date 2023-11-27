@@ -18,12 +18,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
-    marginBottom: 10,
-  },
 });
 
 
@@ -42,15 +36,15 @@ class App extends Component {
   componentDidMount(): void {
     // console.log("Merge");
     
-    getAllPatients().then( (patient_list) => {
-      patient_list.forEach((patient_id) => {
-        getViewerImages(patient_id).then((all_data) => {
-          this.all_data = all_data;
-          this.setState({loading: false});
-          this.forceUpdate();
-        })
-      });
-    });
+    // getAllPatients().then( (patient_list) => {
+    //   patient_list.forEach((patient_id) => {
+    //     getViewerImages(patient_id).then((all_data) => {
+    //       this.all_data = all_data;
+    //       this.setState({loading: false});
+    //       this.forceUpdate();
+    //     })
+    //   });
+    // });
   }
   
   render(): React.ReactNode {
