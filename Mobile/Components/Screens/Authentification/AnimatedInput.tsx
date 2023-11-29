@@ -87,6 +87,7 @@ class AnimatedInput extends Component<Props> {
                         if(this.props.onRef)
                             this.props.onRef(r);
                       }}
+                      onTextInput={() => {}}
                       {...this.restOfProps}
                       onEndEditing={(e) => {
                         if(e.nativeEvent.text === "")
