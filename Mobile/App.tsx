@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import {
-  View,
   StyleSheet,
-  Image
+  Image,
+  Text
 } from 'react-native';
 global.Buffer = global.Buffer || require('buffer').Buffer;
-import {getViewerImages, getAllPatients} from './Components/Data';
-import StudiesList from './Components/StudiesList';
-import SearchBar from './Components/Search/SearchBar';
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-gesture-handler';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import DefaultViewDoc from './Components/Doctor/DefaultViewDoc';
+import { NavigationContainer } from '@react-navigation/native';
+import Login from './Components/Screens/Authentification/Login';
+import SignUp from './Components/Screens/Authentification/SignUp';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,6 +20,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+const Drawer = createDrawerNavigator();
 
 
 class App extends Component {
@@ -59,20 +62,28 @@ class App extends Component {
     }
     // console.log(images);
     return (
-      <View style={styles.container}>
-        {/* <TouchableOpacity 
-        style={styles.button}
-        onPress={this.apasat}
-        >
-          <Text>Click me!</Text>
-        </TouchableOpacity> */}
-        {/* <StatusBar style='auto'></StatusBar> */}
-        {/* {this.state.loading && <Text>loading...</Text>} */}
-        {/* {images} */}
-        {/* <StudiesList></StudiesList> */}
-        <DefaultViewDoc />
-        {/* <Text>You clicked {this.state.count} times!</Text> */}
-      </View>
+      // <View style={styles.container}>
+      <NavigationContainer>
+        {/* <Login /> */}
+        <SignUp/>
+          {/* <TouchableOpacity 
+          style={styles.button}
+          onPress={this.apasat}
+          >
+            <Text>Click me!</Text>
+          </TouchableOpacity> */}
+          {/* <StatusBar style='auto'></StatusBar> */}
+          {/* {this.state.loading && <Text>loading...</Text>} */}
+          {/* {images} */}
+          {/* <StudiesList></StudiesList> */}
+          {/* <DefaultViewDoc /> */}
+          {/* <Drawer.Navigator>
+            <Drawer.Screen
+              name='Patients'
+              component={DefaultViewDoc} />
+          </Drawer.Navigator> */}
+        </NavigationContainer>
+      // </View>
     );
   }
 };

@@ -8,7 +8,7 @@ import SearchBar from '../Search/SearchBar';
 import FilterAge from '../Search/FilterAge';
 import FilterSex from '../Search/FilterSex';
 import List from '../List/List';
-import AccountInfo from '../AccountInfo';
+import AccountInfo from '../Settings/AccountInfo';
 
 const styles = StyleSheet.create({
   view: {
@@ -48,11 +48,6 @@ class DefaultViewDoc extends Component {
           <View
             style={styles.view}
           >
-              <View
-                style={styles.view_account}
-              >
-                <AccountInfo/>
-              </View>
               <View
                 style={styles.view_search}
               >
