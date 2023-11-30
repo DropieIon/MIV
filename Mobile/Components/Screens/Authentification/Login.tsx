@@ -7,7 +7,6 @@ import {
   Button,
   TouchableOpacity
 } from 'react-native';
-import AnimatedInput from './AnimatedInput';
 
 const styles = StyleSheet.create({
     mainView: {
