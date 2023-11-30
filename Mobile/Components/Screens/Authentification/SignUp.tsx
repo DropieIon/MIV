@@ -1,16 +1,19 @@
-import React, {Component} from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  StyleSheet,
-  Dimensions,
-  Text,
-  View,
-  TouchableOpacity
+    StyleSheet,
+    Dimensions,
+    Text,
+    View,
+    TouchableOpacity,
+    TextInput
 } from 'react-native';
-import AnimatedInput from './AnimatedInput';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { selectToken, setToken} from '../../../features/jwtSlice';
 
 const styles = StyleSheet.create({
     mainView: {
-        flex:1,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -20,147 +23,147 @@ const styles = StyleSheet.create({
     },
     textInput: {
         height: "13%",
-        marginBottom: 2,
+        width: "85%",
+        textAlign: 'center',
+        fontSize: 18,
+        borderRadius: 5,
+        borderWidth: 2,
+        marginBottom: 5,
+    },
+    error:{
+        color: 'red'
     },
     signUpButton: {
         borderRadius: 5,
         borderWidth: 1,
-        backgroundColor: '#33b249'
     },
     signUpButtonText: {
         padding: 5
     }
 });
 
-class SignUp extends Component {
-    state = {
-        fullName: "",
-        username: "",
-        email: "",
-        password: "",
-        errName: "",
-        errEmail: "",
-        errUsername: "",
-        errNoMatchPass: "",
-        errEmpty: false,
-    }
-    refDict = {};
-    validateAllFields = () => {
-        if(this.state.errName === ""
-        && this.state.errEmail === ""
-        && this.state.errUsername === ""
-        && this.state.errNoMatchPass === "")
-            // no errors
-            if(this.state.fullName !== ""
-            && this.state.email !== ""
-            && this.state.username !== ""
-            && this.state.password !== ""){
-                // it's not empty
-                this.setState({errEmpty: false});
-                return true;
-            }
-            else {
-                this.setState({errEmpty: true})
-                return false;
-            }
-        return false;
-
-    }
-    render(): React.ReactNode {
-        return (
-            <View
-                style={styles.mainView}
+function SignUp(props) {
+    const token = useSelector(selectToken);
+    const dispatch = useDispatch();
+    const [fullName, setFullName] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errName, setErrName] = useState("");
+    const [errEmail, setErrEmail] = useState("");
+    const [errUsername, setErrUsername] = useState("");
+    const [errNoMatchPass, setErrNoMatchPass] = useState("");
+    const [errEmpty, setErrEmpty] = useState(false);
+    let ref_email = useRef(null);
+    let ref_username = useRef(null);
+    let ref_pass = useRef(null);
+    let ref_repeat = useRef(null);
+    return (
+        <View
+            style={styles.mainView}
+        >
+            <Text
+                style={styles.signUpText}
             >
-                <Text
-                    style={styles.signUpText}
-                >
-                    Sign up
-                </Text>
-                <AnimatedInput
-                    style={styles.textInput}
-                    label="Full name"
-                    onChangeText={(txt) => {
-                        const fname = txt;
-                        if(/^[a-z ,.'-]+\ [a-z ,.'-]+$/.test(fname)){
-                            this.setState({errName: ""});
-                            this.state.fullName = fname;
-                        }
-                        else {
-                            this.setState({errName: "Format: <F_name> <L_name>"});       
-                        }
-                    }}
-                    onSubmitEditing={() => {
-                        if(this.state.errName === "")
-                            this.refDict["email"].focus();
-                    }}
-                    onRef={(r) => this.refDict["name"] = r}
-                    errorText={this.state.errName}
-                />
-                <AnimatedInput
-                    style={styles.textInput}
-                    label="Email"
-                    errorText={this.state.errEmail}
-                    onChangeText={(text) => {
-                        const email = text;
-                        if(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
-                            this.setState({errEmail: ""});
-                            this.state.email = email;
-                        }
-                        else {
-                            this.setState({errEmail: "Invalid email format."});
-                        }
-                    }}
-                    onSubmitEditing={() => {
-                        if (this.state.errEmail === "")
-                            this.refDict["username"].focus();
-                    }}
-                    onRef={(r) => this.refDict["email"] = r}
-                />
-                <AnimatedInput
-                    style={styles.textInput}
-                    label="Username"
-                    errorText={this.state.errUsername}
-                    onChangeText={(text) => {
-                        const username = text;
-                        if(/^[a-zA-Z0-9]+$/.test(username)){
-                            this.setState({errUsername: ""});
-                            this.state.username = username;
-                        }
-                        else {
-                            this.setState({errUsername: "Only letters and numbers allowed."});
-                        }
-                    }}
-                    onSubmitEditing={() => {
-                        if(this.state.errUsername === "")
-                            this.refDict["password"].focus();
-                    }}
-                    onRef={(r) => this.refDict["username"] = r}
-                />
-                <AnimatedInput
-                    style={styles.textInput}
-                    label="Password"
-                    onChangeText={(text) => {
-                        this.state.password = text;
-                    }}
-                    onSubmitEditing={(event) => {
-                        this.refDict["repeatPassword"].focus();  
-                    }}
-                    onRef={(r) => this.refDict["password"] = r}
-                />
-                <AnimatedInput
-                    style={styles.textInput}
-                    label="Repeat password"
-                    onChangeText={(text) => {
-                        if(text !== this.state.password)
-                            this.setState({ errNoMatchPass: "Passwords do not match." });
-                        else
-                            this.setState({ errNoMatchPass: "" });
-                    }}
-                    errorText={this.state.errNoMatchPass}
-                    keyboardDone='y'
-                    onRef={(r) => this.refDict["repeatPassword"] = r}
-                />
-                {this.state.errEmpty && 
+                Sign up
+            </Text>
+            <TextInput
+                style={[styles.textInput, {borderColor: errName ? 'red': 'lightgrey'}]}
+                placeholder="Full name"
+                returnKeyType='next'
+                onChangeText={(txt) => {
+                    const fname = txt;
+                    if (/^[a-z ,.'-]+\ [a-z ,.'-]+$/.test(fname)) {
+                        setErrName("");
+                        setErrEmpty(false);
+                        setFullName(fname);
+                    }
+                    else {
+                        setFullName("");
+                        setErrName("Format: <F_name> <L_name>");
+                    }
+                }}
+                onSubmitEditing={() => {
+                    if (errName === "")
+                        ref_email?.current.focus();
+                }}
+            />
+            {errName && <Text style={styles.error}>{errName}</Text>}
+            <TextInput
+                style={[styles.textInput, {borderColor: errEmail ? 'red': 'lightgrey'}]}
+                placeholder="Email"
+                returnKeyType='next'
+                onChangeText={(text) => {
+                    const emailExtracted = text;
+                    if (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailExtracted)) {
+                        setErrEmail("");
+                        setErrEmpty(false);
+                        setEmail(emailExtracted);
+                    }
+                    else {
+                        setEmail("");
+                        setErrEmail("Invalid email format.");
+                    }
+                }}
+                onSubmitEditing={() => {
+                    if (errEmail === "")
+                        ref_username?.current.focus();
+                }}
+                ref={ref_email}
+            />
+            {errEmail && <Text style={styles.error}>{errEmail}</Text>}
+            <TextInput
+                style={[styles.textInput, { borderColor: errUsername ? 'red' : 'lightgrey' }]}
+                placeholder="Username"
+                returnKeyType='next'
+                onChangeText={(text) => {
+                    const usernameExtracted = text;
+                    if (/^[a-zA-Z0-9]+$/.test(usernameExtracted)) {
+                        setErrUsername("");
+                        setErrEmpty(false);
+                        setUsername(usernameExtracted);
+                    }
+                    else {
+                        setUsername("");
+                        setErrUsername("Only letters and numbers allowed.");
+                    }
+                }}
+                onSubmitEditing={() => {
+                    if (errUsername === "")
+                        ref_pass?.current.focus();
+                }}
+                ref={ref_username}
+            />
+            {errUsername && <Text style={styles.error}>{errUsername}</Text>}
+            <TextInput
+                style={[styles.textInput, {borderColor: 'lightgrey'}]}
+                placeholder="Password"
+                returnKeyType='next'
+                onChangeText={(text) => {
+                    setPassword(text); 
+                    setErrEmpty(false);
+                }}
+                onSubmitEditing={(event) => {
+                    ref_repeat?.current.focus();
+                }}
+                ref={ref_pass}
+            />
+            <TextInput
+                style={[styles.textInput, {borderColor: errNoMatchPass ? 'red': 'lightgrey'}]}
+                placeholder='Repeat password'
+                onChangeText={(text) => {
+                    if (text !== password)
+                        setErrNoMatchPass("Passwords do not match.");
+                    else {
+                        setErrNoMatchPass("");
+                        setErrEmpty(false);
+                    }
+                }}
+                returnKeyType='done'
+                ref={ref_repeat}
+            />
+            {errNoMatchPass && <Text style={styles.error}>{errNoMatchPass}</Text>}
+            {errEmpty &&
                 <Text
                     style={{
                         marginBottom: 16,
@@ -169,24 +172,37 @@ class SignUp extends Component {
                 >
                     Fields shouldn't be empty!
                 </Text>
-                }
-                <TouchableOpacity
-                    style={styles.signUpButton}
-                    onPress={() => {
-                        if(this.validateAllFields()){
-                            
+            }
+            <TouchableOpacity
+                disabled={errEmpty? true : false}
+                style={[styles.signUpButton, {backgroundColor: errEmpty ? 'lightgrey': '#33b249'}]}
+                onPress={() => {
+                    if (errName === ""
+                        && errEmail === ""
+                        && errUsername === ""
+                        && errNoMatchPass === "")
+                        // no errors
+                        if (fullName !== ""
+                            && email !== ""
+                            && username !== ""
+                            && password !== "") {
+                            // it's not empty
+                            setErrEmpty(false);
+                            dispatch(setToken("da"));
                         }
-                    }}
+                        else {
+                            setErrEmpty(true);
+                        }
+                }}
+            >
+                <Text
+                    style={styles.signUpButtonText}
                 >
-                    <Text
-                        style={styles.signUpButtonText}
-                    >
-                        Sign Up
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
+                    Sign Up
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 export default SignUp;
