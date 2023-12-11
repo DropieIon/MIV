@@ -18,6 +18,7 @@ services:
       MARIADB_USER: orthanc
       MARIADB_DATABASE: orthanc
       MARIADB_ROOT_PASSWORD: foo-root
+
   db_backend:
     image: mariadb:10.6-focal
     networks:
@@ -28,12 +29,15 @@ services:
         --default-authentication-plugin=ed25519,
         --log-bin-trust-function-creators=1,
       ]
-    volumes: ["index_backend:/var/lib/mariadb:Z"]
+    volumes:
+      - "index_backend:/var/lib/mariadb:Z"
+      - "./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql"
     environment:
       MARIADB_PASSWORD: secure_miv
       MARIADB_USER: miv
       MARIADB_DATABASE: miv
       MARIADB_ROOT_PASSWORD: miv-root
+
   orthanc:
     image: osimis/orthanc:23.11.0
     depends_on:
@@ -53,11 +57,14 @@ services:
       ORTHANC__AUTHENTICATION_ENABLED: "false"
       VERBOSE_ENABLED: "true"
     # OSIMIS_WEB_VIEWER1_PLUGIN_ENABLED: "false"
+    
   backend:
     build: 
       context: ..
       dockerfile: Infra/dockerfile_backend
     image: backend
+    env_file:
+      - .backend.env
     # restart: always
     ports:
       - "3000:3000"

@@ -190,3 +190,4 @@ buck-out/
 
 delete_this*
 .expo/
+*.env
