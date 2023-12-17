@@ -2,7 +2,8 @@ FROM node:20.9.0
 
 WORKDIR /app
 RUN npm i -g nodemon
+# COPY "Backend" "/app"
 
 EXPOSE 3000
 
-CMD [ "nodemon", "/app/backend.ts" ]
+# CMD [ "nodemon", "/app/microservices/backend.ts" ]

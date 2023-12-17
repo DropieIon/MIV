@@ -191,3 +191,7 @@ buck-out/
 delete_this*
 .expo/
 *.env
+
+# terraform stuff
+.terragrunt*
+.terraform*
