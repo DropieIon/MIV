@@ -3,7 +3,7 @@ export type ErrorContent = {
     context?: { [key: string]: any }
 };
 
-export abstract class RouterError extends Error {
+export abstract class BackendError extends Error {
     abstract readonly statusCode: number;
     abstract readonly errors: ErrorContent[];
     abstract readonly logging: boolean;
@@ -12,6 +12,6 @@ export abstract class RouterError extends Error {
         super(message);
 
         // Only because we are extending a built in class
-        Object.setPrototypeOf(this, RouterError.prototype);
+        Object.setPrototypeOf(this, BackendError.prototype);
     }
 }

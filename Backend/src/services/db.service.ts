@@ -5,15 +5,19 @@ import { sha256 } from '../utils/helper.util';
 
 const pool = mariadb.createPool(db_config);
 
+type checkLogin_resp = { isMedic: yayOrNay, email_validation: yayOrNay }
+
+
 export function get_pool() {
     return pool;
 }
 
-async function sq<T>(sql: string, values?: (string | number)[]): Promise<"" | mariadb.SqlError | T[]> {
+async function sq<T>(sql: string, values?: (string | number)[]): Promise<"" | mariadb.SqlError | T[] | any> {
     let conn: mariadb.PoolConnection | null= null;
     try {
         conn = await pool.getConnection();
         let rez = await conn.query(sql, values);
+        conn.end();
         return rez;
     } catch (error) {
         if(conn)
@@ -21,10 +25,9 @@ async function sq<T>(sql: string, values?: (string | number)[]): Promise<"" | ma
         console.error(error);
         return error as mariadb.SqlError;
     }
-    return "";
 }
 
-export async function insert_user(pool: mariadb.Pool, registerData: registerForm, uuid:string): Promise<string> {
+export async function insert_user(registerData: registerForm, uuid:string): Promise<string> {
     const { email, username, password, isMedic} = registerData;
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email))
         return "Invalid email!";
@@ -38,7 +41,6 @@ export async function insert_user(pool: mariadb.Pool, registerData: registerForm
             }
             return "Database insertion error";
         }
-        return "Cannot add user to database";
     }
     return "";
 }
@@ -46,20 +48,23 @@ export async function insert_user(pool: mariadb.Pool, registerData: registerForm
 export async function validateUUID(uuid: string) {
     const sql_resp = await sq('update login set email_validation="Y" where uuid=?',
     [uuid]);
-    if(sql_resp !== "")
+    if(sql_resp instanceof mariadb.SqlError){
+        return "Database update error";
+    }
+    if((sql_resp as {affectedRows: number}).affectedRows !== 1)
         return "Cannot validate uuid";
     return "";
 }
 
-export async function checkLogin(loginData: loginForm): Promise<string | yayOrNay> {
+export async function checkLogin(loginData: loginForm): Promise<string | checkLogin_resp> {
     const { username, password } = loginData;
-    const sql_resp = await sq<{isMedic: yayOrNay}>('select isMedic from login where username=? and passhash=?',
+    const sql_resp = await sq<checkLogin_resp>('select isMedic, email_validation from login where username=? and passhash=?',
     [username, sha256(password)]);
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
         // is the resp list
         if(sql_resp.length == 0)
             return "Invalid credentials";
-        return sql_resp[0].isMedic;
+        return {isMedic: sql_resp[0].isMedic, email_validation: sql_resp[0].email_validation};
     }
     return "Cannot login";
 }

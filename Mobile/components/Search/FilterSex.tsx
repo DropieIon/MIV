@@ -37,7 +37,7 @@ function FilterSex(props) {
   let ref = useRef(null);
   const [selectedSex, setSelectedSex] = useState('All');
   const handleOpenPicker = () => {
-    ref.current.focus();
+    ref?.current.focus();
   };
   return (
     <TouchableOpacity
@@ -51,7 +51,7 @@ function FilterSex(props) {
       </Text>
       <Picker
         mode='dialog'
-        ref={this.ref}
+        ref={ref}
         selectedValue={selectedSex}
         onValueChange={(selectedSex, itemIndex) => setSelectedSex(selectedSex)}
         style={styles.dropdown}

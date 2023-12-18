@@ -8,7 +8,6 @@ import SearchBar from '../Search/SearchBar';
 import FilterAge from '../Search/FilterAge';
 import FilterSex from '../Search/FilterSex';
 import List from '../List/List';
-import AccountInfo from '../Settings/AccountInfo';
 
 const styles = StyleSheet.create({
   view: {

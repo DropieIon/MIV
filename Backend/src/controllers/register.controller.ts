@@ -19,7 +19,7 @@ export async function registerController(req: Request<{}, {}, registerForm>,
     }
     let resp_create = await create_user(req.body);
     if(resp_create.ok)
-        res.json({ message: resp_create.data });
+        res.status(201).json({ message: resp_create.data });
     else {
         const error: RegisterError = new RegisterError({
             message: resp_create.data
@@ -32,7 +32,7 @@ export async function registerUUID(req: Request,
     res: Response, next: NextFunction) {
     let resp_validate = await validateUUID(req.params.uuid);
     if(resp_validate === ""){
-        res.send('<center style="margin: \"auto\"">Email validated! Olé!</center>')
+        res.status(202).send('<center style="margin: \"auto\"">Email validated! Olé!</center>')
     }
     else {
         console.error(resp_validate);

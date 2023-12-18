@@ -1,6 +1,6 @@
-import { RouterError } from "./RouterError.error";
+import { BackendError } from "./BackendError.error";
 
-export default class RegisterError extends RouterError {
+export default class RegisterError extends BackendError {
   private static readonly _statusCode = 500;
   private readonly _code: number;
   private readonly _logging: boolean;

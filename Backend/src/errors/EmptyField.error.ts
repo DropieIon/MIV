@@ -1,6 +1,6 @@
-import { RouterError } from "./RouterError.error";
+import { BackendError } from "./BackendError.error";
 
-export default class EmptyField extends RouterError {
+export default class EmptyField extends BackendError {
   private static readonly _statusCode = 400;
   private readonly _code: number;
   private readonly _logging: boolean;

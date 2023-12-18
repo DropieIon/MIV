@@ -21,17 +21,13 @@ const styles = StyleSheet.create({
 });
 
 function SearchBar (props){
-  const handlePress = () => {
-    console.log("Merge");
-
-  }
   return (
     <View
       style={styles.searchBox}
     >
       <TextInput
         style={styles.textInput}
-        placeholder={this.state.search_for}
+        placeholder={"Search for..."}
       ></TextInput>
 
     </View>

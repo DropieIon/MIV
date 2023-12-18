@@ -7,6 +7,11 @@ type kong_resp = {
     secret: string
 }
 
+export function parseJwt (token: string) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
+
 export function get_GW_Data(): Promise<kong_resp[]> {
     return fetch("http://kong-gateway:8001/consumers/backend-jwt/jwt")
     .then(response => {

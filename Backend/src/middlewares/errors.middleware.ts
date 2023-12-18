@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { RouterError } from '../errors/RouterError.error';
+import { BackendError } from '../errors/BackendError.error';
 
 export function errorHandler(err: Error, req: Request,
     res: Response, next: NextFunction) {
-        if(err instanceof RouterError) {
+        if(err instanceof BackendError) {
             const { statusCode, errors, logging } = err;
             if(logging) {
               console.error(JSON.stringify({

@@ -1,43 +1,19 @@
 import React, { useRef, useState } from 'react';
 import {
     StyleSheet,
-    Dimensions,
     Text,
     View,
     TouchableOpacity,
     TextInput
 } from 'react-native';
-
-import { useSelector, useDispatch } from 'react-redux';
-import { selectToken, setToken } from '../../../features/jwtSlice';
-import axios from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import { backend_url } from '../../../configs/backend_url';
+import { textSize, marginBottom, auth_styles } from './auth_styles';
+import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
 
-const textSize = 18;
-const marginBottom = 5;
 
 const styles = StyleSheet.create({
-    mainView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    signUpText: {
-        fontSize: Dimensions.get('window').height / 30,
-        margin: 30,
-    },
-    textInput: {
-        height: "13%",
-        width: "85%",
-        textAlign: 'center',
-        fontSize: textSize,
-        borderRadius: 5,
-        borderWidth: 2,
-        marginBottom: marginBottom,
-    },
-    error: {
-        color: 'red'
-    },
     buttonPickerMedic: {
         marginBottom: marginBottom,
     },
@@ -52,19 +28,10 @@ const styles = StyleSheet.create({
         opacity: 0,
         height: 0,
         width: 0,
-    },
-    signUpButton: {
-        borderRadius: 5,
-        borderWidth: 1,
-    },
-    signUpButtonText: {
-        padding: 5
     }
 });
 
 function SignUp(props) {
-    const token = useSelector(selectToken);
-    const dispatch = useDispatch();
     const [fullName, setFullName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -75,6 +42,8 @@ function SignUp(props) {
     const [errUsername, setErrUsername] = useState("");
     const [errNoMatchPass, setErrNoMatchPass] = useState("");
     const [errEmpty, setErrEmpty] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [responseRecv, setResponseRecv] = useState({msg: "", ok: true});
     let ref_email = useRef(null);
     let ref_username = useRef(null);
     let ref_pass = useRef(null);
@@ -87,15 +56,15 @@ function SignUp(props) {
 
     return (
         <View
-            style={styles.mainView}
+            style={auth_styles.mainView}
         >
             <Text
-                style={styles.signUpText}
+                style={auth_styles.authText}
             >
                 Sign up
             </Text>
             <TextInput
-                style={[styles.textInput, { borderColor: errName ? 'red' : fullName ? 'lightblue' : 'lightgrey' }]}
+                style={[auth_styles.textInput, { borderColor: errName ? 'red' : fullName ? 'lightblue' : 'lightgrey' }]}
                 placeholder="Full name"
                 returnKeyType='next'
                 onChangeText={(txt) => {
@@ -115,9 +84,9 @@ function SignUp(props) {
                         ref_email?.current.focus();
                 }}
             />
-            {errName && <Text style={styles.error}>{errName}</Text>}
+            {errName && <Text style={auth_styles.error}>{errName}</Text>}
             <TextInput
-                style={[styles.textInput, { borderColor: errEmail ? 'red' : email ? 'lightblue' : 'lightgrey'}]}
+                style={[auth_styles.textInput, { borderColor: errEmail ? 'red' : email ? 'lightblue' : 'lightgrey'}]}
                 placeholder="Email"
                 returnKeyType='next'
                 onChangeText={(text) => {
@@ -138,9 +107,9 @@ function SignUp(props) {
                 }}
                 ref={ref_email}
             />
-            {errEmail && <Text style={styles.error}>{errEmail}</Text>}
+            {errEmail && <Text style={auth_styles.error}>{errEmail}</Text>}
             <TextInput
-                style={[styles.textInput, { borderColor: errUsername ? 'red' : username ? 'lightblue' : 'lightgrey'}]}
+                style={[auth_styles.textInput, { borderColor: errUsername ? 'red' : username ? 'lightblue' : 'lightgrey'}]}
                 placeholder="Username"
                 returnKeyType='next'
                 onChangeText={(text) => {
@@ -161,9 +130,9 @@ function SignUp(props) {
                 }}
                 ref={ref_username}
             />
-            {errUsername && <Text style={styles.error}>{errUsername}</Text>}
+            {errUsername && <Text style={auth_styles.error}>{errUsername}</Text>}
             <TextInput
-                style={[styles.textInput, { borderColor: password ? 'lightblue' : 'lightgrey'}]}
+                style={[auth_styles.textInput, { borderColor: password ? 'lightblue' : 'lightgrey'}]}
                 placeholder="Password"
                 returnKeyType='next'
                 secureTextEntry
@@ -177,7 +146,7 @@ function SignUp(props) {
                 ref={ref_pass}
             />
             <TextInput
-                style={[styles.textInput, { borderColor: errNoMatchPass ? 'red' : password ? 'lightblue' : 'lightgrey' }]}
+                style={[auth_styles.textInput, { borderColor: errNoMatchPass ? 'red' : password ? 'lightblue' : 'lightgrey' }]}
                 placeholder='Repeat password'
                 secureTextEntry
                 onChangeText={(text) => {
@@ -219,7 +188,7 @@ function SignUp(props) {
                     </Picker>
                 </TouchableOpacity>
             </View>
-            {errNoMatchPass && <Text style={styles.error}>{errNoMatchPass}</Text>}
+            {errNoMatchPass && <Text style={auth_styles.error}>{errNoMatchPass}</Text>}
             {errEmpty &&
                 <Text
                     style={{
@@ -230,10 +199,18 @@ function SignUp(props) {
                     Fields shouldn't be empty!
                 </Text>
             }
+            {loading && <Text style={auth_styles.loading}>Signing up...</Text>}
+            {responseRecv && 
+                <Text
+                    style={[auth_styles.error, responseRecv.ok ? {color: 'blue'}: {}]}>
+                    {responseRecv.msg}
+                </Text>
+            }
             <TouchableOpacity
                 disabled={errEmpty ? true : false}
-                style={[styles.signUpButton, { backgroundColor: errEmpty ? 'lightgrey' : '#33b249' }]}
+                style={[auth_styles.authButton, { backgroundColor: errEmpty ? 'lightgrey' : '#33b249' }]}
                 onPress={() => {
+                    setLoading(true);
                     if (errName === ""
                         && errEmail === ""
                         && errUsername === ""
@@ -245,14 +222,24 @@ function SignUp(props) {
                             && password !== "") {
                             // it's not empty
                             setErrEmpty(false);
-                            dispatch(setToken("da"));
-                            axios.post("http://192.168.1.139:3000/login", {
+                            axios.post(`${backend_url}/register`, {
                                 username: username,
                                 email: email,
                                 password: password,
-                                isMedic: isMedic
-                            }).then((resp) => {
-                                console.log("Test", resp.data);
+                                isMedic: isMedic ? 'Y' : 'N'
+                            })
+                            .then((resp) => {
+                                const msg = (resp as AxiosResponse<{ message: string }>).data.message;
+                                setResponseRecv({msg: msg, ok: true});
+                                setLoading(false);
+                                
+                            })
+                            .catch((errorResp) => {
+                                const errMsg = (errorResp as AxiosError<BackendError>).response.data
+                                    .errors[0].message;
+                                setLoading(false);
+                                setResponseRecv({msg: errMsg, ok: false});
+
                             })
                         }
                         else {
@@ -261,7 +248,7 @@ function SignUp(props) {
                 }}
             >
                 <Text
-                    style={styles.signUpButtonText}
+                    style={auth_styles.authButtonText}
                 >
                     Sign Up
                 </Text>
