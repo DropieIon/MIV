@@ -2,6 +2,7 @@ import mariadb from 'mariadb';
 import { db_config } from '../configs/db.config';
 import { loginForm, registerForm, yayOrNay } from '../types/authentication.type';
 import { sha256 } from '../utils/helper.util';
+import { patientForm } from "../types/patients.type";
 
 const pool = mariadb.createPool(db_config);
 
@@ -12,16 +13,11 @@ export function get_pool() {
     return pool;
 }
 
-async function sq<T>(sql: string, values?: (string | number)[]): Promise<"" | mariadb.SqlError | T[] | any> {
-    let conn: mariadb.PoolConnection | null= null;
+export async function sq<T>(sql: string, values?: (string | number)[]): Promise<"" | mariadb.SqlError | T[] | any> {
     try {
-        conn = await pool.getConnection();
-        let rez = await conn.query(sql, values);
-        conn.end();
+        let rez = await pool.query(sql, values);
         return rez;
     } catch (error) {
-        if(conn)
-            conn.end();
         console.error(error);
         return error as mariadb.SqlError;
     }
@@ -67,4 +63,41 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
         return {isMedic: sql_resp[0].isMedic, email_validation: sql_resp[0].email_validation};
     }
     return "Cannot login";
+}
+
+export async function insert_patient_details(username: string, details: patientForm) {
+    let insert_resp = await sq('insert into patients(username, age, sex) values (?, ?, ?)',
+    [username, details.age, details.sex]);
+    if(insert_resp !== "")
+    {
+        if (insert_resp instanceof mariadb.SqlError) {
+            if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                return "Patient already has the required data";
+            }
+            return "Database insertion error";
+        }
+    }
+    insert_resp = await sq('update login set has_completed=\'Y\' where username=?', [username]);
+    if(insert_resp !== "")
+    {
+        if (insert_resp instanceof mariadb.SqlError) {
+            if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                return "Patient already has the required data";
+            }
+            return "Database insertion error";
+        }
+    }
+    return "";
+}
+
+export async function has_completed(username: string) {
+    let sql_resp = await sq<{has_completed: yayOrNay}>('select has_completed from login where username=?', [username]);
+    if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
+        // is the resp list
+        if(sql_resp.length == 0)
+            return "User not found";
+        return sql_resp[0].has_completed;
+    }
+    return "";
+    
 }

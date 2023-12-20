@@ -1,9 +1,9 @@
 import { generateAccessToken } from './jwt.service';
-import { loginForm, resp_auth_services } from '../types/authentication.type';
+import { loginForm, resp_common_services } from '../types/authentication.type';
 import { checkLogin } from './db.service';
 
 
-export async function loginUser(loginData: loginForm): Promise<resp_auth_services> {
+export async function loginUser(loginData: loginForm): Promise<resp_common_services> {
     let resp_login = await checkLogin(loginData);
     if (typeof resp_login !== "string") {
         if(resp_login.email_validation === 'N'){

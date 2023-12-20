@@ -9,10 +9,15 @@ import {
 
 import { textSize, marginBottom, auth_styles } from './auth_styles';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setToken } from '../../../features/jwtSlice';
+import { setToken, setIsMedic } from '../../../features/globalStateSlice';
 import { useDispatch } from 'react-redux';
 import { backend_url } from '../../../configs/backend_url';
-import { BackendError } from '../../../../Backend/src/errors/BackendError.error'
+import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
+global.Buffer = global.Buffer || require('buffer').Buffer;
+
+function parseJwt (token: string): {exp: number, isMedic: 'Y'| 'N'} {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
 
 const styles = StyleSheet.create({
     signUpView: {
@@ -36,6 +41,26 @@ function Login(props: { passSignUp: () => void }) {
     const [loading, setLoading] = useState(false);
     const [responseRecv, setResponseRecv] = useState("");
     let focusPass = useRef(null);
+    const refreshToken = (username: string, password: string) => {
+        axios.post(`${backend_url}/login`, {
+            username: username,
+            password: password
+        })
+            .then((resp) => {
+                const token = (resp as AxiosResponse<{ token: string }>).data.token;
+                const current_time = Math.floor(new Date().getTime() / 1000);
+                // refresh token when it expires
+                setTimeout(() => refreshToken(username, password), 
+                    (parseJwt(token).exp - current_time) * 1000);
+                dispatch(setToken(token));
+            })
+            .catch((errorResp) => {
+                const errMsg = (errorResp as AxiosError<BackendError>).response.data
+                    .errors[0].message;
+                setLoading(false);
+                setResponseRecv(errMsg);
+            })
+    }
     return (
         <View
             style={auth_styles.mainView}
@@ -129,7 +154,12 @@ function Login(props: { passSignUp: () => void }) {
                                 .then((resp) => {
                                     const token = (resp as AxiosResponse<{ token: string }>).data.token;
                                     setLoading(false);
+                                    const current_time = Math.floor(new Date().getTime() / 1000);
+                                    // refresh token when it expires
+                                    setTimeout(() => refreshToken(username, password), 
+                                        (parseJwt(token).exp - current_time) * 1000);
                                     dispatch(setToken(token));
+                                    dispatch(setIsMedic(parseJwt(token)?.isMedic === 'Y'));
                                 })
                                 .catch((errorResp) => {
                                     const errMsg = (errorResp as AxiosError<BackendError>).response.data

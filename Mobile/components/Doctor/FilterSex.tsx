@@ -1,9 +1,8 @@
-import React, { Component, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  Animated,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 

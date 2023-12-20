@@ -5,7 +5,7 @@ export type registerForm = {
     isMedic: yayOrNay
 }
 
-export type resp_auth_services = {
+export type resp_common_services = {
     ok: boolean,
     data: string
 }

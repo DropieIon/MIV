@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import jwtReducer from '../features/jwtSlice';
+import globalReducer from '../features/globalStateSlice';
 
 export const store = configureStore({
-    reducer: jwtReducer
+    reducer: globalReducer
+    // reducer: jwtReducer
   })

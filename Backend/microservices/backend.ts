@@ -2,6 +2,7 @@ import express from 'express';
 import { json } from 'body-parser';
 import { errorHandler } from '../src/middlewares/errors.middleware';
 import { get_pool } from '../src/services/db.service';
+import patientsRouter from '../src/routes/patients.route';
 
 const app = express();
 const port = 3000;
@@ -14,10 +15,7 @@ app.get('/', (req, res) => {
   res.json({'message': 'ok'});
 })
 
-app.get('/studies', (req, res) => {
-  res.json({message: "bravo fratic"})
-})
-
+app.use('/patients', patientsRouter);
 
 /* Error handler middleware */
 app.use(errorHandler);

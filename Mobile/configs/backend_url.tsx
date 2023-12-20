@@ -1,1 +1,1 @@
-export const backend_url = "http://192.168.1.210:8000";
+export const backend_url = "http://192.168.220.13:8000";

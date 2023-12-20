@@ -41,7 +41,7 @@ type exitOptions = {
 function exitHandler(options: exitOptions) {
     if (options.cleanup) {
       console.log("Closed connection pool");
-      get_pool().end();
+      return get_pool().end().then();
     }
     if (options.exit) process.exit();
 }

@@ -84,6 +84,7 @@ services:
       - "3000:3000"
     networks:
       - kong-net
+      - auth-db
     volumes:
       - ../Backend:/app
     command: nodemon /app/microservices/backend.ts

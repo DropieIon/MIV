@@ -1,10 +1,10 @@
 import { insert_user } from './db.service';
 import { sendRegisterEmail } from './email.service';
 import { v4 as uuidv4 } from 'uuid';
-import { registerForm, resp_auth_services } from '../types/authentication.type';
+import { registerForm, resp_common_services } from '../types/authentication.type';
 
 
-export async function create_user(registerData: registerForm): Promise<resp_auth_services> {
+export async function create_user(registerData: registerForm): Promise<resp_common_services> {
     let uuid = uuidv4();
     const { email } = registerData;
     let rez = await insert_user(registerData, uuid);
