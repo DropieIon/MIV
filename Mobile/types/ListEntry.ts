@@ -5,3 +5,8 @@ export type ListEntryStudy = {
     age?: number,
     sex?: 'M' | 'F'
 }
+
+export type imageListItem = {
+    ind: number,
+    data: string
+}

@@ -22,6 +22,7 @@
     "react-native-gesture-handler": "~2.12.0",
     "react-native-navigation": "^7.37.1-hotfix.1",
     "react-native-picker-select": "^9.0.0",
+    "react-native-preload-images": "^1.0.2",
     "react-native-reanimated": "~3.3.0",
     "react-native-web": "~0.19.6",
     "react-redux": "^8.1.3",
