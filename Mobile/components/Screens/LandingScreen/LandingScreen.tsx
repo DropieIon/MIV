@@ -11,11 +11,6 @@ import { Viewer } from "../Viewer/Viewer";
 
 const Drawer = createDrawerNavigator();
 
-/*
-    TODO1: change this so it show the drawer only when the token is valid 
-    and decide what to do when it's not
-*/
-
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
     const isMedic = useSelector(selectIsMedic);

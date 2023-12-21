@@ -57,7 +57,7 @@ export function Viewer(props) {
         <SafeAreaView
             style={styles.main_screen}
         >
-            {loading && <Text style={{ textAlign: 'center' }}>Loading</Text>}
+            {loading && <Text style={{ justifyContent: 'center', flex: 1, color: 'white'}}>Loading</Text>}
                 {!loading &&
                     <ViewerImage
                         all_data={all_data}

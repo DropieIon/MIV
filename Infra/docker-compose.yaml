@@ -47,6 +47,7 @@ services:
       - "4242:4242"
     networks:
       - orthanc-db
+      - kong-net
     environment:
       ORTHANC__MYSQL__HOST: db_orthanc
       ORTHANC__MYSQL__USERNAME: orthanc

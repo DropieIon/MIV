@@ -94,6 +94,7 @@ async function getViewerImages(patient_id: string) {
 
   // TODO: change this to something more appropriate
   let all_frames: Array<imageListItem> = [];
+  let preloaded_imgs = [];
   // TODO: change this
   let count = 0;
   const max_count = 1000;
@@ -106,13 +107,13 @@ async function getViewerImages(patient_id: string) {
         let instance_id = instances_list[index_instaces];
       //   let frames_list = await getFrames(instance_id);
       //   for (let index_frames = 0; index_frames < frames_list.length; index_frames++) {
-            // let frame = await getJpeg(instance_id, /*frames_list[index_frames]*/);
+            let frame = await getJpeg(instance_id, /*frames_list[index_frames]*/);
             let frame_url = instance_id;
-            Image.prefetch(`${orthanc_url}/instances/${frame_url}/rendered`);
+            // Image.prefetch(`${orthanc_url}/instances/${frame_url}/rendered`);
             count++;
             if(count == max_count)
               break;
-            all_frames.push({ind: count, data: frame_url});
+            all_frames.push({ind: count, data: frame});
         // }
       }
       if(count == max_count)
@@ -121,7 +122,6 @@ async function getViewerImages(patient_id: string) {
     if(count == max_count)
               break;
   }
-  
   return all_frames;
 
 }
