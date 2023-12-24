@@ -6,8 +6,9 @@ import {
     FlatList,
 } from "react-native";
 import { ViewerImage } from "./ViewerImage";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { imageListItem } from "../../../types/ListEntry";
+import { InstanceStatus } from "./InstanceStatus";
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -17,7 +18,8 @@ const styles = StyleSheet.create({
     },
     img_scroll: {
         top: "22%",
-        height: "78%",
+        height: "58%",
+        // backgroundColor: 'blue',
         width: "100%",
         opacity: 0,
         position: 'absolute',
@@ -30,7 +32,17 @@ const styles = StyleSheet.create({
     loading_text: {
         textAlign: 'center',
         color: 'white'
-    }
+    },
+    instance_status: {
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems: 'center',
+        height: "20%",
+        width: "100%",
+        position: 'absolute',
+        bottom: 0,
+
+    },
 })
 
 type propsTemplate = {
@@ -49,7 +61,8 @@ export function MainImageView(props: propsTemplate) {
     const [loading, setLoading] = useState(false);
     let nr_ref = useRef<FlatList>(null);
     let natural_scroll = useRef(true);
-    let img_nr = null, setImg_nr = null;
+    let setImg_nr = null;
+    let status_setImg_nr = null;
     let currentOffset = 0;
     let index = 0;
     if(series_data)
@@ -63,7 +76,6 @@ export function MainImageView(props: propsTemplate) {
                     <ViewerImage
                         series_data={series_data}
                         onMount={(childData) => {
-                            img_nr = childData[0];
                             setImg_nr = childData[1];
                         }}
                     />
@@ -79,6 +91,8 @@ export function MainImageView(props: propsTemplate) {
                         ref={nr_ref}
                         style={styles.img_scroll}
                         onScrollEndDrag={(e) => {
+                            // scrollToIndex triggers the onScroll event and we don't want to update
+                            // index based on that
                             nr_ref.current?.scrollToIndex({ index: 15, animated: false })
                             natural_scroll.current = false;
                         }}
@@ -90,9 +104,11 @@ export function MainImageView(props: propsTemplate) {
                                 if (currentOffset > offset) {
                                     index -= (index <= 0 ? 0 : 1)
                                 } else if (currentOffset < offset) {
-                                    index += (index === 100 - 1 ? 0 : 1);
+                                    index += (index === 100 ? 0 : 1);
                                 }
-                                setImg_nr(Math.round(index / 100 * (series_data.length - 1)));
+                                const img_nr = Math.round(index / 100 * (series_data.length - 1));
+                                setImg_nr(img_nr);
+                                status_setImg_nr(img_nr);
                                 currentOffset = offset;
                             }
                             else
@@ -100,11 +116,24 @@ export function MainImageView(props: propsTemplate) {
                         }}
     
                     />}
+                {!loading &&
+                    <InstanceStatus
+                        style={styles.instance_status}
+                        chageImgNr={(img_nr) => {
+                            setImg_nr(img_nr);
+                            index = img_nr;
+                        }}
+                        onMount={(childData) => {
+                            status_setImg_nr = childData[1];
+                        }}
+                        series_length={series_data.length}
+                    />
+                }
             </SafeAreaView>
         );
     }
     return (
-        <Text>Oops</Text>
+        <Text>Series data is empty</Text>
     )
 
 }

@@ -41,15 +41,11 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "15%"
     },
-    img_scroll: {
-        top: "22%",
-        //TODO: change this back
-        // height: "78%",
-        height: "0%",
-        width: "100%",
-        opacity: 0,
-        position: 'absolute',
-        zIndex: 100
+    drawer_header: {
+        top: "3%",
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 20,
     },
     loading_text_view: {
         flex: 1,
@@ -66,29 +62,39 @@ const Drawer = createDrawerNavigator();
 export function Viewer(props: { study_id: string }) {
     function CustomDrawerContent({ navigation }: DrawerContentComponentProps) {
         return (
-            <FlatList
-                style={[styles.series_list, {height: "100%"}]}
-                data={all_data.current}
-                showsHorizontalScrollIndicator={false}
-                renderItem={(item) => {
-                    return (
-                        <TouchableOpacity
-                            style={{alignItems: 'center'}}
-                            onPress={(e) => {
-                                navigation.navigate('MainImage', {
-                                    seriesData: all_data.current[item.index].series
-                                });
-                            }}
-                        >
-                            <Image
-                                style={{ height: 200, width: 200 }}
-                                // source={{uri: `data:image/png;base64,${item.item.serie[item.index].data}`}}
-                                source={{ uri: `data:image/png;base64,${item.item.series[Math.round(item.item.series.length / 2)]?.data}` }}
-                            />
-                        </TouchableOpacity>
-                    )
-                }
-                } />
+            <View
+            // style={[styles.series_list, {height: "100%"}]}
+                style={{ flex: 1 }}
+            >
+                <Text
+                    style={styles.drawer_header}
+                >
+                    Series
+                </Text>
+                <FlatList
+                    style={[styles.series_list, {height: "100%"}]}
+                    data={all_data.current}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={(item) => {
+                        return (
+                            <TouchableOpacity
+                                style={{alignItems: 'center'}}
+                                onPress={(e) => {
+                                    navigation.navigate('MainImage', {
+                                        seriesData: all_data.current[item.index].series
+                                    });
+                                }}
+                            >
+                                <Image
+                                    style={{ height: 200, width: 200 }}
+                                    // source={{uri: `data:image/png;base64,${item.item.serie[item.index].data}`}}
+                                    source={{ uri: `data:image/png;base64,${item.item.series[Math.round(item.item.series.length / 2)]?.data}` }}
+                                />
+                            </TouchableOpacity>
+                        )
+                    }
+                    } />
+            </View>
         );
     }
     const [loading, setLoading] = useState(true);

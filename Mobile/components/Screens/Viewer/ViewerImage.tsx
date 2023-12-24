@@ -26,13 +26,12 @@ export function ViewerImage(props: { onMount, series_data: imageListItem[] }) {
     }, [props.onMount, img_nr]);
     const img_width = Dimensions.get('screen').width - 20;
     const imgData = props.series_data[img_nr];
-
     if (props.series_data.length !== 0) {
         return (
             <Image
                 style={[styles.main_img, { width: img_width, height: img_width}]}
                 source={{
-                    uri: `data:image/png;base64,${imgData.data}`
+                    uri: `data:image/png;base64,${imgData?.data}`
                 }}
             />
         )
