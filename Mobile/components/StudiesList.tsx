@@ -9,7 +9,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 global.Buffer = global.Buffer || require('buffer').Buffer;
-import {getViewerImages, getAllPatients} from './Data';
+import {getViewerImages, getAllPatients} from '../dataRequests/OrthancData';
 
 const styles = StyleSheet.create({
     container: {

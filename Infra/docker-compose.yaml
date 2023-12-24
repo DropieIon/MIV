@@ -43,7 +43,9 @@ services:
     depends_on:
       - db_orthanc
     ports: 
+    # TODO: change this
       - "8042:8042"
+    # TODO: make this over the gateway
       - "4242:4242"
     networks:
       - orthanc-db
@@ -57,7 +59,8 @@ services:
       #   {"demo": "demo"}
       ORTHANC__AUTHENTICATION_ENABLED: "false"
       VERBOSE_ENABLED: "true"
-      OSIMIS_WEB_VIEWER1_PLUGIN_ENABLED: "false"
+      # TODO: change this
+      OSIMIS_WEB_VIEWER1_PLUGIN_ENABLED: "true"
 
   auth:
     build: 
@@ -80,9 +83,6 @@ services:
     image: backend
     env_file:
       - .backend.env
-    # restart: always
-    ports:
-      - "3000:3000"
     networks:
       - kong-net
       - auth-db

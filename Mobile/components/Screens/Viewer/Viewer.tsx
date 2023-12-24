@@ -1,18 +1,33 @@
-import React, { Component, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Text,
     StyleSheet,
     FlatList,
-    Image,
+    View,
     SafeAreaView,
-    BackHandler
+    BackHandler,
+    TouchableOpacity,
 } from 'react-native';
 global.Buffer = global.Buffer || require('buffer').Buffer;
-import { getViewerImages, getAllPatients } from '../../Data';
-import { useDispatch } from 'react-redux';
-import { setOpenViewer } from '../../../features/globalStateSlice';
-import { imageListItem } from '../../../types/ListEntry';
-import { ViewerImage } from './ViewerImage';
+import { getViewerImages, getAllPatients } from '../../../dataRequests/OrthancData';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectToken, setOpenViewer } from '../../../features/globalStateSlice';
+import { viewerData } from '../../../types/ViewerData';
+import { Image } from 'expo-image';
+import {
+    createDrawerNavigator,
+    DrawerContentComponentProps,
+} from '@react-navigation/drawer';
+import { MainImageView } from './MainImageView';
+
+
+function Article() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Article Screen</Text>
+        </View>
+    );
+}
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -20,29 +35,87 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center'
     },
-    scroll_list: { 
-        height: "100%",
+    series_list: {
+        position: 'absolute',
+        top: "7%",
+        width: "100%",
+        height: "15%"
+    },
+    img_scroll: {
+        top: "22%",
+        //TODO: change this back
+        // height: "78%",
+        height: "0%",
         width: "100%",
         opacity: 0,
         position: 'absolute',
-        zIndex: 1
+        zIndex: 100
+    },
+    loading_text_view: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    loading_text: {
+        textAlign: 'center',
+        color: 'white'
     }
 })
 
+const Drawer = createDrawerNavigator();
 
-export function Viewer(props) {
+export function Viewer(props: { study_id: string }) {
+    function CustomDrawerContent({ navigation }: DrawerContentComponentProps) {
+        return (
+            <FlatList
+                style={[styles.series_list, {height: "100%"}]}
+                data={all_data.current}
+                showsHorizontalScrollIndicator={false}
+                renderItem={(item) => {
+                    return (
+                        <TouchableOpacity
+                            style={{alignItems: 'center'}}
+                            onPress={(e) => {
+                                navigation.navigate('MainImage', {
+                                    seriesData: all_data.current[item.index].series
+                                });
+                            }}
+                        >
+                            <Image
+                                style={{ height: 200, width: 200 }}
+                                // source={{uri: `data:image/png;base64,${item.item.serie[item.index].data}`}}
+                                source={{ uri: `data:image/png;base64,${item.item.series[Math.round(item.item.series.length / 2)]?.data}` }}
+                            />
+                        </TouchableOpacity>
+                    )
+                }
+                } />
+        );
+    }
     const [loading, setLoading] = useState(true);
-    const [all_data, setAll_Data] = useState<imageListItem[]>([]);
-    let index = 0;
-    let nr_ref = useRef<FlatList>(null);
+    // We use these refs so we can have peristent data between renders
+    const all_data = useRef<viewerData[]>(null);
+    const token = useSelector(selectToken);
+    let startTime = useRef(null);
     useEffect(() => {
-        getAllPatients().then((data) => getViewerImages(data[0]).then((data) => {
-            setAll_Data(data);
-            setLoading(false);
-        }));
-        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        // TODO: change this for the current patient
 
+        getViewerImages(props.study_id, token).then((images) => {
+            if (images.length !== 0) {
+                all_data.current = images;
+            }
+            else {
+                console.error("No instances for study");
+            }
+            setLoading(false);
+        });
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        startTime.current = (new Date()).getTime();
     }, []);
+
+    //TODO: delete this test
+    if (!loading) {
+        console.log("Time elapsed: ", (new Date().getTime() - startTime.current) / 1000.0 + "s");
+    }
 
     const dispatch = useDispatch();
     const handleBackButtonClick = () => {
@@ -50,49 +123,40 @@ export function Viewer(props) {
         BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         return true;
     }
-    let currentOffset = 0;
-    let img_nr = null, setImg_nr = null;
-    
     return (
         <SafeAreaView
             style={styles.main_screen}
         >
-            {loading && <Text style={{ justifyContent: 'center', flex: 1, color: 'white'}}>Loading</Text>}
-                {!loading &&
-                    <ViewerImage
-                        all_data={all_data}
-                        onMount={(childData) => {
-                            img_nr = childData[0];
-                            setImg_nr = childData[1];
+            {loading &&
+                <View
+                    style={styles.loading_text_view}
+                >
+                    <Text style={styles.loading_text}>Loading...</Text>
+                </View>
+            }
+            {!loading &&
+                <Drawer.Navigator
+                drawerContent={(props) => <CustomDrawerContent {...props} />}
+                >
+                    <Drawer.Screen
+                        name='MainImage'
+                        component={MainImageView}
+                        initialParams={{
+                            seriesData: all_data.current[0].series
+                        }}
+                        options={{
+                            headerStyle: {backgroundColor: 'black'},
+                            headerTintColor: 'red',
+                            headerTitleStyle: {
+                                display: 'none'
+                            },
+                            drawerStyle: {
+                                backgroundColor: 'black'
+                            }
                         }}
                     />
-                }
-                {! loading && 
-                    <FlatList
-                        data={Array.from(Array(30).keys())}
-                        keyExtractor={(item) => item.valueOf()}
-                        renderItem={(item) => {
-                            return <Text style={{height: 100, width: 100}}>{item.item}</Text>
-                        }}
-                        showsVerticalScrollIndicator={false}
-                        ref={nr_ref}
-                        style={styles.scroll_list}
-                        onScrollEndDrag={(e) => {
-                            nr_ref.current?.scrollToIndex({ index: 15, animated: false })
-                        }}
-                        scrollEventThrottle={100}
-                        onScroll={(e) => {
-                            const offset = e.nativeEvent.contentOffset.y
-                            if (currentOffset > offset) {
-                                index -= (index === 0 ? 0 : 1)
-                            } else if (currentOffset < offset) {
-                                index += (index === 100 - 1 ? 0 : 1);
-                            }
-                            setImg_nr(Math.round(index/100 * (all_data.length - 1)));
-                            currentOffset = offset;
-                        }}
-
-                />}
+                </Drawer.Navigator>
+            }
 
         </SafeAreaView>
     );

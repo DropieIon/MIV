@@ -1,43 +1,41 @@
-import React, { Dimensions, View } from "react-native"
-import { imageListItem } from "../../../types/ListEntry"
+import React, {
+    Dimensions,
+    Text,
+    StyleSheet
+} from "react-native"
 import { useEffect, useState } from "react"
-import { orthanc_url } from "../../../configs/backend_url"
-import { useSelector } from "react-redux"
-import { selectToken } from "../../../features/globalStateSlice"
 import { Image } from 'expo-image';
+import { imageListItem } from "../../../types/ListEntry";
 
+const styles = StyleSheet.create({
+    main_img: {
+        alignSelf: 'center'
+    },
+    err_text: {
+        flex: 1,
+        color: 'white',
+        textAlign: 'center',
+        textAlignVertical: 'center'
+    },
+})
 
-type propsTemplate = {
-    all_data: imageListItem[],
-    img_nr: number
-}
-
-export function ViewerImage(props: { onMount, all_data: imageListItem[] }) {
+export function ViewerImage(props: { onMount, series_data: imageListItem[] }) {
     const [img_nr, setImg_nr] = useState(0);
-    const token = useSelector(selectToken);
     useEffect(() => {
         props.onMount([img_nr, setImg_nr]);
     }, [props.onMount, img_nr]);
-    useEffect(() => {
-        // prerender images
-        // for (let i = 0; i < props.all_data.length; i++)
-        //     Image.prefetch(`${orthanc_url}/instances/${props.all_data[i].data}/rendered`);
-    }, [])
     const img_width = Dimensions.get('screen').width - 20;
-    
-    return (
-        // <Image
-        //     style={{ width: img_width, height: img_width, alignSelf: 'center' }}
-        //     source={{ 
-        //         uri: `${orthanc_url}/instances/${props.all_data[img_nr].data}/rendered`,
-        //         headers: {Authorization: `Bearer ${token}`}
-        //     }}
-        // />
-        <Image
-            style={{ width: img_width, height: img_width, alignSelf: 'center' }}
-            source={{ 
-                uri: `data:image/png;base64,${props.all_data[img_nr].data}`
-            }}
-        />
-    )
+    const imgData = props.series_data[img_nr];
+
+    if (props.series_data.length !== 0) {
+        return (
+            <Image
+                style={[styles.main_img, { width: img_width, height: img_width}]}
+                source={{
+                    uri: `data:image/png;base64,${imgData.data}`
+                }}
+            />
+        )
+    }
+    return <Text style={styles.err_text}>No images.</Text>;
 }

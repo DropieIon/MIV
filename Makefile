@@ -1,5 +1,5 @@
 run-infra:
-	(cd Infra ; docker-compose down ; docker-compose up -d kong-gateway db_auth auth backend db_orthanc orthanc)
+	(cd Infra ; docker-compose down ; docker-compose up -d)
 
 run-mobile:
 	(cd Mobile ; npx expo start)
