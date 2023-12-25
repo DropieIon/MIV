@@ -9,7 +9,7 @@ import { imageListItem } from "../../../types/ListEntry";
 
 const styles = StyleSheet.create({
     main_img: {
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     err_text: {
         flex: 1,
@@ -24,15 +24,21 @@ export function ViewerImage(props: { onMount, series_data: imageListItem[] }) {
     useEffect(() => {
         props.onMount([img_nr, setImg_nr]);
     }, [props.onMount, img_nr]);
-    const img_width = Dimensions.get('screen').width - 20;
+    // it has to fit
+    const img_size = Math.min(
+        Dimensions.get('window').height * 0.5, 
+        Dimensions.get('window').width
+    );
+    // const img_width = "100%";
     const imgData = props.series_data[img_nr];
     if (props.series_data.length !== 0) {
         return (
             <Image
-                style={[styles.main_img, { width: img_width, height: img_width}]}
+                style={[styles.main_img, { width: img_size, height: img_size}]}
                 source={{
                     uri: `data:image/png;base64,${imgData?.data}`
                 }}
+                contentFit='contain'
             />
         )
     }

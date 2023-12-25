@@ -10,6 +10,11 @@ export type resp_common_services = {
     data: string
 }
 
+export type resp_list_services = {
+    ok: boolean,
+    data: string[] | string
+}
+
 export type jwt_payload = {
     username: string,
     isMedic: yayOrNay

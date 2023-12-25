@@ -1,7 +1,7 @@
 import express from 'express';
 import { json } from 'body-parser';
 import { errorHandler } from '../src/middlewares/errors.middleware';
-import { get_pool } from '../src/services/db.service';
+import { get_pool } from '../src/services/db-auth.service';
 import patientsRouter from '../src/routes/patients.route';
 
 const app = express();

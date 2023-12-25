@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { create_user } from '../services/register.service';
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
-import { validateUUID } from "../services/db.service";
+import { validateUUID } from "../services/db-auth.service";
 import type { registerForm } from "../types/authentication.type";
 
 export async function registerController(req: Request<{}, {}, registerForm>, 

@@ -1,6 +1,6 @@
 import { BackendError } from "./BackendError.error";
 
-export default class RegisterError extends BackendError {
+export default class ControllerError extends BackendError {
   private static readonly _statusCode = 500;
   private readonly _code: number;
   private readonly _logging: boolean;
@@ -10,12 +10,12 @@ export default class RegisterError extends BackendError {
     const { code, message, logging } = params || {};
     
     super(message || "Database error");
-    this._code = code || RegisterError._statusCode;
+    this._code = code || ControllerError._statusCode;
     this._logging = logging || false;
     this._context = params?.context || {};
 
     // Only because we are extending a built in class
-    Object.setPrototypeOf(this, RegisterError.prototype);
+    Object.setPrototypeOf(this, ControllerError.prototype);
   }
 
   get errors() {

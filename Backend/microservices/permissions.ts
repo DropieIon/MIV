@@ -1,9 +1,8 @@
 import express from 'express';
 import { json } from 'body-parser';
-import loginRouter from '../src/routes/login.route';
-import registerRouter from '../src/routes/register.route';
 import { errorHandler } from '../src/middlewares/errors.middleware';
 import { get_pool } from '../src/services/db-auth.service';
+import { studiesController } from '../src/controllers/studies.controller';
 
 
 const app = express();
@@ -18,9 +17,7 @@ app.get('/', (req, res) => {
   res.json({'message': 'ok'});
 })
 
-app.use('/login', loginRouter);
-
-app.use('/register', registerRouter);
+app.use('/studies', studiesController);
 
 /* Error handler middleware */
 app.use(errorHandler);

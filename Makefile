@@ -1,5 +1,5 @@
 run-infra:
-	(cd Infra ; docker-compose down ; docker-compose up -d)
+	(cd Infra ; docker compose down ; docker compose up -d)
 
 run-mobile:
 	(cd Mobile ; npx expo start)

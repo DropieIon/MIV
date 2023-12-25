@@ -8,6 +8,8 @@ services:
     url: http://auth:3000/
   - name: orthanc
     url: http://orthanc:8042/
+  - name: permissions
+    url: http://permissions:3000/
 routes:
   - name: backend-route
     service: main-gateway
@@ -19,6 +21,11 @@ routes:
     strip_path: true
     paths:
       - /dicom
+  - name: permissions-route
+    service: permissions
+    strip_path: true
+    paths:
+      - /permissions
   - name: jwt-route
     service: jwt
     paths:
@@ -33,6 +40,13 @@ plugins:
         - exp
   - name: jwt
     route: orthanc-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+  - name: jwt
+    route: permissions-route
     enabled: true
     config:
       key_claim_name: kid

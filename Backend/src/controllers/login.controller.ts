@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import RegisterError from "../errors/RegisterError.error";
+import ControllerError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
 import type { loginForm } from "../types/authentication.type";
 import { loginUser } from "../services/login.service";
@@ -16,7 +16,7 @@ export async function loginController(req: Request<{}, {}, loginForm>,
         res.json({token: resp_login.data});
         return;
     }
-    next(new RegisterError({
+    next(new ControllerError({
         message: resp_login.data,
         code: 400
     }))

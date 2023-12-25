@@ -1,5 +1,5 @@
 export type ListEntryStudy = {
-    uuid: string,
+    uid: string,
     name: string,
     date?: string,
     age?: number,

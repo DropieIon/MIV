@@ -1,4 +1,4 @@
-import { insert_user } from './db.service';
+import { insert_user } from './db-auth.service';
 import { sendRegisterEmail } from './email.service';
 import { v4 as uuidv4 } from 'uuid';
 import { registerForm, resp_common_services } from '../types/authentication.type';

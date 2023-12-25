@@ -4,18 +4,33 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    Image,
-    ListRenderItem,
 } from 'react-native';
-
+import { Image } from 'expo-image';
 import ViewStyles from '../Templates/DefaultViewStyles';
 import { ListEntryStudy } from '../../types/ListEntry';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
 import { setOpenViewer } from '../../features/globalStateSlice';
 
+type propsTemplate = { 
+    items: ListEntryStudy[],
+    isMedic: boolean,
+    loading: boolean,
+}
 
-function List(props: { items: ListEntryStudy[], isMedic: boolean }) {
+const styles = StyleSheet.create({
+    loading_text: {
+        textAlign: 'center',
+        marginTop: 10
+    },
+    no_items_text: {
+        flex: 1,
+        textAlign: "center",
+        textAlignVertical: 'center'
+    },
+})
+
+function List(props: propsTemplate) {
     const medicTemplate = (item: ListEntryStudy) => {
         return <TouchableOpacity
             style={ViewStyles.item}
@@ -66,7 +81,6 @@ function List(props: { items: ListEntryStudy[], isMedic: boolean }) {
     let templateToUse = props.isMedic ? medicTemplate : patientTemplate;
     let no_items = false;
 
-    
     if (props.items.length == 0) {
         no_items = true;
     }
@@ -74,20 +88,23 @@ function List(props: { items: ListEntryStudy[], isMedic: boolean }) {
         <View
             style={ViewStyles.list}
         >
-            {no_items &&
+            {props.loading &&
                 <Text
-                    style={{
-                        flex: 1,
-                        textAlign: "center",
-                        textAlignVertical: 'center'
-                    }}
+                    style={styles.loading_text}
+                >
+                    Loading...
+                </Text>
+            }
+            {!props.loading && no_items &&
+                <Text
+                    style={styles.no_items_text}
                 >
                     No patients
                 </Text>
             }
-            {!no_items &&
+            {!props.loading && !no_items &&
                 <FlatList
-                    keyExtractor={(item) => item.uuid}
+                    keyExtractor={(item) => item.uid}
                     style={props.items.length == 0 ? { display: 'none' } : {}}
                     data={props.items}
                     renderItem={(item) => templateToUse(item.item)}

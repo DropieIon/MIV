@@ -6,7 +6,7 @@ import {
     FlatList,
 } from "react-native";
 import { ViewerImage } from "./ViewerImage";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { imageListItem } from "../../../types/ListEntry";
 import { InstanceStatus } from "./InstanceStatus";
 
@@ -57,6 +57,10 @@ type propsTemplate = {
 
 export function MainImageView(props: propsTemplate) {
     const series_data = props.route.params.seriesData;
+    useEffect(() => {
+        setImg_nr(0);
+        status_setImg_nr(0);
+    }, [props.route.params.seriesData])
     // TODO: implement loading functionality
     const [loading, setLoading] = useState(false);
     let nr_ref = useRef<FlatList>(null);
@@ -121,7 +125,7 @@ export function MainImageView(props: propsTemplate) {
                         style={styles.instance_status}
                         chageImgNr={(img_nr) => {
                             setImg_nr(img_nr);
-                            index = img_nr;
+                            index = Math.round(img_nr/(series_data.length - 1) * 100);
                         }}
                         onMount={(childData) => {
                             status_setImg_nr = childData[1];

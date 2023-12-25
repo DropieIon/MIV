@@ -67,7 +67,7 @@ export function InstanceStatus(props: propsTemplate) {
             <Text
                 style={styles.status_nr}
             >
-                {img_nr} / {props.series_length - 1}
+                {img_nr + 1} / {props.series_length}
             </Text>
             <TouchableOpacity
                 style={styles.arrow_button}

@@ -100,12 +100,13 @@ async function getInstances(serie_id: string, token: string): Promise<Array<stri
 async function getJpeg(instance_id: string, token: string): Promise<string> {
   let resp;
   try {
-    resp = await axios.get(`${orthanc_url}/instances/${instance_id}/rendered`, {
+    resp = await axios.get(`${orthanc_url}/instances/${instance_id}`, {
       responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token }
     })
+    // console.log(resp.status);
   }
   catch (e) {
-    console.error("Could not get image");
+    console.error("Could not get image", e);
     return null;
   }
   return Buffer.from(resp.data, 'binary').toString('base64');

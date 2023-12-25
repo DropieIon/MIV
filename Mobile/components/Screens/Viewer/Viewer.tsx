@@ -8,7 +8,6 @@ import {
     BackHandler,
     TouchableOpacity,
 } from 'react-native';
-global.Buffer = global.Buffer || require('buffer').Buffer;
 import { getViewerImages, getAllPatients } from '../../../dataRequests/OrthancData';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToken, setOpenViewer } from '../../../features/globalStateSlice';
@@ -19,15 +18,6 @@ import {
     DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import { MainImageView } from './MainImageView';
-
-
-function Article() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Article Screen</Text>
-        </View>
-    );
-}
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -63,7 +53,6 @@ export function Viewer(props: { study_id: string }) {
     function CustomDrawerContent({ navigation }: DrawerContentComponentProps) {
         return (
             <View
-            // style={[styles.series_list, {height: "100%"}]}
                 style={{ flex: 1 }}
             >
                 <Text
@@ -87,7 +76,6 @@ export function Viewer(props: { study_id: string }) {
                             >
                                 <Image
                                     style={{ height: 200, width: 200 }}
-                                    // source={{uri: `data:image/png;base64,${item.item.serie[item.index].data}`}}
                                     source={{ uri: `data:image/png;base64,${item.item.series[Math.round(item.item.series.length / 2)]?.data}` }}
                                 />
                             </TouchableOpacity>
