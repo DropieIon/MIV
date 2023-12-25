@@ -8,7 +8,7 @@ import mariadb
 import json
 import base64
 from pyorthanc import orthanc_sdk
-import multiprocessing
+# import multiprocessing
 import signal
 
 def Initializer():
@@ -38,32 +38,47 @@ formatter = logging.Formatter('%(asctime)s p%(process)d %(levelname)s - %(messag
 handler.setFormatter(formatter)
 root.addHandler(handler)
 
-
-def Filter(uri, **request):
-    body = {
-        'uri' : uri,
-        'headers' : request['headers']
-    }
-    logging.info("Test")
-    r = requests.post('http://localhost:8000/authorize',
-                      data = json.dumps(body))
-    return r.json() ['granted']  # Must be a Boolean
-
-# orthanc.RegisterIncomingHttpRequestFilter(Filter)
-
-test = "da"
-
-def processRequest(parent_study, request):
+def cursorWithStudyIds(request):
     encoded_username = request['headers']['authorization']\
                                         .split(" ")[1].split(".")[1] + '='
     patient_username = json.loads(base64.b64decode(encoded_username))["username"]
     pconn = sql_pool.get_connection()
     cursor = pconn.cursor()
     cursor.execute("select study_id from studies_assigned where patient_username=?",
-                (patient_username,))
+                    (patient_username,))
+    return cursor, pconn
+
+def computeStudyIdList(request):
+    cursor, pconn = cursorWithStudyIds(request)
+    study_ids = []
+    for (study_id) in cursor:
+        study_ids.append(study_id[0])
+    pconn.close()
+    return study_ids
+
+def getStudies(output: orthanc_sdk.RestOutput, uri: str, **request):
+    if request['method'] == 'GET':
+        study_ids = computeStudyIdList(request)
+        output.AnswerBuffer(json.dumps(study_ids), 'application/json')
+    else:
+        output.SendMethodNotAllowed('Not allowed')
+
+def getSeries(output: orthanc_sdk.RestOutput, uri: str, **request):
+    if request['method'] == 'GET':
+        study_ids = computeStudyIdList(request)
+        series_list = []
+        for study_id in study_ids:
+            series_list += json.loads(orthanc.RestApiGet(
+                f"/studies/{study_id}"))["Series"]
+        output.AnswerBuffer(json.dumps(series_list), 'application/json')
+        
+    else:
+        output.SendMethodNotAllowed('Not allowed')
+
+def checkAccess(parent_study, request):
+    cursor, pconn = cursorWithStudyIds(request)
     has_access = False
     for (study_id) in cursor:
-        # logging.info(study_id)
         if study_id[0] == parent_study:
             has_access = True
             break
@@ -72,32 +87,33 @@ def processRequest(parent_study, request):
 
 # process_pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1, initializer = Initializer)
 
-def OnRest(output: orthanc_sdk.RestOutput, uri: str, **request):
-    global test
+
+def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
     if request['method'] == 'GET':
-        path_as_list = uri.split("/")
-        if len(path_as_list) == 2:
-            output.AnswerBuffer(orthanc.RestApiGet('/instances'), "application/text")
-            return
-        instance_id = path_as_list[2]
+        instance_id = uri.split("/")[2]
         parent_series = json.loads(orthanc.RestApiGet(
             f"/instances/{instance_id}/"))\
             ["ParentSeries"]
         parent_study = json.loads(orthanc.RestApiGet(
             f"/series/{parent_series}/"))\
             ["ParentStudy"]
-        # logging.info(parent_study)
         # has_access = process_pool.apply(processRequest, args=(parent_study, request,), kwds={})
-        has_access = processRequest(parent_study, request)
+        has_access = checkAccess(parent_study, request)
         if has_access:
             output.AnswerBuffer(orthanc.RestApiGet(
                 f'/instances/{instance_id}/rendered'), 'binary')
         else:
             output.SendUnauthorized('Not allowed')
+    else:
+        output.SendMethodNotAllowed('Not allowed')
         
 
 
-orthanc.RegisterRestCallback('/instances/(.*)', OnRest)
+orthanc.RegisterRestCallback('/instances/(.*)', getInstaces)
+orthanc.RegisterRestCallback('/studies', getStudies)
+orthanc.RegisterRestCallback('/series', getSeries)
+orthanc.RegisterRestCallback('/patients', lambda output, uri, 
+                             **req: output.SendUnauthorized('Not Allowed'))
 
 # output object methods:
 #['AnswerBuffer', 'CompressAndAnswerJpegImage', 'CompressAndAnswerPngImage', 'Redirect', 'SendHttpStatus', 'SendHttpStatusCode', 'SendMethodNotAllowed', 'SendMultipartItem', 

@@ -5,7 +5,10 @@ export const globalStateSlice = createSlice({
     initialState: {
         token: "",
         isMedic: false,
-        openViewer: false,
+        openViewer: {
+            should_open: false,
+            study_id: ""
+        }
     },
     reducers: {
         setToken: (state, action) => {

@@ -91,8 +91,6 @@ export function Viewer(props: { study_id: string }) {
     const token = useSelector(selectToken);
     let startTime = useRef(null);
     useEffect(() => {
-        // TODO: change this for the current patient
-
         getViewerImages(props.study_id, token).then((images) => {
             if (images.length !== 0) {
                 all_data.current = images;

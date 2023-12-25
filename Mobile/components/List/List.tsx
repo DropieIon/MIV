@@ -60,7 +60,7 @@ function List(props: propsTemplate) {
     const patientTemplate = (item: ListEntryStudy) => {
         return <TouchableOpacity
             style={ViewStyles.item}
-            onPress={() => dispatch(setOpenViewer(true))}
+            onPress={() => dispatch(setOpenViewer({should_open: true, study_id: item.name}))}
         >
             <Image
                 style={ViewStyles.item_img}

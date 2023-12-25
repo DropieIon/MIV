@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { orthanc_url } from '../configs/backend_url';
 import { imageListItem } from '../types/ListEntry';
 import { viewerData } from '../types/ViewerData';
@@ -31,18 +31,6 @@ interface studies_resp {
   }
 }
 
-interface patients_resp {
-  data: {
-    ID: string,
-    PatientName: string,
-    MainDicomTags: {
-      PatientID: string,
-      PatientName: string
-    },
-    Studies: Array<string>
-  }
-}
-
 async function getAllPatients(token: string): Promise<Array<string>> {
   let resp;
   try {
@@ -57,18 +45,18 @@ async function getAllPatients(token: string): Promise<Array<string>> {
   return resp.data;
 }
 
-async function getStudies(patient_id: string, token: string): Promise<Array<string>> {
-  let resp: patients_resp;
+async function getStudies(token: string): Promise<Array<string>> {
+  let resp: AxiosResponse;
   try {
-    resp = await axios.get(`${orthanc_url}/patients/${patient_id}`,
+    resp = await axios.get(`${orthanc_url}/studies`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
   catch (error) {
-    console.error("Could not get studies");
+    console.error("Could not get studies", error);
     return null;
   };
-  return resp.data.Studies;
+  return resp.data;
 }
 
 async function getSeries(study_id: string, token: string): Promise<Array<string>> {
@@ -103,25 +91,9 @@ async function getJpeg(instance_id: string, token: string): Promise<string> {
     resp = await axios.get(`${orthanc_url}/instances/${instance_id}`, {
       responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token }
     })
-    // console.log(resp.status);
   }
   catch (e) {
     console.error("Could not get image", e);
-    return null;
-  }
-  return Buffer.from(resp.data, 'binary').toString('base64');
-  // return resp.data;
-}
-
-async function getPreview(instance_id: string, token: string) {
-  let resp;
-  try {
-    resp = await axios.get(`${orthanc_url}/instances/${instance_id}/preview`, {
-      responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token }
-    })
-  }
-  catch (e) {
-    console.error("Could not get preview");
     return null;
   }
   return Buffer.from(resp.data, 'binary').toString('base64');
@@ -133,7 +105,7 @@ async function getPatient(patient: string, token: string) {
 async function getSeriesData(series_id: string, token: string): Promise<imageListItem[]> {
   const instances_list = await getInstances(series_id, token);
   let series_data: imageListItem[] = [];
-  let img_data, preview_data;
+  let img_data;
   for (const index_instaces in instances_list) {
     let instance_id = instances_list[index_instaces];
     img_data = await getJpeg(instance_id, token);

@@ -9,9 +9,6 @@ import FilterSex from '../Doctor/FilterSex';
 import List from '../List/List';
 import FilterDate from '../Patient/FilterDate';
 import { AddEntry } from '../Patient/AddEntry';
-import { getStudies } from '../../dataRequests/OrthancData';
-import { useSelector } from 'react-redux';
-import { selectToken } from '../../features/globalStateSlice';
 
 const styles = StyleSheet.create({
     view: {
@@ -30,23 +27,24 @@ const styles = StyleSheet.create({
     }
 });
 
-function DefaultView(props: { isMedic: boolean}) {
-    const token = useSelector(selectToken);
-    let studies_uid_list = useRef<string[]>(null);
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        if(token)
-        {
-            // TODO: get this for the current patient
-            getStudies("8e9e8135-f9e05d3e-aa128825-97883040-ec6c49a5", token)
-                .then((data) => {
-                    studies_uid_list.current = data;
-                    setLoading(false);
-                })
+type propsTemplate = {
+    route: {
+        params: {
+            isMedic: boolean,
+            studies_list: string[],
+            loading: boolean
         }
-    }, [])
+    }
+}
+
+function DefaultView(props: propsTemplate) {
     let list_of_studies = [];
-    studies_uid_list.current?.forEach((value) => {
+    const {
+        isMedic, 
+        studies_list,
+        loading
+    } = props.route.params;
+    studies_list?.forEach((value) => {
         list_of_studies.push({uid: value, name: value, date: '1/1/2024'})
     })
     return <View
@@ -57,9 +55,9 @@ function DefaultView(props: { isMedic: boolean}) {
         >
             {/* Search, filter and patients View */}
             <SearchBar />
-            {props.isMedic && <FilterAge />}
-            {props.isMedic && <FilterSex />}
-            {!props.isMedic && <FilterDate/>}
+            {isMedic && <FilterAge />}
+            {isMedic && <FilterSex />}
+            {!isMedic && <FilterDate/>}
             <AddEntry/>
         </View>
         <View
@@ -69,7 +67,7 @@ function DefaultView(props: { isMedic: boolean}) {
             <List
                 loading={loading}
                 items={list_of_studies}
-                isMedic={props.isMedic}
+                isMedic={isMedic}
             // items={[]}
             ></List>
         </View>
