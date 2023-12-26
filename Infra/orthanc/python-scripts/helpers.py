@@ -11,7 +11,7 @@ class Encoder(json.JSONEncoder):
 
 def getDocUsername(request):
     encoded_payload = request['headers']['authorization']\
-                                        .split(" ")[1].split(".")[1] + '='
+                                        .split(" ")[1].split(".")[1] + '=='
     json_payload = json.loads(base64.b64decode(encoded_payload))
     if json_payload["isMedic"] != 'Y':
         return None
@@ -19,7 +19,7 @@ def getDocUsername(request):
 
 def getUsername(request):
     encoded_payload = request['headers']['authorization']\
-                                        .split(" ")[1].split(".")[1] + '='
+                                        .split(" ")[1].split(".")[1] + '=='
     return json.loads(base64.b64decode(encoded_payload))["username"]
 
 @timed_lru_cache(seconds=300, maxsize=32)
