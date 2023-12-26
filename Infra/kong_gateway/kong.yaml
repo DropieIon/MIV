@@ -1,0 +1,58 @@
+_format_version: "1.1"
+_transform: true
+
+services:
+  - name: main-gateway
+    url: http://backend:3000/
+  - name: jwt
+    url: http://auth:3000/
+  - name: orthanc
+    url: http://orthanc:8042/
+  - name: permissions
+    url: http://permissions:3000/
+routes:
+  - name: backend-route
+    service: main-gateway
+    strip_path: true
+    paths:
+      - /api
+  - name: orthanc-route
+    service: orthanc
+    strip_path: true
+    paths:
+      - /dicom
+  - name: permissions-route
+    service: permissions
+    strip_path: true
+    paths:
+      - /permissions
+  - name: jwt-route
+    service: jwt
+    paths:
+      - /
+plugins:
+  - name: jwt
+    route: backend-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+  - name: jwt
+    route: orthanc-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+  - name: jwt
+    route: permissions-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+consumers:
+  - username: backend-jwt
+jwt_secrets:
+  - consumer: backend-jwt

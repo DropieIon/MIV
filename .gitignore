@@ -187,3 +187,15 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
+
+delete_this*
+.expo/
+*.env
+
+# terraform stuff
+.terragrunt*
+.terraform*
+
+# python
+
+__pycache__
