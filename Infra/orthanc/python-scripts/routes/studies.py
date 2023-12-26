@@ -1,5 +1,6 @@
 from pyorthanc import orthanc_sdk
-from helpers import getDocUsername, Encoder
+import orthanc
+from helpers import getDocUsername, Encoder, getUsername, checkAccess
 from services.StudyService import StudyListForUser, AllStudiesList
 import json
 import logging
@@ -7,7 +8,7 @@ import logging
 def getStudiesForUser(output: orthanc_sdk.RestOutput, uri: str, **request):
     if request['method'] == 'GET':
         study_ids = StudyListForUser(request)
-        output.AnswerBuffer(json.dumps(study_ids), 'application/json')
+        output.AnswerBuffer(json.dumps(study_ids, cls=Encoder), 'application/json')
     else:
         output.SendMethodNotAllowed('Not allowed')
 
@@ -19,5 +20,18 @@ def getAllStudies(output: orthanc_sdk.RestOutput, uri: str, **request):
             return    
         study_ids = AllStudiesList()
         output.AnswerBuffer(json.dumps(study_ids, cls=Encoder), 'application/json')
+    else:
+        output.SendMethodNotAllowed('Not allowed')
+
+def getStudyData(output: orthanc_sdk.RestOutput, uri: str, **request):
+    if request['method'] == 'GET':
+        study_id = uri.split("/")[2]
+        patient_username = getUsername(request)
+        if checkAccess(study_id, patient_username):
+            output.AnswerBuffer(
+                orthanc.RestApiGet(f'/studies/{study_id}'),
+                'application/json')
+        else:
+            output.SendUnauthorized('Not allowed')
     else:
         output.SendMethodNotAllowed('Not allowed')

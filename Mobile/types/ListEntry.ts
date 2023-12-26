@@ -1,7 +1,11 @@
+import { studiesListEntry } from "../dataRequests/OrthancData"
+
 export type ListEntryStudy = {
-    uid: string,
-    name: string,
+    study_id: string,
+    modality?: string,
     date?: string,
+    previewB64?: string,
+    assignee?: string, 
     age?: number,
     sex?: 'M' | 'F'
 }

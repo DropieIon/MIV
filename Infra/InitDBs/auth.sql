@@ -106,3 +106,93 @@ VALUES (
     '888777',
     'testulescu'
 );
+/* INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    'ec6cfbd6-364237fe-56813031-bd264f2b-ee084354'
+);
+*/
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '14d74df9-be0fb9f4-a88c5382-55c94913-b46b297a'
+);
+/*
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '41abfc37-017aa274-3d25d5fb-7083b369-6b9f0838'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    'e2961f20-e2210b0d-f5dcbf8c-e5735d1c-5331274b'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '5b4fe3b3-365c4cff-0bcb456e-eafddbc7-2a053734'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '56bcf14e-94520693-73dff50f-382d1dde-e3cc7870'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '6dd77db5-ac801ee9-781aa3b6-f02b5237-0320cb04'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    '81a1e4e8-813d4052-7169c282-40be39db-444b75e0'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    'f01fc01f-c70ec7bd-290c49d8-58310aab-3cd3b24f'
+);
+
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id
+    )
+VALUES (
+    'patient',
+    'd9d1b581-d614e90d-8f4d63a9-ff811dd2-35108ab8'
+); */

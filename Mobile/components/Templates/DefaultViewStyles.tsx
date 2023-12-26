@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     item: {
-        height: Dimensions.get('window').height / 18,
+        height: Dimensions.get('window').height / 15,
         flexDirection: "row",
         borderWidth: 1,
         borderColor: "black"

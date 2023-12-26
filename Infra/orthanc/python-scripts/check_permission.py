@@ -1,11 +1,11 @@
 import orthanc
 import logging
 import sys
-from paths.studies import getStudiesForUser, getAllStudies
-from paths.series import getSeries
-from paths.instances import getInstaces
-from paths.patients import getAssignedPatients, getStudiesForPatient, getAllPatients
-from paths.doctors import getAllDoctors
+from routes.studies import getStudiesForUser, getAllStudies, getStudyData
+from routes.series import getSeries, getSeriesData
+from routes.instances import getInstaces
+from routes.patients import getAssignedPatients, getStudiesForPatient, getAllPatients
+from routes.doctors import getAllDoctors
 
 # logger options
 root = logging.getLogger()
@@ -17,13 +17,15 @@ handler.setFormatter(formatter)
 root.addHandler(handler)
 
 
-# Paths
+# routes
 orthanc.RegisterRestCallback('/instances/(.*)', getInstaces)
 
 orthanc.RegisterRestCallback('/studies', getStudiesForUser)
+orthanc.RegisterRestCallback('/studies/(.*)', getStudyData)
 orthanc.RegisterRestCallback('/all_studies', getAllStudies)
 
 orthanc.RegisterRestCallback('/series', getSeries)
+orthanc.RegisterRestCallback('/series/(.*)', getSeriesData)
 
 orthanc.RegisterRestCallback('/patients', getAssignedPatients)
 orthanc.RegisterRestCallback('/all_patients', getAllPatients)

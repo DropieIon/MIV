@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 const Drawer = createDrawerNavigator();
 
 export function Viewer(props: { study_id: string }) {
-    function CustomDrawerContent({ navigation }: DrawerContentComponentProps) {
+    function SeriesView({ navigation }: DrawerContentComponentProps) {
         return (
             <View
                 style={{ flex: 1 }}
@@ -76,7 +76,9 @@ export function Viewer(props: { study_id: string }) {
                             >
                                 <Image
                                     style={{ height: 200, width: 200 }}
-                                    source={{ uri: `data:image/png;base64,${item.item.series[Math.round(item.item.series.length / 2)]?.data}` }}
+                                    source={{ uri: `data:image/png;base64,${item.item.series[
+                                        Math.round(item.item.series.length === 1? 0 : item.item.series.length / 2)
+                                    ]?.data}` }}
                                 />
                             </TouchableOpacity>
                         )
@@ -128,7 +130,7 @@ export function Viewer(props: { study_id: string }) {
             }
             {!loading &&
                 <Drawer.Navigator
-                drawerContent={(props) => <CustomDrawerContent {...props} />}
+                drawerContent={(props) => <SeriesView {...props} />}
                 >
                     <Drawer.Screen
                         name='MainImage'

@@ -8,4 +8,4 @@ def getAllDoctors(output: orthanc_sdk.RestOutput, uri: str, **request):
     if request['method'] == 'GET':
         output.AnswerBuffer(json.dumps(AllDoctorsList(), cls=Encoder), 'application/json')
     else:
-        output.SendMethodNotAllowed('Not allowed')    
+        output.SendMethodNotAllowed('Not allowed')

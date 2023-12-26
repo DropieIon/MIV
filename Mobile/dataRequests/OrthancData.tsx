@@ -31,6 +31,14 @@ interface studies_resp {
   }
 }
 
+export type studiesListEntry = {
+  study_id: string,
+  modality: string,
+  date: string,
+  preview: string,
+  assignee: string
+}
+
 async function getAllPatients(token: string): Promise<Array<string>> {
   let resp;
   try {
@@ -45,8 +53,8 @@ async function getAllPatients(token: string): Promise<Array<string>> {
   return resp.data;
 }
 
-async function getStudies(token: string): Promise<Array<string>> {
-  let resp: AxiosResponse;
+async function getStudies(token: string): Promise<Array<studiesListEntry>> {
+  let resp: AxiosResponse<studiesListEntry[]>;
   try {
     resp = await axios.get(`${orthanc_url}/studies`,
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -85,6 +93,7 @@ async function getInstances(serie_id: string, token: string): Promise<Array<stri
   }
   return resp.data.Instances;
 }
+
 async function getJpeg(instance_id: string, token: string): Promise<string> {
   let resp;
   try {
@@ -107,6 +116,7 @@ async function getSeriesData(series_id: string, token: string): Promise<imageLis
   let series_data: imageListItem[] = [];
   let img_data;
   for (const index_instaces in instances_list) {
+    
     let instance_id = instances_list[index_instaces];
     img_data = await getJpeg(instance_id, token);
     series_data.push({ ind: parseInt(index_instaces), data: img_data});
@@ -116,7 +126,7 @@ async function getSeriesData(series_id: string, token: string): Promise<imageLis
 
 
 async function getViewerImages(study_id: string, token: string) {
-  // get studies -> series -> instances
+  // get studies -> series -> instances  
 
   let all_frames: Array<viewerData> = [];
   let promise_list = [];

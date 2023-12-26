@@ -22,6 +22,9 @@ def getUsername(request):
                                         .split(" ")[1].split(".")[1] + '=='
     return json.loads(base64.b64decode(encoded_payload))["username"]
 
+def convertDate(date: str):
+    return date[6:] + "/" + date[4:6] + "/" + date[:4]
+
 @timed_lru_cache(seconds=300, maxsize=32)
 def checkAccess(parent_study, patient_username):
     cursor, pconn = cursorWithStudyIds(patient_username)

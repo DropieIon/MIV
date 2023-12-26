@@ -8,7 +8,7 @@ import SettingsScreen from "../Settings/SettingsScreen";
 import DefaultView from "../../Templates/DefaultView";
 import { useEffect, useRef, useState } from "react";
 import { Viewer } from "../Viewer/Viewer";
-import { getStudies } from "../../../dataRequests/OrthancData";
+import { getStudies, studiesListEntry } from "../../../dataRequests/OrthancData";
 import { viewerState } from "../../../features/ViewerTypes";
 
 const Drawer = createDrawerNavigator();
@@ -18,14 +18,17 @@ export function LandingScreen(props) {
     const isMedic = useSelector(selectIsMedic);
     const viewer: viewerState = useSelector(selectOpenViewer);
     const [loading, setLoading] = useState(true);
-    let studies_list = useRef<string[]>(null);
+    let studies_list = useRef<studiesListEntry[]>(null);
     useEffect(() => {
         if(token !== "")
         {
             getStudies(token)
             .then((data) => {
                 studies_list.current = data;
+                // setTimeout(() => setLoading(false), 5000);
                 setLoading(false);
+                console.log("loaded at:", (new Date()).toLocaleTimeString());
+                
             })
         }
     }, [token])
@@ -33,6 +36,17 @@ export function LandingScreen(props) {
         <SafeAreaView
             style={{flex:1}}
         >
+            {loading && token &&
+                <Text
+                    style={{
+                        flex: 1,
+                        verticalAlign: 'middle',
+                        textAlign: 'center'
+                    }}
+                >
+                    Loading...
+                </Text>
+            }
             {!loading && token && viewer.should_open && <Viewer study_id={viewer.study_id} />}
             {!loading && token && !viewer.should_open &&
                 <Drawer.Navigator>
@@ -43,7 +57,6 @@ export function LandingScreen(props) {
                             isMedic: isMedic, 
                             studies_list: studies_list.current,
                             loading: loading,
-
                         }}
                         />
                     <Drawer.Screen

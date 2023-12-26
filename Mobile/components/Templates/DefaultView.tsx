@@ -9,6 +9,7 @@ import FilterSex from '../Doctor/FilterSex';
 import List from '../List/List';
 import FilterDate from '../Patient/FilterDate';
 import { AddEntry } from '../Patient/AddEntry';
+import { studiesListEntry } from '../../dataRequests/OrthancData';
 
 const styles = StyleSheet.create({
     view: {
@@ -31,22 +32,16 @@ type propsTemplate = {
     route: {
         params: {
             isMedic: boolean,
-            studies_list: string[],
-            loading: boolean
+            studies_list: studiesListEntry[],
         }
     }
 }
 
 function DefaultView(props: propsTemplate) {
-    let list_of_studies = [];
     const {
         isMedic, 
         studies_list,
-        loading
     } = props.route.params;
-    studies_list?.forEach((value) => {
-        list_of_studies.push({uid: value, name: value, date: '1/1/2024'})
-    })
     return <View
         style={styles.view}
     >
@@ -65,10 +60,8 @@ function DefaultView(props: propsTemplate) {
         >
             {/*/ Patients / Studies list */}
             <List
-                loading={loading}
-                items={list_of_studies}
+                items={studies_list}
                 isMedic={isMedic}
-            // items={[]}
             ></List>
         </View>
 
