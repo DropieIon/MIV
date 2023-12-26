@@ -21,32 +21,6 @@ services:
       MARIADB_USER: orthanc
       MARIADB_DATABASE: orthanc
       MARIADB_ROOT_PASSWORD: miv-root
-    
-  # this db is for patient -> studies link and doctor -> patients link
-  db_permissions:
-    image: mariadb:10.6-focal
-    healthcheck:
-      test: ["CMD", "mariadb-admin" ,"ping", "-pmiv-root"]
-      timeout: 5s
-      retries: 10
-    networks:
-      - permissions-db
-    command:
-      [
-        mysqld,
-        --default-authentication-plugin=ed25519,
-        --log-bin-trust-function-creators=1,
-      ]
-    volumes:
-      - "index_permissions:/var/lib/mariadb:Z"
-      - "./InitDBs/permissions.sql:/docker-entrypoint-initdb.d/initdb.sql"
-    environment:
-    # TODO: get these from env file and change them to not be
-    # identical to db_auth
-      MARIADB_PASSWORD: secure_miv
-      MARIADB_USER: miv
-      MARIADB_DATABASE: miv
-      MARIADB_ROOT_PASSWORD: miv-root
 
   db_auth:
     image: mariadb:10.6-focal
@@ -80,8 +54,6 @@ services:
     depends_on:
       db_orthanc:
           condition: service_healthy
-      db_permissions:
-          condition: service_healthy
       db_auth:
           condition: service_healthy
     ports: 
@@ -93,7 +65,6 @@ services:
       - orthanc-db
       - kong-net
       - auth-db
-      - permissions-db
     volumes:
       # - ./orthanc/configs/:/etc/orthanc/configs:ro
       - ./orthanc/python-scripts/:/etc/orthanc/python-scripts/
@@ -141,14 +112,13 @@ services:
     env_file:
       - .permissions.env
     networks:
-      - permissions-db
       - auth-db
       - kong-net
     volumes:
       - ../Backend:/app
     command: nodemon /app/microservices/permissions.ts
     depends_on:
-      db_permissions:
+      db_auth:
         condition: service_healthy
 
   kong-gateway:
@@ -173,13 +143,10 @@ volumes:
   storage:
   index_orthanc:
   index_backend:
-  index_permissions:
 networks:
   kong-net:
     driver: bridge
   orthanc-db:
     driver: bridge
   auth-db:
-    driver: bridge
-  permissions-db:
     driver: bridge
