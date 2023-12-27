@@ -98,7 +98,6 @@ export function Viewer(props: { study_id: string }) {
     const [progress, setProgress] = useState(0);
     const loading= useRef(true);
     // We use these refs so we can have peristent data between renders
-    const all_data = useRef<viewerData[]>(null);
     const loading_data = useRef<imageListItem[][]>([]);
     const [series_lengths, setSeries_lengths] = useState<number[]>([]);
     const token = useSelector(selectToken);
@@ -111,10 +110,7 @@ export function Viewer(props: { study_id: string }) {
         getViewerImages(props.study_id, token, loading_data.current, 
             setSeries_lengths, functions)
         .then((images) => {
-            if (images.length !== 0) {
-                all_data.current = images;
-            }
-            else {
+            if (images.length === 0) {
                 console.error("No instances for study");
             }
             loading.current = false;
@@ -124,9 +120,8 @@ export function Viewer(props: { study_id: string }) {
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
         startTime.current = (new Date()).getTime();
     }, []);
-    console.log("Re-render");
     
-    if(series_lengths.length !== 0)
+    if(loading.current && series_lengths.length !== 0)
     {
         loading.current = false;
     }
@@ -135,13 +130,13 @@ export function Viewer(props: { study_id: string }) {
     if (progress === 100) {
         console.log("Time elapsed: ", (new Date().getTime() - startTime.current) / 1000.0 + "s");
     }
-
+    
     const dispatch = useDispatch();
     const handleBackButtonClick = () => {
         dispatch(setOpenViewer(false));
         BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         return true;
-    }
+    }   
     return (
         <SafeAreaView
             style={styles.main_screen}
@@ -155,7 +150,9 @@ export function Viewer(props: { study_id: string }) {
                     <Text style={styles.loading_text}>Rabdarea e o virtutae...</Text>
                 </View>
             }
-            {!loading.current &&
+            {/* This "length != 0" is a little hack because 
+            react caches the drawer with empty data on creation */}
+            {!loading.current && loading_data.current[0].length !== 0 &&
                 <Drawer.Navigator
                 drawerContent={(props) => <SeriesView {...props} />}
                 >

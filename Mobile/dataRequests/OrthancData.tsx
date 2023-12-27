@@ -118,7 +118,7 @@ async function getPatient(patient: string, token: string) {
 }
 
 async function getSeriesData(instances_list: string[], token: string,
-  test_data: imageListItem[][], series_index: number, functions: stateFunctions)
+  loading_data: imageListItem[][], series_index: number, functions: stateFunctions)
   : Promise<imageListItem[]> {
   const {
     dispatch,
@@ -135,10 +135,10 @@ async function getSeriesData(instances_list: string[], token: string,
     counter++;
     let instance_id = instances_list[index_instaces];
     img_data = await getJpeg(instance_id, token);
-    test_data[series_index].push({ ind: parseInt(index_instaces), data: img_data});
+    loading_data[series_index].push({ ind: parseInt(index_instaces), data: img_data});
     series_data.push({ ind: parseInt(index_instaces), data: img_data});
   }
-  dispatch(setLoadingProgress({index: series_index, length: counter}))
+  dispatch(setLoadingProgress({index: series_index, length: counter}));
   return series_data;
 }
 
