@@ -1,10 +1,20 @@
 {
   "expo": {
-    "name": "MIV_expo",
+    "name": "MIV",
     "slug": "MIV_expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
@@ -18,10 +28,16 @@
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/images/rad.png"
+      },
+      "package": "com.dropieion.MIV"
     },
-    "web": {
+    "web": {},
+    "extra": {
+      "eas": {
+        "projectId": "f2a24033-731d-4288-a19a-658af1f9e146"
+      }
     }
   }
 }

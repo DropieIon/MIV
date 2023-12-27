@@ -55,8 +55,7 @@ export function LandingScreen(props) {
                         component={DefaultView}
                         initialParams={{
                             isMedic: isMedic, 
-                            studies_list: studies_list.current,
-                            loading: loading,
+                            studies_list: studies_list.current
                         }}
                         />
                     <Drawer.Screen

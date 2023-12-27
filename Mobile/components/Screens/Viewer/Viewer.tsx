@@ -125,7 +125,8 @@ export function Viewer(props: { study_id: string }) {
                 <View
                     style={styles.loading_text_view}
                 >
-                    <Text style={styles.loading_text}>Loading...</Text>
+                    {/* TODO: change this */}
+                    <Text style={styles.loading_text}>Rabdarea e o virtutae...</Text>
                 </View>
             }
             {!loading &&
