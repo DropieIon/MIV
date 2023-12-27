@@ -7,10 +7,11 @@ import {
     SafeAreaView,
     BackHandler,
     TouchableOpacity,
+    ActivityIndicator,
 } from 'react-native';
 import { getViewerImages, getAllPatients } from '../../../dataRequests/OrthancData';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, setOpenViewer } from '../../../features/globalStateSlice';
+import { selectLoadingProgress, selectToken, setLoadingProgress, setOpenViewer } from '../../../features/globalStateSlice';
 import { viewerData } from '../../../types/ViewerData';
 import { Image } from 'expo-image';
 import {
@@ -18,6 +19,8 @@ import {
     DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import { MainImageView } from './MainImageView';
+import { imageListItem } from '../../../types/ListEntry';
+import { LoadingSeriesBar } from './LoadingSeriesBar';
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -53,7 +56,7 @@ export function Viewer(props: { study_id: string }) {
     function SeriesView({ navigation }: DrawerContentComponentProps) {
         return (
             <View
-                style={{ flex: 1 }}
+                style={{ flex: 1}}
             >
                 <Text
                     style={styles.drawer_header}
@@ -61,8 +64,8 @@ export function Viewer(props: { study_id: string }) {
                     Series
                 </Text>
                 <FlatList
-                    style={[styles.series_list, {height: "100%"}]}
-                    data={all_data.current}
+                    style={[styles.series_list, {height: "90%"}]}
+                    data={loading_data.current}
                     showsHorizontalScrollIndicator={false}
                     renderItem={(item) => {
                         return (
@@ -70,14 +73,19 @@ export function Viewer(props: { study_id: string }) {
                                 style={{alignItems: 'center'}}
                                 onPress={(e) => {
                                     navigation.navigate('MainImage', {
-                                        seriesData: all_data.current[item.index].series
+                                        length: series_lengths[item.index],
+                                        seriesData: loading_data.current[item.index]
                                     });
                                 }}
                             >
+                                <LoadingSeriesBar
+                                    index={item.index}
+                                    length={series_lengths[item.index]}
+                                />
                                 <Image
                                     style={{ height: 200, width: 200 }}
-                                    source={{ uri: `data:image/png;base64,${item.item.series[
-                                        Math.round(item.item.series.length === 1? 0 : item.item.series.length / 2)
+                                    source={{ uri: `data:image/png;base64,${item.item[
+                                        Math.round(item.item.length === 1? 0 : item.item.length / 2)
                                     ]?.data}` }}
                                 />
                             </TouchableOpacity>
@@ -87,27 +95,44 @@ export function Viewer(props: { study_id: string }) {
             </View>
         );
     }
-    const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
+    const loading= useRef(true);
     // We use these refs so we can have peristent data between renders
     const all_data = useRef<viewerData[]>(null);
+    const loading_data = useRef<imageListItem[][]>([]);
+    const [series_lengths, setSeries_lengths] = useState<number[]>([]);
     const token = useSelector(selectToken);
     let startTime = useRef(null);
     useEffect(() => {
-        getViewerImages(props.study_id, token).then((images) => {
+        const functions = {
+            dispatch: dispatch, 
+            setLoadingProgress: setLoadingProgress
+        }
+        getViewerImages(props.study_id, token, loading_data.current, 
+            setSeries_lengths, functions)
+        .then((images) => {
             if (images.length !== 0) {
                 all_data.current = images;
             }
             else {
                 console.error("No instances for study");
             }
-            setLoading(false);
+            loading.current = false;
+            setProgress(100);
         });
+        
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
         startTime.current = (new Date()).getTime();
     }, []);
-
+    console.log("Re-render");
+    
+    if(series_lengths.length !== 0)
+    {
+        loading.current = false;
+    }
+    
     //TODO: delete this test
-    if (!loading) {
+    if (progress === 100) {
         console.log("Time elapsed: ", (new Date().getTime() - startTime.current) / 1000.0 + "s");
     }
 
@@ -121,15 +146,16 @@ export function Viewer(props: { study_id: string }) {
         <SafeAreaView
             style={styles.main_screen}
         >
-            {loading &&
+            {loading.current &&
                 <View
                     style={styles.loading_text_view}
                 >
+                    <ActivityIndicator size="large" color="000000"></ActivityIndicator>
                     {/* TODO: change this */}
                     <Text style={styles.loading_text}>Rabdarea e o virtutae...</Text>
                 </View>
             }
-            {!loading &&
+            {!loading.current &&
                 <Drawer.Navigator
                 drawerContent={(props) => <SeriesView {...props} />}
                 >
@@ -137,7 +163,8 @@ export function Viewer(props: { study_id: string }) {
                         name='MainImage'
                         component={MainImageView}
                         initialParams={{
-                            seriesData: all_data.current[0].series
+                            length: series_lengths[0],
+                            seriesData: loading_data.current[0]
                         }}
                         options={{
                             headerStyle: {backgroundColor: 'black'},

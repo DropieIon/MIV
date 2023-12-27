@@ -1,4 +1,4 @@
-import { SafeAreaView, Text } from "react-native";
+import { ActivityIndicator, SafeAreaView, Text, View } from "react-native";
 
 import { selectToken, selectIsMedic, selectOpenViewer } from "../../../features/globalStateSlice";
 import { useSelector } from "react-redux";
@@ -25,7 +25,6 @@ export function LandingScreen(props) {
             getStudies(token)
             .then((data) => {
                 studies_list.current = data;
-                // setTimeout(() => setLoading(false), 5000);
                 setLoading(false);
                 console.log("loaded at:", (new Date()).toLocaleTimeString());
                 
@@ -37,15 +36,25 @@ export function LandingScreen(props) {
             style={{flex:1}}
         >
             {loading && token &&
-                <Text
+                <View
                     style={{
-                        flex: 1,
-                        verticalAlign: 'middle',
-                        textAlign: 'center'
+                        justifyContent: 'center',
+                        height: "100%",
+                        width: "100%",
                     }}
                 >
-                    Loading...
-                </Text>
+                    <ActivityIndicator
+                        size="large"
+                        color="0000ff"
+                    />
+                    <Text
+                        style={{
+                            textAlign: 'center'
+                        }}
+                    >
+                        Loading...
+                    </Text>
+                </View>
             }
             {!loading && token && viewer.should_open && <Viewer study_id={viewer.study_id} />}
             {!loading && token && !viewer.should_open &&

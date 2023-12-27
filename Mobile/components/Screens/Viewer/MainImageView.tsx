@@ -50,7 +50,8 @@ type propsTemplate = {
     route: {
         params: {
             seriesData: imageListItem[],
-            uid: number
+            uid: number,
+            length: number,
         }
     }
 }
@@ -71,7 +72,6 @@ export function MainImageView(props: propsTemplate) {
     let index = 0;
     if(series_data)
     {
-
         return (
             <SafeAreaView
                 style={styles.main_screen}
@@ -130,7 +130,7 @@ export function MainImageView(props: propsTemplate) {
                         onMount={(childData) => {
                             status_setImg_nr = childData[1];
                         }}
-                        series_length={series_data.length}
+                        series_length={props.route.params.length}
                     />
                 }
             </SafeAreaView>

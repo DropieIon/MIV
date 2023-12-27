@@ -2,6 +2,7 @@ import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { orthanc_url } from '../configs/backend_url';
 import { imageListItem } from '../types/ListEntry';
 import { viewerData } from '../types/ViewerData';
+import { AnyAction, Dispatch } from 'redux';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -37,6 +38,11 @@ export type studiesListEntry = {
   date: string,
   preview: string,
   assignee: string
+}
+
+type stateFunctions = {
+  dispatch: Dispatch<AnyAction>,
+  setLoadingProgress
 }
 
 async function getAllPatients(token: string): Promise<Array<string>> {
@@ -111,35 +117,57 @@ async function getJpeg(instance_id: string, token: string): Promise<string> {
 async function getPatient(patient: string, token: string) {
 }
 
-async function getSeriesData(series_id: string, token: string): Promise<imageListItem[]> {
-  const instances_list = await getInstances(series_id, token);
+async function getSeriesData(instances_list: string[], token: string,
+  test_data: imageListItem[][], series_index: number, functions: stateFunctions)
+  : Promise<imageListItem[]> {
+  const {
+    dispatch,
+    setLoadingProgress
+  } = functions;
   let series_data: imageListItem[] = [];
   let img_data;
+  let counter = 0;
   for (const index_instaces in instances_list) {
-    
+    if(counter % 5 === 0)
+    {
+      dispatch(setLoadingProgress({index: series_index, length: counter}))
+    }
+    counter++;
     let instance_id = instances_list[index_instaces];
     img_data = await getJpeg(instance_id, token);
+    test_data[series_index].push({ ind: parseInt(index_instaces), data: img_data});
     series_data.push({ ind: parseInt(index_instaces), data: img_data});
   }
+  dispatch(setLoadingProgress({index: series_index, length: counter}))
   return series_data;
 }
 
 
-async function getViewerImages(study_id: string, token: string) {
-  // get studies -> series -> instances  
-
+async function getViewerImages(study_id: string, token: string,
+  test_data: imageListItem[][], setSeries_lengths: React.Dispatch<React.SetStateAction<number[]>>,
+  functions: stateFunctions
+  ) {
+  // get studies -> series -> instances
+  
   let all_frames: Array<viewerData> = [];
   let promise_list = [];
-      let series_list = await getSeries(study_id, token);
-      for (const index_series in series_list) {
-        const series_id = series_list[index_series];
-        promise_list.push(
-          getSeriesData(series_id, token)
-            .then((series_data) => {
-              all_frames.push({ ind: parseInt(index_series), series: series_data})
-            })
-        );
+  let series_list = await getSeries(study_id, token);
+  let s_lengths = [];
+  for (const index_series in series_list) {
+    test_data.push([])
+    const series_id = series_list[index_series];
+    const instances_list = await getInstances(series_id, token);
+    s_lengths.push(instances_list.length);
+    promise_list.push(
+      getSeriesData(instances_list, token, test_data, 
+        parseInt(index_series), functions)
+        .then((series_data) => {
+          all_frames.push({ ind: parseInt(index_series), series: series_data })
+        })
+    );
   }
+  setSeries_lengths(s_lengths);
+  
   const rez = await Promise.all(promise_list);
   return all_frames;
 }
