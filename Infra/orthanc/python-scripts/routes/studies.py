@@ -24,8 +24,8 @@ def getAllStudies(output: orthanc_sdk.RestOutput, uri: str, **request):
         output.SendMethodNotAllowed('Not allowed')
 
 def getStudyData(output: orthanc_sdk.RestOutput, uri: str, **request):
+    study_id = uri.split("/")[2]
     if request['method'] == 'GET':
-        study_id = uri.split("/")[2]
         patient_username = getUsername(request)
         if checkAccess(study_id, patient_username):
             output.AnswerBuffer(
@@ -33,5 +33,13 @@ def getStudyData(output: orthanc_sdk.RestOutput, uri: str, **request):
                 'application/json')
         else:
             output.SendUnauthorized('Not allowed')
+    elif request['method'] == 'POST':
+        if not getDocUsername(request):
+            logging.info("Nasol")
+            output.SendUnauthorized('Not allowed')
+            return
+        output.AnswerBuffer(
+                orthanc.RestApiGet(f'/studies/{study_id}'),
+                'application/json')
     else:
         output.SendMethodNotAllowed('Not allowed')

@@ -9,10 +9,9 @@ import {
     TouchableOpacity,
     ActivityIndicator,
 } from 'react-native';
-import { getViewerImages, getAllPatients } from '../../../dataRequests/OrthancData';
+import { getViewerImages } from '../../../dataRequests/DicomData';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectLoadingProgress, selectToken, setLoadingProgress, setOpenViewer } from '../../../features/globalStateSlice';
-import { viewerData } from '../../../types/ViewerData';
+import { selectToken, setLoadingProgress, setOpenViewer } from '../../../features/globalStateSlice';
 import { Image } from 'expo-image';
 import {
     createDrawerNavigator,
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
 
 const Drawer = createDrawerNavigator();
 
-export function Viewer(props: { study_id: string }) {
+export function Viewer(props: { study_id: string}) {
     function SeriesView({ navigation }: DrawerContentComponentProps) {
         return (
             <View
@@ -107,6 +106,7 @@ export function Viewer(props: { study_id: string }) {
             dispatch: dispatch, 
             setLoadingProgress: setLoadingProgress
         }
+        
         getViewerImages(props.study_id, token, loading_data.current, 
             setSeries_lengths, functions)
         .then((images) => {

@@ -1,10 +1,10 @@
 from pyorthanc import orthanc_sdk
 import json
 import orthanc
-from helpers import checkAccess, getUsername
+from helpers import checkAccess, getUsername, getDocUsername
 def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
+    instance_id = uri.split("/")[2]
     if request['method'] == 'GET':
-        instance_id = uri.split("/")[2]
         parent_series = json.loads(orthanc.RestApiGet(
             f"/instances/{instance_id}/"))\
             ["ParentSeries"]
@@ -19,6 +19,12 @@ def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
                 f'/instances/{instance_id}/rendered'), 'binary')
         else:
             output.SendUnauthorized('Not allowed')
+    elif request['method'] == 'POST':
+        if not getDocUsername(request):
+            output.SendUnauthorized('Not allowed')
+            return
+        output.AnswerBuffer(orthanc.RestApiGet(
+                f'/instances/{instance_id}/rendered'), 'binary')
     else:
         output.SendMethodNotAllowed('Not allowed')
         

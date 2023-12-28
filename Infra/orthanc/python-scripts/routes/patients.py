@@ -3,6 +3,10 @@ from helpers import getDocUsername, Encoder
 from services.PatientService import AllPatientsList, AssignedPatientsList
 from db.cursorsStudies import cursorWithStudiesForPatient
 import json
+from classes.Study import Study
+import orthanc
+from helpers import convertDate
+from services.StudyService import getModalityForSeries, getPreviewForStudy
 import logging
 
 def getAssignedPatients(output: orthanc_sdk.RestOutput, uri: str, **request):
@@ -36,8 +40,13 @@ def getStudiesForPatient(output: orthanc_sdk.RestOutput, uri: str, **request):
         cursor, pconn = cursorWithStudiesForPatient(patient_id, doc_username)
         studies_list = []
         for (study_id,) in cursor:
-            studies_list.append(study_id)
+            study_metadata = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))
+            studies_list.append(Study(study_id, 
+                               getModalityForSeries(study_metadata["Series"]), 
+                               getPreviewForStudy(study_id),
+                               convertDate(study_metadata["MainDicomTags"]["StudyDate"]))
+                               )
         pconn.close()
-        output.AnswerBuffer(json.dumps(studies_list), 'application/json')
+        output.AnswerBuffer(json.dumps(studies_list, cls=Encoder), 'application/json')
     else:
         output.SendMethodNotAllowed('Not allowed')    

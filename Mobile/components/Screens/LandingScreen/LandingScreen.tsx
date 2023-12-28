@@ -1,6 +1,6 @@
 import { ActivityIndicator, SafeAreaView, Text, View } from "react-native";
 
-import { selectToken, selectIsMedic, selectOpenViewer } from "../../../features/globalStateSlice";
+import { selectToken, selectLoadStudies, selectOpenViewer } from "../../../features/globalStateSlice";
 import { useSelector } from "react-redux";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Authentication from "../Authentification/Authentication";
@@ -8,27 +8,42 @@ import SettingsScreen from "../Settings/SettingsScreen";
 import DefaultView from "../../Templates/DefaultView";
 import { useEffect, useRef, useState } from "react";
 import { Viewer } from "../Viewer/Viewer";
-import { getStudies, studiesListEntry } from "../../../dataRequests/OrthancData";
+import { getStudies, studiesListEntry } from "../../../dataRequests/DicomData";
 import { viewerState } from "../../../features/ViewerTypes";
+import { patientsListEntry } from "../../../types/ListEntry";
+import { getPatients } from "../../../dataRequests/PatientData";
+import { parseJwt } from "../../../utils/helper";
 
 const Drawer = createDrawerNavigator();
 
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
-    const isMedic = useSelector(selectIsMedic);
+    const loadStudies = useSelector(selectLoadStudies);
     const viewer: viewerState = useSelector(selectOpenViewer);
     const [loading, setLoading] = useState(true);
     let studies_list = useRef<studiesListEntry[]>(null);
+    let patients_list = useRef<patientsListEntry[]>(null);
     useEffect(() => {
         if(token !== "")
-        {
-            getStudies(token)
-            .then((data) => {
-                studies_list.current = data;
-                setLoading(false);
-                console.log("loaded at:", (new Date()).toLocaleTimeString());
-                
-            })
+        {   
+            // is medic is set after the renrender triggered by the token
+            // so we have to check manually
+            if(parseJwt(token).isMedic === 'N')
+            {
+                getStudies(token)
+                .then((data) => {
+                    studies_list.current = data;
+                    setLoading(false);
+                    console.log("loaded at:", (new Date()).toLocaleTimeString());
+                    
+                });
+            } else {
+                getPatients(token)
+                .then((patients) => {
+                    patients_list.current = patients;
+                    setLoading(false);
+                });
+            }
         }
     }, [token])
     return (
@@ -56,15 +71,17 @@ export function LandingScreen(props) {
                     </Text>
                 </View>
             }
-            {!loading && token && viewer.should_open && <Viewer study_id={viewer.study_id} />}
+            {!loading && token && viewer.should_open && 
+                <Viewer study_id={viewer.study_id} />
+            }
             {!loading && token && !viewer.should_open &&
                 <Drawer.Navigator>
                     <Drawer.Screen
-                        name={isMedic? 'Patients' : 'Studies'}
+                        name={loadStudies? 'Patients' : 'Studies'}
                         component={DefaultView}
                         initialParams={{
-                            isMedic: isMedic, 
-                            studies_list: studies_list.current
+                            listStudies: !loadStudies, 
+                            items_list: !loadStudies ? studies_list.current : patients_list.current
                         }}
                         />
                     <Drawer.Screen

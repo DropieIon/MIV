@@ -1,13 +1,26 @@
-import { studiesListEntry } from "../dataRequests/OrthancData"
+import { studiesListEntry } from "../dataRequests/DicomData"
 
-export type ListEntryStudy = {
-    study_id: string,
+export type ListEntry = {
+    study_id?: string,
     modality?: string,
     date?: string,
     previewB64?: string,
-    assignee?: string, 
+
+    username?: string,
+    uid?: string,
     age?: number,
-    sex?: 'M' | 'F'
+    sex?: 'M' | 'F',
+    full_name?: string, 
+    doctor_username?: string, 
+}
+
+export type patientsListEntry = {
+    username: string,
+    uid: string,
+    age: number,
+    sex: 'M' | 'F',
+    full_name: string,
+    doctor_username: string,
 }
 
 export type imageListItem = {

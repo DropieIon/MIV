@@ -2,4 +2,4 @@
 const ip_laptop = "ionica.cometa.ro";
 
 export const backend_url = `http://${ip_laptop}:8000`;
-export const orthanc_url = `http://${ip_laptop}:8000/dicom`;
+export const orthanc_url = `http://${ip_laptop}:8000`;

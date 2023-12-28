@@ -9,15 +9,12 @@ import {
 
 import { textSize, marginBottom, auth_styles } from './auth_styles';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setToken, setIsMedic } from '../../../features/globalStateSlice';
+import { setToken, setLoadStudies } from '../../../features/globalStateSlice';
 import { useDispatch } from 'react-redux';
 import { backend_url } from '../../../configs/backend_url';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
+import { parseJwt } from '../../../utils/helper';
 global.Buffer = global.Buffer || require('buffer').Buffer;
-
-function parseJwt (token: string): {exp: number, isMedic: 'Y'| 'N'} {
-    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-}
 
 const styles = StyleSheet.create({
     signUpView: {
@@ -159,7 +156,7 @@ function Login(props: { passSignUp: () => void }) {
                                     setTimeout(() => refreshToken(username, password), 
                                         (parseJwt(token).exp - current_time) * 1000);
                                     dispatch(setToken(token));
-                                    dispatch(setIsMedic(parseJwt(token)?.isMedic === 'Y'));
+                                    dispatch(setLoadStudies(parseJwt(token)?.isMedic === 'Y'));
                                 })
                                 .catch((errorResp) => {
                                     const errMsg = (errorResp as AxiosError<BackendError>).response.data

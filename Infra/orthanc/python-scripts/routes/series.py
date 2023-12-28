@@ -1,5 +1,5 @@
 from pyorthanc import orthanc_sdk
-from helpers import getUsername, checkAccess
+from helpers import getUsername, checkAccess, getDocUsername
 from services.StudyService import StudyListForUser
 import json
 import orthanc
@@ -17,8 +17,8 @@ def getSeries(output: orthanc_sdk.RestOutput, uri: str, **request):
         output.SendMethodNotAllowed('Not allowed')
 
 def getSeriesData(output: orthanc_sdk.RestOutput, uri: str, **request):
+    series_id = uri.split("/")[2]
     if request['method'] == 'GET':
-        series_id = uri.split("/")[2]
         patient_username = getUsername(request)
         parent_study = None
         try:
@@ -35,5 +35,13 @@ def getSeriesData(output: orthanc_sdk.RestOutput, uri: str, **request):
             )
         else:
             output.SendUnauthorized('Not allowed')
+    elif request['method'] == 'POST':
+        if not getDocUsername(request):
+            output.SendUnauthorized('Not allowed')
+            return
+        output.AnswerBuffer(
+                orthanc.RestApiGet(f'/series/{series_id}'),
+                'application/json'
+            )
     else:
         output.SendMethodNotAllowed('Not allowed')

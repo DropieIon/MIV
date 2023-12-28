@@ -18,9 +18,14 @@ routes:
       - /api
   - name: orthanc-route
     service: orthanc
-    strip_path: true
+    strip_path: false
     paths:
-      - /dicom
+      - /studies
+      - /series
+      - /instances
+      - /patients
+      - /all_patients
+      - /all_doctors
   - name: permissions-route
     service: permissions
     strip_path: true
