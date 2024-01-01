@@ -44,7 +44,8 @@ interface series_resp {
 
 type stateFunctions = {
     dispatch: Dispatch<AnyAction>,
-    setLoadingProgress
+    setLoadingProgress,
+    setProgress,
 }
 
 async function getStudies(token: string): Promise<Array<studiesListEntry>> {
@@ -136,6 +137,7 @@ async function getSeriesData(instances_list: string[], token: string,
     let series_data: imageListItem[] = [];
     let img_data: string;
     let counter = 0;
+    let setProgress = true;
     for (const index_instaces in instances_list) {
         if (counter % 5 === 0) {
             dispatch(setLoadingProgress({ index: series_index, length: counter }))
@@ -145,6 +147,12 @@ async function getSeriesData(instances_list: string[], token: string,
         img_data = await getJpeg(instance_id, token);
         loading_data[series_index].push({ ind: parseInt(index_instaces), data: img_data });
         series_data.push({ ind: parseInt(index_instaces), data: img_data });
+        // solves a bug where nothing is displayed,
+        // because the instances list is empty
+        if(setProgress) {
+            setProgress = false;
+            functions.setProgress(1);
+        }
     }
     dispatch(setLoadingProgress({ index: series_index, length: counter }));
     return series_data;

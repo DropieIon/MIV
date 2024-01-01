@@ -104,7 +104,8 @@ export function Viewer(props: { study_id: string}) {
     useEffect(() => {
         const functions = {
             dispatch: dispatch, 
-            setLoadingProgress: setLoadingProgress
+            setLoadingProgress: setLoadingProgress,
+            setProgress
         }
         
         getViewerImages(props.study_id, token, loading_data.current, 
