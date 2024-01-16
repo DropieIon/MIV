@@ -6,30 +6,48 @@ import {
 } from 'react-native';
 
 import ViewStyles from '../Templates/DefaultViewStyles';
+import { AntDesign } from '@expo/vector-icons';
+
 
 const styles = StyleSheet.create({
   searchBox: {
-    left: ViewStyles.item_img.width,
+    flexDirection: 'row',
+    elevation: 5,
+    width: "90%",
+    height: "60%",
     position: "absolute",
-    borderColor: "black",
-    borderWidth: 2,
-    borderRadius: 5,
+    borderRadius: 200,
+    backgroundColor: 'white'
   },
   textInput: {
+    flex: 10,
+    padding: 10,
+  },
+  searchIcon: {
     flex: 1,
-    textAlign: 'center'
+    verticalAlign: 'middle'
   }
 });
 
 function SearchBar (props){
+  const {
+    onChange
+  } = props;
   return (
     <View
       style={[ViewStyles.item_name, styles.searchBox]}
     >
       <TextInput
+        onChangeText={onChange}
         style={styles.textInput}
         placeholder={"Search for..."}
       ></TextInput>
+      <AntDesign
+        name="search1"
+        size={15}
+        color="#68A2F2"
+        style={styles.searchIcon} 
+      />
 
     </View>
   );

@@ -79,6 +79,15 @@ export function LandingScreen(props) {
                     <Drawer.Screen
                         name={loadStudies? 'Patients' : 'Studies'}
                         component={DefaultView}
+                        options={{
+                            headerStyle: {
+                                backgroundColor: '#2F80ED',
+                            },
+                            headerTintColor: 'white',
+                            headerTitleStyle: {
+                                color: 'white'
+                            }
+                        }}
                         initialParams={{
                             listStudies: !loadStudies, 
                             items_list: !loadStudies ? studies_list.current : patients_list.current
