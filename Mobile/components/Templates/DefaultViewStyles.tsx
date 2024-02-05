@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     },
     item_img: {
         borderRadius: 10,
-        width: "20%",
-        height: "80%",
+        width: 75,
+        height: 75,
     },
     searchBox: {
         left: "15%",

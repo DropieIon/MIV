@@ -3,50 +3,15 @@ import {
     View,
     StyleSheet,
 } from 'react-native';
-import SearchBar from '../Search/SearchBar';
-import List from '../List/List';
-import { AddEntry } from '../Patient/AddEntry';
-import { ListEntry } from '../../types/ListEntry';
+import SearchBar from '../../Search/SearchBar';
 
 const styles = StyleSheet.create({
-    view: {
-        flex: 1,
-        width: "100%",
-        backgroundColor: '#2F80ED'
-    },
-    view_search: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: "100%",
-        height: "10%",
-        position: 'absolute'
-    },
-    view_list: {
-        backgroundColor: "white",
-        borderRadius: 50,
-        top: "10%",
-        height: "100%",
-        width: "100%",
-    }
+
 });
 
-type propsTemplate = {
-    navigation,
-    route: {
-        params: {
-            listStudies: boolean,
-            items_list: (ListEntry)[],
-        }
-    }
-}
-
-function DefaultView(props: propsTemplate) {
-    const {
-        listStudies, 
-        items_list,
-    } = props.route.params;
-    let filteredList;
+export function RequestMedic(props) {
     const [filter, setFilter] = useState("");
+    let filteredList;
     if(filter !== "") {
         filteredList = items_list.filter((item) => {
             let toFilter;
@@ -60,7 +25,8 @@ function DefaultView(props: propsTemplate) {
     else {
         filteredList = items_list;
     }
-    return <View
+    return (
+        <View
         style={styles.view}
     >
         <View
@@ -88,6 +54,5 @@ function DefaultView(props: propsTemplate) {
         </View>
         <AddEntry/>
     </View>
+    );
 }
-
-export default DefaultView;

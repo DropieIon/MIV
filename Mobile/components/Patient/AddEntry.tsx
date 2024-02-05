@@ -6,7 +6,6 @@ import {
     StyleSheet
 } from 'react-native';
 
-import ViewStyles from '../Templates/DefaultViewStyles';
 import { AntDesign } from '@expo/vector-icons';
 
 
@@ -20,17 +19,16 @@ const styles = StyleSheet.create({
         right: "3%",
         borderRadius: 10,
         backgroundColor: '#2F80ED',
-        width: "20%",
         height: "5%",
     },
     buttonText: {
         textAlignVertical: 'center',
         color: 'white',
-        height: "90%",
-        paddingStart: "17%",
-        width: "100%",
+        height: "100%",
+        paddingEnd: 10,
     },
     buttonPlus: {
+        padding: 10,
         verticalAlign: 'middle',
         left: "10%"
     }
@@ -50,7 +48,8 @@ export function AddEntry(props) {
                 <View
                     style={{
                         flex: 1,
-                        flexDirection: 'row'
+                        flexDirection: 'row',
+                        // backgroundColor: 'black'
                     }}
                 >
                     <AntDesign

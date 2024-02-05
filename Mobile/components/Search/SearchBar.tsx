@@ -24,8 +24,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   searchIcon: {
-    flex: 1,
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    textAlign: 'center',
+    right: "30%"
   }
 });
 

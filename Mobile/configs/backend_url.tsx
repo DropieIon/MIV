@@ -1,4 +1,4 @@
-const ip_laptop = "192.168.220.13";
+const ip_laptop = "192.168.1.207";
 // const ip_laptop = "10.41.41.89";
 // const ip_laptop = "ionica.cometa.ro";
 
