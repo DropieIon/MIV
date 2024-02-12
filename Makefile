@@ -2,6 +2,9 @@ PORT=4242
 run-infra:
 	(cd Infra ; docker compose down ; docker compose up -d)
 
+stop-infra:
+	(cd Infra; docker compose down)
+
 run-mobile:
 	(cd Mobile ; npx expo start)
 
