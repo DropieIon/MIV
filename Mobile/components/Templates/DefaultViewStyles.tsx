@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         borderWidth: 1,
         borderRadius: 20,
-        borderColor: "#F1F1F1"
+        borderColor: "#F1F1F1",
     },
     item_name: {
         width: "45%",
@@ -41,12 +41,21 @@ const styles = StyleSheet.create({
         width: "17%",
         height: "80%",
         textAlignVertical: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     item_img: {
         borderRadius: 10,
         width: 75,
         height: 75,
+    },
+    item_assign_button: {
+        alignSelf: 'center',
+        borderWidth: 1,
+        elevation: 3,
+        padding: 10,
+        borderRadius: 15,
+        backgroundColor: 'white',
+        borderColor: '#F1F1F1'
     },
     searchBox: {
         left: "15%",

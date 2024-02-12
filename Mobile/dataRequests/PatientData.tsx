@@ -1,10 +1,10 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { orthanc_url } from '../configs/backend_url';
-import { patientsListEntry } from '../types/ListEntry';
+import { accountDataListEntry } from '../types/ListEntry';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
 
-async function getPatients(token: string): Promise<Array<patientsListEntry>> {
+async function getPatients(token: string): Promise<Array<accountDataListEntry>> {
   let resp;
   try {
     resp = await axios.get(`${orthanc_url}/patients/`,
