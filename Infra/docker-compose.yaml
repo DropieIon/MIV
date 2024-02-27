@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   db_orthanc:
+    container_name: db_orthanc
     image: mariadb:10.6-focal
     healthcheck:
       test: ["CMD", "mariadb-admin" ,"ping", "-pmiv-root"]
@@ -23,6 +24,7 @@ services:
       MARIADB_ROOT_PASSWORD: miv-root
 
   db_auth:
+    container_name: db_auth
     image: mariadb:10.6-focal
     healthcheck:
       test: ["CMD", "mariadb-admin" ,"ping", "-pmiv-root"]
@@ -37,8 +39,9 @@ services:
         --log-bin-trust-function-creators=1,
       ]
     volumes:
-      - "index_backend:/var/lib/mariadb:Z"
+      - "index_account_data:/var/lib/mariadb:Z"
       - "./InitDBs/auth.sql:/docker-entrypoint-initdb.d/initdb.sql"
+      - "./InitDBs/profile_pics.sql:/docker-entrypoint-initdb.d/profile_pics.sql"
     environment:
     # TODO: get these from env file
       MARIADB_PASSWORD: secure_miv
@@ -47,6 +50,7 @@ services:
       MARIADB_ROOT_PASSWORD: miv-root
 
   orthanc:
+    container_name: orthanc
     build:
       context: ./orthanc
       dockerfile: dockerfile_orthanc
@@ -74,6 +78,7 @@ services:
       
 
   auth:
+    container_name: auth
     build: 
       context: ..
       dockerfile: Infra/dockerfile_backend
@@ -90,11 +95,12 @@ services:
       db_auth:
         condition: service_healthy
   
-  backend:
+  account_data:
+    container_name: account_data
     build: 
       context: ..
       dockerfile: Infra/dockerfile_backend
-    image: backend
+    image: account_data
     env_file:
       - .backend.env
     networks:
@@ -102,26 +108,10 @@ services:
       - auth-db
     volumes:
       - ../Backend:/app
-    command: nodemon /app/microservices/backend.ts
-  
-  permissions:
-    build: 
-      context: ..
-      dockerfile: Infra/dockerfile_backend
-    image: backend
-    env_file:
-      - .permissions.env
-    networks:
-      - auth-db
-      - kong-net
-    volumes:
-      - ../Backend:/app
-    command: nodemon /app/microservices/permissions.ts
-    depends_on:
-      db_auth:
-        condition: service_healthy
+    command: nodemon /app/microservices/account_data.ts
 
   kong-gateway:
+    container_name: kong_gateway
     image: kong:3.5
     ports:
       - 8000:8000
@@ -142,7 +132,7 @@ services:
 volumes:
   storage:
   index_orthanc:
-  index_backend:
+  index_account_data:
 networks:
   kong-net:
     driver: bridge

@@ -2,12 +2,10 @@ import express from 'express';
 import { json } from 'body-parser';
 import { errorHandler } from '../src/middlewares/errors.middleware';
 import { get_pool } from '../src/services/db-auth.service';
-import { studiesController } from '../src/controllers/studies.controller';
-
+import personal_resuests_router from '../src/routes/personal_requests.route';
 
 const app = express();
 const port = 3000;
-
 
 /* Middleware */
 
@@ -17,14 +15,18 @@ app.get('/', (req, res) => {
   res.json({'message': 'ok'});
 })
 
-app.use('/studies', studiesController);
+app.get('/api', (req, res) => {
+  res.json({'message': 'ok'});
+})
+
+app.use('/personal_requests', personal_resuests_router);
 
 /* Error handler middleware */
 app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
-})
+});
 
 /* Cleanup */
 
@@ -38,7 +40,7 @@ type exitOptions = {
 function exitHandler(options: exitOptions) {
     if (options.cleanup) {
       console.log("Closed connection pool");
-      return get_pool().end().then();
+      get_pool().end();
     }
     if (options.exit) process.exit();
 }

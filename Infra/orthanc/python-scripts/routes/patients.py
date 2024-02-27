@@ -22,10 +22,11 @@ def getAssignedPatients(output: orthanc_sdk.RestOutput, uri: str, **request):
 
 def getAllPatients(output: orthanc_sdk.RestOutput, uri: str, **request):
     if request['method'] == 'GET':
-        if not getDocUsername(request):
+        doc_username = getDocUsername(request)
+        if not doc_username:
             output.SendUnauthorized('Not allowed')
             return
-        output.AnswerBuffer(json.dumps(AllPatientsList(), cls=Encoder), 'application/json')
+        output.AnswerBuffer(json.dumps(AllPatientsList(doc_username), cls=Encoder), 'application/json')
     else:
         output.SendMethodNotAllowed('Not allowed')         
 

@@ -2,20 +2,18 @@ _format_version: "1.1"
 _transform: true
 
 services:
-  - name: main-gateway
-    url: http://backend:3000/
+  - name: account_data
+    url: http://account_data:3000/
   - name: jwt
     url: http://auth:3000/
   - name: orthanc
     url: http://orthanc:8042/
-  - name: permissions
-    url: http://permissions:3000/
 routes:
   - name: backend-route
-    service: main-gateway
+    service: account_data
     strip_path: true
     paths:
-      - /api
+      - /acc_data
   - name: orthanc-route
     service: orthanc
     strip_path: false
@@ -26,11 +24,6 @@ routes:
       - /patients
       - /all_patients
       - /all_doctors
-  - name: permissions-route
-    service: permissions
-    strip_path: true
-    paths:
-      - /permissions
   - name: jwt-route
     service: jwt
     paths:
@@ -45,13 +38,6 @@ plugins:
         - exp
   - name: jwt
     route: orthanc-route
-    enabled: true
-    config:
-      key_claim_name: kid
-      claims_to_verify:
-        - exp
-  - name: jwt
-    route: permissions-route
     enabled: true
     config:
       key_claim_name: kid

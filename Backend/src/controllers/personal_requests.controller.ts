@@ -1,19 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
-import { patientForm } from "../types/patients.type";
-import { has_completed, insert_patient_details } from "../services/db-auth.service";
 import { parseJwt } from "../utils/helper.util";
-import { patient_details } from "../services/patients.service";
-
-/* TODO: finish this function */
+import { personal_requests_form } from "../types/personal_requests.type";
+import { insert_personal_requests, get_personal_requests } from "../services/personal_requests.service";
 
 const get_username = (token: string): string => parseJwt(token)?.username;
 
-export async function patientsController(req: Request<{}, {}, patientForm>,
+export async function post_personal_requestsController(req: Request<{}, {}, personal_requests_form>,
     res: Response, next: NextFunction) {
-    if (!req.body.age || !req.body.sex) {
-        next(new EmptyField({ message: "Age and sex are required!", logging: true }))
+    if (!req.body.to) {
+        next(new EmptyField({ message: "To is required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];
@@ -24,19 +21,19 @@ export async function patientsController(req: Request<{}, {}, patientForm>,
         }));
         return;
     }
-    const resp_insert = await patient_details(get_username(token), req.body);
-    if(resp_insert.ok)
+    const resp_db = await insert_personal_requests(get_username(token), req.body.to);
+    if(resp_db.ok)
     {
-        res.json({message: resp_insert.data});
+        res.json({message: resp_db.data});
         return;
     }
     next(new RegisterError({
-        message: resp_insert.data,
+        message: resp_db.data as string,
         code: 400
     }))
 }
 
-export async function has_completedController(req: Request,
+export async function get_personal_requestsController(req: Request<{}, {}, {}>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
@@ -46,15 +43,14 @@ export async function has_completedController(req: Request,
         }));
         return;
     }
-    
-    let resp_completed = await has_completed(get_username(token));
-    if(["Y", "N"].includes(resp_completed)) {
-        res.json({message: resp_completed})
+    const resp_db = await get_personal_requests(get_username(token), parseJwt(token)?.isMedic);
+    if(resp_db.ok)
+    {
+        res.json(resp_db.data);
         return;
     }
-
     next(new RegisterError({
-        message: resp_completed,
+        message: resp_db.data as string,
         code: 400
     }))
 }
