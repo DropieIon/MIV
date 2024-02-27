@@ -40,8 +40,7 @@ services:
       ]
     volumes:
       - "index_account_data:/var/lib/mariadb:Z"
-      - "./InitDBs/auth.sql:/docker-entrypoint-initdb.d/initdb.sql"
-      - "./InitDBs/profile_pics.sql:/docker-entrypoint-initdb.d/profile_pics.sql"
+      - "./InitDBs:/docker-entrypoint-initdb.d"
     environment:
     # TODO: get these from env file
       MARIADB_PASSWORD: secure_miv
