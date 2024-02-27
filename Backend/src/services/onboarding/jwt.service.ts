@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import type { NextFunction, Request, Response } from 'express';
-import { jwt_payload, yayOrNay } from '../types/authentication.type';
-import { get_GW_Data } from '../utils/helper.util';
+import { jwt_payload, yayOrNay } from '../../types/authentication.type';
+import { get_GW_Data } from '../../utils/helper.util';
 
 export async function generateAccessToken(username: string, isMedic: yayOrNay): Promise<string | null> {
     let resp_gateway = await get_GW_Data();

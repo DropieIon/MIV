@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
 import { patientForm } from "../types/patients.type";
-import { has_completed, insert_patient_details } from "../services/db-auth.service";
+import { has_completed, insert_patient_details } from "../services/db/db-auth.service";
 import { parseJwt } from "../utils/helper.util";
 import { patient_details } from "../services/patients.service";
 

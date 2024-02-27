@@ -1,8 +1,8 @@
 import mariadb from 'mariadb';
-import { db_config } from '../configs/db.config';
-import { loginForm, registerForm, yayOrNay } from '../types/authentication.type';
-import { sha256 } from '../utils/helper.util';
-import { patientForm } from "../types/patients.type";
+import { db_config } from '../../configs/db.config';
+import { loginForm, registerForm, yayOrNay } from '../../types/authentication.type';
+import { sha256 } from '../../utils/helper.util';
+import { patientForm } from "../../types/patients.type";
 
 const pool = mariadb.createPool(db_config);
 

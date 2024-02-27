@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import ControllerError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
 import type { loginForm } from "../types/authentication.type";
-import { loginUser } from "../services/login.service";
+import { loginUser } from "../services/onboarding/login.service";
 
 export async function loginController(req: Request<{}, {}, loginForm>,
     res: Response, next: NextFunction) {

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { create_user } from '../services/register.service';
+import { create_user } from '../services/onboarding/register.service';
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
-import { validateUUID } from "../services/db-auth.service";
+import { validateUUID } from "../services/db/db-auth.service";
 import type { registerForm } from "../types/authentication.type";
 
 export async function registerController(req: Request<{}, {}, registerForm>, 

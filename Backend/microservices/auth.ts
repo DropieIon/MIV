@@ -3,7 +3,7 @@ import { json } from 'body-parser';
 import loginRouter from '../src/routes/login.route';
 import registerRouter from '../src/routes/register.route';
 import { errorHandler } from '../src/middlewares/errors.middleware';
-import { get_pool } from '../src/services/db-auth.service';
+import { get_pool } from '../src/services/db/db-auth.service';
 
 
 const app = express();

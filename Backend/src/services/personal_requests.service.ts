@@ -1,6 +1,6 @@
 import { resp_common_services } from "../types/authentication.type";
 import { personal_requests_form } from "../types/personal_requests.type";
-import { db_insert_patient_requests, db_get_requests, has_completed, insert_patient_details } from "./db-auth.service";
+import { db_insert_patient_requests, db_get_requests, has_completed, insert_patient_details } from "./db/db-auth.service";
 
 type resp_presonal_requests = {
     ok: boolean,

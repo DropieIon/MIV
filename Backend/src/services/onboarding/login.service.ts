@@ -1,6 +1,6 @@
 import { generateAccessToken } from './jwt.service';
-import { loginForm, resp_common_services } from '../types/authentication.type';
-import { checkLogin } from './db-auth.service';
+import { loginForm, resp_common_services } from '../../types/authentication.type';
+import { checkLogin } from '../db/db-auth.service';
 
 
 export async function loginUser(loginData: loginForm): Promise<resp_common_services> {

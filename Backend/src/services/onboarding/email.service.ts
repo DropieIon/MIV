@@ -1,5 +1,5 @@
-import { transporter } from "../configs/email.config";
-import { HTML_TEMPLATE } from './../../templates/registerEmail.template'
+import { transporter } from "../../configs/email.config";
+import { HTML_TEMPLATE } from '../../../templates/registerEmail.template'
 
 export async function sendRegisterEmail(receiver: string, uuid: string): Promise<string> {
     const mailDetails = {

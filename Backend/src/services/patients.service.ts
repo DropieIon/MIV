@@ -1,6 +1,6 @@
 import { resp_common_services } from "../types/authentication.type";
 import { patientForm } from "../types/patients.type";
-import { has_completed, insert_patient_details } from "./db-auth.service";
+import { has_completed, insert_patient_details } from "./db/db-auth.service";
 
 
 export async function patient_details(username: string, details: patientForm): Promise<resp_common_services> {

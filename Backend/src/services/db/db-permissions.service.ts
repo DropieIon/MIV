@@ -1,5 +1,5 @@
 import mariadb from 'mariadb';
-import { db_config } from '../configs/db.config';
+import { db_config } from '../../configs/db.config';
 import { sq } from './db-auth.service';
 
 const pool = mariadb.createPool(db_config);
