@@ -4,12 +4,12 @@ import {
     Text,
     StyleSheet,
 } from 'react-native';
-import SearchBar from '../../Search/SearchBar';
-import List from '../../List/List';
-import { ListEntry } from '../../../types/ListEntry';
-import { getDoctors } from '../../../dataRequests/DoctorData';
-import { selectToken } from '../../../features/globalStateSlice';
+import { getRequests } from '../../../dataRequests/AssignRequestsData';
 import { useSelector } from 'react-redux';
+import { selectToken } from '../../../features/globalStateSlice';
+import { requestsListEntry } from '../../../types/ListEntry';
+import List from '../../List/List';
+import SearchBar from '../../Search/SearchBar';
 
 const styles = StyleSheet.create({
     view: {
@@ -35,29 +35,23 @@ const styles = StyleSheet.create({
 
 type propsTemplate = {
     navigation,
-    // route: {
-    //     params: {
-    //         listStudies: boolean,
-    //         items_list: (ListEntry)[],
-    //     }
-    // }
 }
 
-export function RequestMedic(props: propsTemplate) {
+export function MedicRequests(props: propsTemplate) {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("");
-    const itemsList = useRef<ListEntry[]>(null);
-    let filteredList: ListEntry[] = null;
+    const itemsList = useRef<requestsListEntry[]>(null);
+    let filteredList: requestsListEntry[] = null;
     const token = useSelector(selectToken);
     useEffect(() => {
-        getDoctors(token).then((data) => {
+        getRequests(token).then((data) => {
             itemsList.current = data;
             setLoading(false);
         });
     }, []);
-    if(filter !== "") {
+    if (filter !== "") {
         filteredList = itemsList.current.filter((item) => {
-            return (new RegExp(`^${filter.toLowerCase()}`)).test(item.full_name.toLowerCase());
+            return (new RegExp(`^${filter.toLowerCase()}`)).test(item.patient_username.toLowerCase());
         })
     }
     else {
@@ -81,7 +75,7 @@ export function RequestMedic(props: propsTemplate) {
                 style={styles.view_list}
             >
                 {/*/ Patients / Studies list */}
-                {loading && 
+                {loading &&
                     <Text
                         style={{
                             flex: 1,
@@ -94,6 +88,7 @@ export function RequestMedic(props: propsTemplate) {
                 }
                 {!loading &&
                     <List
+                        template='patientReq'
                         navigation={props.navigation}
                         items={filteredList}
                         listStudies={false}

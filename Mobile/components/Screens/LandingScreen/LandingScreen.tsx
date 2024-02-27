@@ -13,7 +13,8 @@ import { viewerState } from "../../../features/ViewerTypes";
 import { accountDataListEntry } from "../../../types/ListEntry";
 import { getPatients } from "../../../dataRequests/PatientData";
 import { parseJwt } from "../../../utils/helper";
-import { RequestMedic } from "../MedPatLinks/RequestMedic";
+import { RequestOrAssign } from "../MedPatLinks/RequestOrAssing";
+import { MedicRequests } from "../PersonalRequests/MedicRequests";
 
 const Drawer = createDrawerNavigator();
 
@@ -36,8 +37,6 @@ export function LandingScreen(props) {
     let patients_list = useRef<accountDataListEntry[]>(null);
     useEffect(() => {
         if (token !== "") {
-            // is medic is set after the renrender triggered by the token
-            // so we have to check manually
             if (parseJwt(token).isMedic === 'N') {
                 getStudies(token)
                     .then((data) => {
@@ -95,9 +94,14 @@ export function LandingScreen(props) {
                         }}
                     />
                     <Drawer.Screen
-                        name='Medics'
+                        name={parseJwt(token).isMedic === 'N' ? 'All Doctors' : 'All Patients'}
                         options={drawerScreenOptions}
-                        component={RequestMedic}
+                        component={RequestOrAssign}
+                    />
+                    <Drawer.Screen
+                        name={parseJwt(token).isMedic === 'N' ? 'My Requests' : 'Requests'}
+                        options={drawerScreenOptions}
+                        component={MedicRequests}
                     />
                     <Drawer.Screen
                         name='Settings'

@@ -81,6 +81,7 @@ function DefaultView(props: propsTemplate) {
         >
             {/*/ Patients / Studies list */}
             <List
+                template={listStudies ? 'patient' : 'medic'}
                 navigation={props.navigation}
                 items={filteredList}
                 listStudies={listStudies}

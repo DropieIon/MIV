@@ -15,7 +15,7 @@ async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
     console.error("Could not get patients");
     return null;
   };
-  return resp.data.map(obj => ({...obj, isAssignable: true}));
+  return resp.data;
 }
 
 export {

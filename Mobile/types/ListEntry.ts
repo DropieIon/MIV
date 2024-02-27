@@ -13,7 +13,6 @@ export type ListEntry = {
     full_name?: string,
     // username of the doctor to which he's assigned
     doctor_username?: string,
-    isAssignable?: boolean,
     // profile picture in base64 string
     profile_pic?: string,
 }
@@ -27,7 +26,14 @@ export type accountDataListEntry = {
     // profile picture in base64 string
     profile_pic: string,
     doctor_username?: string,
-    isAssignable?: boolean,
+}
+
+export type requestsListEntry = {
+    patient_username: string,
+    accepted: 'Y' | 'N',
+    date: string,
+    profile_pic: string,
+    uid: string,
 }
 
 export type imageListItem = {
