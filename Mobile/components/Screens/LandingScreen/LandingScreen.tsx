@@ -36,6 +36,7 @@ export function LandingScreen(props) {
     let studies_list = useRef<studiesListEntry[]>(null);
     let patients_list = useRef<accountDataListEntry[]>(null);
     useEffect(() => {
+        setLoading(true);
         if (token !== "") {
             if (parseJwt(token).isMedic === 'N') {
                 getStudies(token)

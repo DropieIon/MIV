@@ -120,7 +120,7 @@ export async function db_get_requests(username: string, isMedic: 'Y' | 'N'): Pro
 }
 
 export async function db_insert_patient_requests(username: string, to: string): Promise<string> {
-    let query_resp = await sq('insert into requests(patient_username, doctor_username) values (?, ?)',
+    let query_resp = await sq('insert into requests(patient_username, doctor_username, date) values (?, ?, NOW())',
         [username, to]);
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {

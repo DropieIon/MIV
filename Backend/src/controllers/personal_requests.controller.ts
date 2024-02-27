@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
-import { parseJwt } from "../utils/helper.util";
+import { get_username, parseJwt } from "../utils/helper.util";
 import { personal_requests_form } from "../types/personal_requests.type";
-import { insert_personal_requests, get_personal_requests } from "../services/personal_requests.service";
-
-const get_username = (token: string): string => parseJwt(token)?.username;
+import { insert_personal_requests, get_personal_requests } from "../services/requests/personal_requests.service";
 
 export async function post_personal_requestsController(req: Request<{}, {}, personal_requests_form>,
     res: Response, next: NextFunction) {
