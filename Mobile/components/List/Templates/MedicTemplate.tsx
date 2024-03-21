@@ -8,8 +8,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getPatientStudies } from '@dataRequests/PatientData';
 import { propsTemplate } from './PropsTemplate';
 
-
-
 export function medicTemplate(props: propsTemplate) {
     return <TouchableOpacity
         style={ViewStyles.item}

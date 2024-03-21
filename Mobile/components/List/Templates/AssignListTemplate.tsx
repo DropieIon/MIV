@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -8,9 +8,16 @@ import ViewStyles from '@components/Templates/DefaultViewStyles';
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import { parseJwt } from '../../../utils/helper';
 import { propsTemplate } from './PropsTemplate';
-
+import { make_request } from '../../../dataRequests/AssignRequestsData';
+import Toast from 'react-native-root-toast';
 
 export const assignListTemplate = (props: propsTemplate) => {
+    const medic = parseJwt(props.token).isMedic === 'Y';
+    // const [successful, setSuccessful] = useState(false);
+    // let toast = Toast.show('Request failed to send.', {
+    //     duration: Toast.durations.LONG,
+    //   });
+    
     return (
         <TouchableOpacity
             activeOpacity={0.7}
@@ -38,12 +45,22 @@ export const assignListTemplate = (props: propsTemplate) => {
             >
                 <TouchableOpacity
                     style={ViewStyles.item_assign_button}
+                    onPress={medic ? () => {} : () => {                        
+                        make_request(props.token, props.item.username)
+                        .then(() => {
+                            <Toast visible={true}>Thanks for subscribing!</Toast>
+                        })
+                        .catch((err) => {
+                            // TODO
+                        })
+                    }}
                 >
                     <Text
                     >
-                        {parseJwt(props.token).isMedic === 'Y' ? "Assign" : "Request"}
+                        {medic ? "Assign" : "Request"}
                     </Text>
                 </TouchableOpacity>
+                {/* <Toast visible={true}>Thanks for subscribing!</Toast> */}
             </View>
         </TouchableOpacity>
     );

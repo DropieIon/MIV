@@ -68,7 +68,7 @@ export function RequestOrAssign(props: propsTemplate) {
     }, []);
     if(filter !== "") {
         filteredList = itemsList.current.filter((item) => {
-            return (new RegExp(`^${filter.toLowerCase()}`)).test(item.full_name.toLowerCase());
+            return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.full_name.toLowerCase());
         })
     }
     else {

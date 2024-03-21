@@ -58,19 +58,21 @@ type propsTemplate = {
 
 export function MainImageView(props: propsTemplate) {
     const series_data = props.route.params.seriesData;
+    let index = 0;
     useEffect(() => {
         if(setImg_nr)
             setImg_nr(0);
         if(status_setImg_nr)
+        {
+            index = 0;
             status_setImg_nr(0);
+        }
     }, [props.route.params.seriesData])
     let nr_ref = useRef<FlatList>(null);
     let natural_scroll = useRef(true);
     let setImg_nr = null;
     let status_setImg_nr = null;
     let currentOffset = 0;
-    let index = 0;
-    
     if (series_data) {
         return (
             <SafeAreaView
@@ -100,12 +102,14 @@ export function MainImageView(props: propsTemplate) {
                     scrollEventThrottle={100}
                     onScroll={(e) => {
                         if (natural_scroll.current) {
+                            console.log(index);
                             const offset = e.nativeEvent.contentOffset.y
                             if (currentOffset > offset) {
-                                index -= (index <= 0 ? 0 : 1)
+                                index -= (index === 0 ? 0 : 1)
                             } else if (currentOffset < offset) {
                                 index += (index === 100 ? 0 : 1);
                             }
+                            
                             const img_nr = Math.round(index / 100 * (series_data.length - 1));
                             setImg_nr(img_nr);
                             status_setImg_nr(img_nr);
@@ -120,7 +124,9 @@ export function MainImageView(props: propsTemplate) {
                     style={styles.instance_status}
                     chageImgNr={(img_nr) => {
                         setImg_nr(img_nr);
-                        index = Math.round(img_nr / (series_data.length - 1) * 100);
+                        // 0 / 0 is NaN that's why we need to add a rule
+                        const len_ser_data = series_data.length;
+                        index = Math.round(img_nr / (len_ser_data - (len_ser_data > 1 ? 1 : 0)) * 100);
                     }}
                     onMount={(childData) => {
                         status_setImg_nr = childData[1];

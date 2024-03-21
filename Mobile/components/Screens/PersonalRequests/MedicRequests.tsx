@@ -51,7 +51,7 @@ export function MedicRequests(props: propsTemplate) {
     }, []);
     if (filter !== "") {
         filteredList = itemsList.current.filter((item) => {
-            return (new RegExp(`^${filter.toLowerCase()}`)).test(item.patient_username.toLowerCase());
+            return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.full_name.toLowerCase());
         })
     }
     else {

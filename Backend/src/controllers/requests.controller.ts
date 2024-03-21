@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import RegisterError from "../errors/RegisterError.error";
 import EmptyField from "../errors/EmptyField.error";
 import { get_username, parseJwt } from "../utils/helper.util";
-import { insert_personal_requests, get_personal_requests } from "../services/requests/personal_requests.service";
-import { db_insert_patient_requests } from "../services/db/db-auth.service";
+import { get_personal_requests } from "../services/requests/personal_requests.service";
+import { insert_personal_requests } from "../services/requests/request.service";
 
 export async function pat_make_request(req: Request<{}, {}, {to: string}>,
     res: Response, next: NextFunction) {
@@ -15,14 +15,21 @@ export async function pat_make_request(req: Request<{}, {}, {to: string}>,
         }));
         return;
     }
-    // const resp_db = await db_insert_patient_requests(get_username(token), req.body.to);
-    // if(resp_db.ok)
-    // {
-    //     res.json(resp_db.data);
-    //     return;
-    // }
-    // next(new RegisterError({
-    //     message: resp_db.data as string,
-    //     code: 400
-    // }))
+    if(parseJwt(token)?.isMedic === 'Y'){
+        next(new RegisterError({
+            message: "Only a patient can request a medic.",
+            code: 400
+        }));
+        return;
+    }
+    const resp_db = await insert_personal_requests(get_username(token), req.body.to);
+    if(resp_db.ok)
+    {
+        res.json(resp_db.data);
+        return;
+    }
+    next(new RegisterError({
+        message: resp_db.data as string,
+        code: 400
+    }))
 }

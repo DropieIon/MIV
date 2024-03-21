@@ -31,6 +31,7 @@ export type accountDataListEntry = {
 export type requestsListEntry = {
     patient_username: string,
     accepted: 'Y' | 'N',
+    full_name: string,
     date: string,
     profile_pic: string,
     uid: string,

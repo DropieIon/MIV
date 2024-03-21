@@ -3,6 +3,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import 'react-native-gesture-handler';
+import { RootSiblingParent } from 'react-native-root-siblings';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { NavigationContainer } from '@react-navigation/native';
@@ -22,9 +23,12 @@ function App(props) {
     <Provider
       store={store}
     >
-      <NavigationContainer>
-        <LandingScreen/>
-      </NavigationContainer>
+      {/* App needs this to display toasts */}
+      <RootSiblingParent>
+        <NavigationContainer>
+          <LandingScreen />
+        </NavigationContainer>
+      </RootSiblingParent>
     </Provider>
   );
 }

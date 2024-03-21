@@ -14,7 +14,7 @@ async function getRequests(token: string): Promise<Array<requestsListEntry>> {
     )
   }
   catch (error) {
-    console.error("Could not get personal requests");
+    console.error("Could not get personal requests", (error as AxiosError).response.data);
     return null;
   };
   let index = 0;
@@ -34,6 +34,26 @@ async function getAllPatients(token: string): Promise<accountDataListEntry[]> {
   }
   catch (error) {
     console.error("Could not get requestable patients list");
+    return null;
+  };
+  return resp.data;
+}
+
+async function make_request(token: string, medic_username: string) {
+  let resp;
+  
+  try {
+    if(parseJwt(token)?.isMedic === 'Y') {
+      throw new Error('Not a patient');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/request/`,
+      { headers: { 'Authorization': 'Bearer ' + token },
+        to: medic_username
+      },
+    )
+  }
+  catch (error) {
+    console.error("Could not make request", error);
     return null;
   };
   return resp.data;
@@ -62,5 +82,6 @@ async function answerReq(token: string, patient_username: string, isAccepted: bo
 export {
   getRequests,
   getAllPatients,
+  make_request,
   answerReq
 };

@@ -54,7 +54,7 @@ function DefaultView(props: propsTemplate) {
                 toFilter = item.modality;
             else
                 toFilter = item.full_name;
-            return (new RegExp(`^${filter.toLowerCase()}`)).test(toFilter.toLowerCase());
+            return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(toFilter.toLowerCase());
         })
     }
     else {

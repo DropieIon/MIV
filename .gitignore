@@ -190,6 +190,7 @@ buck-out/
 
 *.apk
 delete_this*
+unde_am_ramas.txt
 .expo/
 *.env
 

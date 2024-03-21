@@ -73,7 +73,7 @@ export function InstanceStatus(props: propsTemplate) {
                 style={styles.arrow_button}
                 onPress={(e) => {
                     const new_img_nr = img_nr + ((img_nr === props.series_length - 1) ? 0 : 1);
-                    setImg_nr(new_img_nr)
+                    setImg_nr(new_img_nr);
                     props.chageImgNr(new_img_nr);
                 }}
             >
