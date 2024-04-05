@@ -7,7 +7,7 @@ global.Buffer = global.Buffer || require('buffer').Buffer
 async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
   let resp;
   try {
-    resp = await axios.get(`${orthanc_url}/all_doctors/`,
+    resp = await axios.get(`${orthanc_url}/users/all_doctors/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }

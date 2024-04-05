@@ -10,6 +10,7 @@ import { selectToken } from '../../../features/globalStateSlice';
 import { requestsListEntry } from '../../../types/ListEntry';
 import List from '../../List/List';
 import SearchBar from '../../Search/SearchBar';
+import { useIsFocused } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     view: {
@@ -43,12 +44,19 @@ export function MedicRequests(props: propsTemplate) {
     const itemsList = useRef<requestsListEntry[]>(null);
     let filteredList: requestsListEntry[] = null;
     const token = useSelector(selectToken);
+    let [refreshList, setRefreshList] = useState(0);
+    const isVisible = useIsFocused();
     useEffect(() => {
-        getRequests(token).then((data) => {
-            itemsList.current = data;
-            setLoading(false);
-        });
-    }, []);
+        // don't trigger unnecessary refreshes
+        if(isVisible)
+        {
+            setLoading(true);
+            getRequests(token).then((data) => {
+                itemsList.current = data;
+                setLoading(false);
+            });
+        }
+    }, [, isVisible, refreshList]);
     if (filter !== "") {
         filteredList = itemsList.current.filter((item) => {
             return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.full_name.toLowerCase());
@@ -91,6 +99,7 @@ export function MedicRequests(props: propsTemplate) {
                         template='patientReq'
                         navigation={props.navigation}
                         items={filteredList}
+                        setRefreshList={setRefreshList}
                         listStudies={false}
                     />
                 }

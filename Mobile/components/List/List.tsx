@@ -5,13 +5,13 @@ import {
     StyleSheet,
     FlatList,
 } from 'react-native';
-import ViewStyles from '../Templates/DefaultViewStyles';
+import ViewStyles from '../ListStyles';
 import { ListEntry } from '@types/ListEntry';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToken, setOpenViewer } from '@features/globalStateSlice';
-import { medicTemplate } from '../List/Templates/MedicTemplate'
+import { patientsTemplate } from './Templates/PatientsTemplate'
 import { assignListTemplate } from './Templates/AssignListTemplate';
-import { patientTemplate } from './Templates/PatientTemplate';
+import { StudiesTemplate } from './Templates/StudiesTemplate';
 import { patientReqTemplate } from './Templates/PatientReqTemplate';
 import { useAssets } from 'expo-asset';
 
@@ -19,7 +19,10 @@ type propsTemplate = {
     items: ListEntry[],
     listStudies: boolean,
     template: string,
-    patient_username?: string,
+    setRefreshList?: any,
+    // propagate the openModal state to
+    // children
+    setOpenDetails?,
     navigation
 }
 
@@ -38,11 +41,11 @@ function List(props: propsTemplate) {
     switch (props.template) {
         case 'medic':
             emptyString = 'patients';
-            templateToUse = medicTemplate;
+            templateToUse = patientsTemplate;
             break;
         case 'patient':
             emptyString = 'studies';
-            templateToUse = patientTemplate;
+            templateToUse = StudiesTemplate;
             break;
         case 'assign':
             emptyString = 'items';
@@ -84,6 +87,8 @@ function List(props: propsTemplate) {
                         item: item.item,
                         dispatch: dispatch,
                         setOpenViewer: setOpenViewer,
+                        setRefreshList: props.setRefreshList,
+                        setOpenDetails: props.setOpenDetails,
                         asset,
                         navigation: props.navigation
                     })}

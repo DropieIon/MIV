@@ -127,14 +127,12 @@ export function Viewer(props: { study_id: string}) {
         loading.current = false;
     }
     
-    //TODO: delete this test
-    if (progress === 100) {
-        console.log("Time elapsed: ", (new Date().getTime() - startTime.current) / 1000.0 + "s");
-    }
-    
     const dispatch = useDispatch();
     const handleBackButtonClick = () => {
-        dispatch(setOpenViewer(false));
+        dispatch(setOpenViewer({
+            should_open: false,
+            study_id: ""
+        }));
         BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         return true;
     }   

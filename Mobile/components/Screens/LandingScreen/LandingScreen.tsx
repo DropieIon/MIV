@@ -1,11 +1,11 @@
-import { ActivityIndicator, SafeAreaView, Text, View } from "react-native";
+import { ActivityIndicator, BackHandler, SafeAreaView, Text, View } from "react-native";
 
-import { selectToken, selectLoadStudies, selectOpenViewer } from "../../../features/globalStateSlice";
+import { selectToken, selectOpenViewer } from "../../../features/globalStateSlice";
 import { useSelector } from "react-redux";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Authentication from "../Authentification/Authentication";
 import SettingsScreen from "../Settings/SettingsScreen";
-import DefaultView from "../../Templates/DefaultView";
+import ViewPatients from "../PatAndStudies/ViewPatients";
 import { useEffect, useRef, useState } from "react";
 import { Viewer } from "../Viewer/Viewer";
 import { getStudies, studiesListEntry } from "../../../dataRequests/DicomData";
@@ -15,6 +15,9 @@ import { getPatients } from "../../../dataRequests/PatientData";
 import { parseJwt } from "../../../utils/helper";
 import { RequestOrAssign } from "../MedPatLinks/RequestOrAssing";
 import { MedicRequests } from "../PersonalRequests/MedicRequests";
+import { CustomDrawer } from "../../CustomDrawer";
+import { useIsFocused } from "@react-navigation/native";
+import ViewStudies from "../PatAndStudies/ViewStudies";
 
 const Drawer = createDrawerNavigator();
 
@@ -30,68 +33,62 @@ const drawerScreenOptions = {
 
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
-    const loadStudies = useSelector(selectLoadStudies);
     const viewer: viewerState = useSelector(selectOpenViewer);
-    const [loading, setLoading] = useState(true);
-    let studies_list = useRef<studiesListEntry[]>(null);
-    let patients_list = useRef<accountDataListEntry[]>(null);
+    const medic = token ? parseJwt(token)?.isMedic === 'Y' : false;
     useEffect(() => {
-        setLoading(true);
-        if (token !== "") {
-            if (parseJwt(token).isMedic === 'N') {
-                getStudies(token)
-                    .then((data) => {
-                        studies_list.current = data;
-                        setLoading(false);
-                        console.log("loaded at:", (new Date()).toLocaleTimeString());
+        // don't trigger unnecessary refreshes
+        // if (isVisible) {
+        //     setLoading(true);
+        //     if (token !== "") {
+        //         if (parseJwt(token).isMedic === 'N') {
+        //             getStudies(token)
+        //                 .then((data) => {
+        //                     studies_list.current = data;
+        //                     setLoading(false);
+        //                     console.log("loaded at:", (new Date()).toLocaleTimeString());
 
-                    });
-            } else {
-                getPatients(token)
-                    .then((patients) => {
-                        patients_list.current = patients;
-                        setLoading(false);
-                    });
-            }
-        }
-    }, [token])
+        //                 });
+        //         } else {
+        //             getPatients(token)
+        //                 .then((patients) => {
+        //                     patients_list.current = patients;
+        //                     setLoading(false);
+        //                 });
+        //         }
+        //     }
+        //     // const handleBackButtonClick = () => {
+        //     //     BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        //     //     return true;
+        //     // }
+        //     // BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        // }
+    }, []);
     return (
         <SafeAreaView
             style={{ flex: 1 }}
         >
-            {loading && token &&
-                <View
-                    style={{
-                        justifyContent: 'center',
-                        height: "100%",
-                        width: "100%",
-                    }}
-                >
-                    <ActivityIndicator
-                        size="large"
-                        color="0000ff"
-                    />
-                    <Text
-                        style={{
-                            textAlign: 'center'
-                        }}
-                    >
-                        Loading...
-                    </Text>
-                </View>
-            }
-            {!loading && token && viewer.should_open &&
+            {token && viewer.should_open &&
                 <Viewer study_id={viewer.study_id} />
             }
-            {!loading && token && !viewer.should_open &&
-                <Drawer.Navigator>
+            {token && !viewer.should_open &&
+                <Drawer.Navigator
+                    initialRouteName={medic ? 'Patients' : 'Studies'}
+                    drawerContent={(props) => <CustomDrawer {...props} />}
+                    screenOptions={({ route }) => ({
+                        activeTintColor: '#8772BC',
+                        headerShown: true,
+                    })}>
                     <Drawer.Screen
-                        name={loadStudies ? 'Patients' : 'Studies'}
-                        component={DefaultView}
+                        name={'Studies'}
+                        component={ViewStudies}
+                        options={drawerScreenOptions}
+                    />
+                    <Drawer.Screen
+                        name={'Patients'}
+                        component={ViewPatients}
                         options={drawerScreenOptions}
                         initialParams={{
-                            listStudies: !loadStudies,
-                            items_list: !loadStudies ? studies_list.current : patients_list.current
+                            listStudies: !medic,
                         }}
                     />
                     <Drawer.Screen

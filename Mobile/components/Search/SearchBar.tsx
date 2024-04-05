@@ -5,7 +5,7 @@ import {
   TextInput
 } from 'react-native';
 
-import ViewStyles from '../Templates/DefaultViewStyles';
+import ViewStyles from '../ListStyles';
 import { AntDesign } from '@expo/vector-icons';
 
 

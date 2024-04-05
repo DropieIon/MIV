@@ -28,7 +28,7 @@ async function getAllPatients(token: string): Promise<accountDataListEntry[]> {
     if(parseJwt(token)?.isMedic === 'N') {
       throw new Error('Not a medic');
     }
-    resp = await axios.get(`${backend_url}/all_patients/`,
+    resp = await axios.get(`${backend_url}/users/all_patients/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -47,9 +47,12 @@ async function make_request(token: string, medic_username: string) {
       throw new Error('Not a patient');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/`,
-      { headers: { 'Authorization': 'Bearer ' + token },
+      {
         to: medic_username
       },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
     )
   }
   catch (error) {
@@ -61,27 +64,55 @@ async function make_request(token: string, medic_username: string) {
 
 async function answerReq(token: string, patient_username: string, isAccepted: boolean) {
   let resp;
-
+  
   try {
     if(parseJwt(token)?.isMedic === 'N') {
       throw new Error('Not a medic');
     }
-    resp = await axios.post(`${backend_url}/acc_data/requests/${isAccepted ? 'accept' : 'deny'}`,
-      { headers: { 'Authorization': 'Bearer ' + token },
-        patient_username: patient_username
-      },
+    resp = await axios.put(`${backend_url}/acc_data/request/${isAccepted ? 'accept' : 'decline'}`,
+    {
+      patient_username: patient_username
+    },
+    {
+      headers: { 'Authorization': 'Bearer ' + token }
+    },
     )
   }
   catch (error) {
-    console.error("Could not answer request");
+    console.error("Could not answer request " + (error as AxiosError).message);
     return null;
   };
   return resp.data;
+}
+
+async function assignPatient(token: string, patient_username: string) {
+  let resp;
+  
+  try {
+    if(parseJwt(token)?.isMedic === 'N') {
+      throw new Error('Not a doctor');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/request/assign`,
+      {
+        patient_username: patient_username
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not make assignment", error);
+    return null;
+  };
+  return resp.data;
+  
 }
 
 export {
   getRequests,
   getAllPatients,
   make_request,
-  answerReq
+  answerReq,
+  assignPatient
 };

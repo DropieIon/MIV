@@ -66,8 +66,6 @@ async function getSeries(study_id: string, token: string): Promise<Array<string>
     let resp: studies_resp;
     try {
         if(parseJwt(token).isMedic === 'Y') {
-            console.log(study_id);
-            
             resp = await axios.post(`${orthanc_url}/studies/${study_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )

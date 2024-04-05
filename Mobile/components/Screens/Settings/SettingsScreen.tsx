@@ -15,7 +15,7 @@ export default function SettingsScreen(props) {
         >
             <TouchableOpacity
                 style={{alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%"}}
-                onPress={() => dispatch(setToken(""))}
+                onPress={() => {}}
             >
                 <Text>Log out</Text>
             </TouchableOpacity>

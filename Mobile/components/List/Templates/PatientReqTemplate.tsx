@@ -4,12 +4,13 @@ import {
     View
 } from 'react-native';
 import { Image } from 'expo-image';
-import ViewStyles from '@components/Templates/DefaultViewStyles';
+import ViewStyles from '@components/ListStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { propsTemplate } from './PropsTemplate';
 import { AntDesign } from '@expo/vector-icons';
 import { parseJwt } from '../../../utils/helper';
 import { Asset, useAssets } from 'expo-asset';
+import { answerReq } from '../../../dataRequests/AssignRequestsData';
 
 export const patientReqTemplate = (props: propsTemplate) => {
     const medic = parseJwt(props.token)?.isMedic === 'Y';
@@ -47,6 +48,11 @@ export const patientReqTemplate = (props: propsTemplate) => {
                 >
                     <TouchableOpacity
                         style={[ViewStyles.item_assign_button, { backgroundColor: 'lightgreen' }]}
+                        onPress={() => {
+                            // after the request is answered we should trigger a refresh on the list
+                            answerReq(props.token, props.item.patient_username, true)
+                                .then(() => props.setRefreshList(Math.random()))
+                        }}
                     >
                         <AntDesign name="check" size={24} color="black" />
                     </TouchableOpacity>
@@ -60,6 +66,10 @@ export const patientReqTemplate = (props: propsTemplate) => {
                 >
                     <TouchableOpacity
                         style={[ViewStyles.item_assign_button, { backgroundColor: '#ff4c4c' }]}
+                        onPress={() => {
+                            answerReq(props.token, props.item.patient_username, false)
+                                .then(() => props.setRefreshList(Math.random()))
+                        }}
                     >
                         <AntDesign name="close" size={24} color="black" />
                     </TouchableOpacity>

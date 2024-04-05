@@ -4,6 +4,8 @@ export type propsTemplate = {
     item: ListEntry,
     dispatch?,
     setOpenViewer?,
+    setRefreshList?,
     asset?,
+    setOpenDetails?,
     navigation
 }

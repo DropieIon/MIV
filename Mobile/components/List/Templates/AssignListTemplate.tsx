@@ -4,11 +4,11 @@ import {
     Text,
 } from 'react-native';
 import { Image } from 'expo-image';
-import ViewStyles from '@components/Templates/DefaultViewStyles';
+import ViewStyles from '@components/ListStyles';
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import { parseJwt } from '../../../utils/helper';
 import { propsTemplate } from './PropsTemplate';
-import { make_request } from '../../../dataRequests/AssignRequestsData';
+import { answerReq, assignPatient, make_request } from '../../../dataRequests/AssignRequestsData';
 import Toast from 'react-native-root-toast';
 
 export const assignListTemplate = (props: propsTemplate) => {
@@ -45,13 +45,17 @@ export const assignListTemplate = (props: propsTemplate) => {
             >
                 <TouchableOpacity
                     style={ViewStyles.item_assign_button}
-                    onPress={medic ? () => {} : () => {                        
-                        make_request(props.token, props.item.username)
+                    onPress={() => {
+                        // Request or assign to medic
+                        const funcUsed = medic ? assignPatient : make_request;
+                        funcUsed(props.token, props.item.username)
                         .then(() => {
-                            <Toast visible={true}>Thanks for subscribing!</Toast>
+                            // <Toast visible={true}>Thanks for subscribing!</Toast>
+                            // It should always refresh after clicking request or assign
+                            props.setRefreshList(Math.random());
                         })
                         .catch((err) => {
-                            // TODO
+                            console.error(err);
                         })
                     }}
                 >

@@ -9,7 +9,7 @@ import {
 
 import { textSize, marginBottom, auth_styles } from './auth_styles';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setToken, setLoadStudies } from '../../../features/globalStateSlice';
+import { setToken, setTokenRefreshRef, setFullName } from '../../../features/globalStateSlice';
 import { useDispatch } from 'react-redux';
 import { backend_url } from '../../../configs/backend_url';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
@@ -44,11 +44,20 @@ function Login(props: { passSignUp: () => void }) {
             password: password
         })
             .then((resp) => {
-                const token = (resp as AxiosResponse<{ token: string }>).data.token;
+                const respData = (resp as AxiosResponse<{ token: string, fullName: string }>).data;
+                const token = respData.token;
+                const fullName = respData.fullName;
                 const current_time = Math.floor(new Date().getTime() / 1000);
+                dispatch(setFullName(fullName));
                 // refresh token when it expires
-                setTimeout(() => refreshToken(username, password), 
-                    (parseJwt(token).exp - current_time) * 1000);
+                dispatch(
+                    setTokenRefreshRef(
+                        setTimeout(
+                            () => refreshToken(username, password),
+                            (parseJwt(token).exp - current_time) * 1000
+                        )
+                    )
+                );
                 dispatch(setToken(token));
             })
             .catch((errorResp) => {
@@ -149,14 +158,21 @@ function Login(props: { passSignUp: () => void }) {
                                 password: password
                             })
                                 .then((resp) => {
-                                    const token = (resp as AxiosResponse<{ token: string }>).data.token;
+                                    const respData = (resp as AxiosResponse<{ token: string, fullName: string }>).data;
+                                    const token = respData.token;
                                     setLoading(false);
                                     const current_time = Math.floor(new Date().getTime() / 1000);
                                     // refresh token when it expires
-                                    setTimeout(() => refreshToken(username, password), 
-                                        (parseJwt(token).exp - current_time) * 1000);
+                                    dispatch(
+                                        setTokenRefreshRef(
+                                            setTimeout(
+                                                () => refreshToken(username, password),
+                                                (parseJwt(token).exp - current_time) * 1000
+                                            )
+                                        )
+                                    );
+                                    dispatch(setFullName(respData.fullName))
                                     dispatch(setToken(token));
-                                    dispatch(setLoadStudies(parseJwt(token)?.isMedic === 'Y'));
                                 })
                                 .catch((errorResp) => {
                                     const errMsg = (errorResp as AxiosError<BackendError>).response.data

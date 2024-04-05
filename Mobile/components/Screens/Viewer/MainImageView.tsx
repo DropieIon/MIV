@@ -102,7 +102,6 @@ export function MainImageView(props: propsTemplate) {
                     scrollEventThrottle={100}
                     onScroll={(e) => {
                         if (natural_scroll.current) {
-                            console.log(index);
                             const offset = e.nativeEvent.contentOffset.y
                             if (currentOffset > offset) {
                                 index -= (index === 0 ? 0 : 1)

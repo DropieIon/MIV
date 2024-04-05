@@ -12,6 +12,7 @@ import { selectToken } from '../../../features/globalStateSlice';
 import { useSelector } from 'react-redux';
 import { parseJwt } from '../../../utils/helper';
 import { getAllPatients } from '../../../dataRequests/AssignRequestsData';
+import { useIsFocused } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
     view: {
@@ -37,12 +38,6 @@ const styles = StyleSheet.create({
 
 type propsTemplate = {
     navigation,
-    // route: {
-    //     params: {
-    //         listStudies: boolean,
-    //         items_list: (ListEntry)[],
-    //     }
-    // }
 }
 
 export function RequestOrAssign(props: propsTemplate) {
@@ -51,21 +46,31 @@ export function RequestOrAssign(props: propsTemplate) {
     const itemsList = useRef<(ListEntry | accountDataListEntry)[]>(null);
     let filteredList: ListEntry[] = null;
     const token = useSelector(selectToken);
+    let [refreshList, setRefreshList] = useState(0);
+    const isVisible = useIsFocused();
+
     useEffect(() => {
-        const isMedic = parseJwt(token)?.isMedic === 'Y';
-        if(isMedic) {
-            getAllPatients(token).then((data) => {
-                itemsList.current = data;
-                setLoading(false);
-            })
+        // don't trigger unnecessary refreshes
+        if(isVisible)
+        {
+            setLoading(true);
+            const isMedic = parseJwt(token)?.isMedic === 'Y';
+            if(isMedic) {
+                getAllPatients(token).then((data) => {
+                    itemsList.current = data;
+                    setLoading(false);
+                })
+            }
+            else {
+                getDoctors(token).then((data) => {
+                    itemsList.current = data;
+                    // console.log("Refreshed", itemsList.current.length);
+                    
+                    setLoading(false);
+                });
+            }
         }
-        else {
-            getDoctors(token).then((data) => {
-                itemsList.current = data;
-                setLoading(false);
-            });
-        }
-    }, []);
+    }, [, isVisible, refreshList]);
     if(filter !== "") {
         filteredList = itemsList.current.filter((item) => {
             return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.full_name.toLowerCase());
@@ -74,6 +79,8 @@ export function RequestOrAssign(props: propsTemplate) {
     else {
         filteredList = itemsList.current;
     }
+    // console.log(Object.keys(filteredList[0]));
+    
     return (
         <View
             style={styles.view}
@@ -107,6 +114,7 @@ export function RequestOrAssign(props: propsTemplate) {
                     <List
                         template='assign'
                         navigation={props.navigation}
+                        setRefreshList={setRefreshList}
                         items={filteredList}
                         listStudies={false}
                     />

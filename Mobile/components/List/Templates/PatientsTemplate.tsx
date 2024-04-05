@@ -3,23 +3,21 @@ import {
     Text,
 } from 'react-native';
 import { Image } from 'expo-image';
-import ViewStyles from '@components/Templates/DefaultViewStyles';
+import ViewStyles from '@components/ListStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { getPatientStudies } from '@dataRequests/PatientData';
 import { propsTemplate } from './PropsTemplate';
 
-export function medicTemplate(props: propsTemplate) {
+export function patientsTemplate(props: propsTemplate) {
     return <TouchableOpacity
         style={ViewStyles.item}
+        onLongPress={() => {
+            props.setOpenDetails(true);
+        }}
         onPress={() => {
-            getPatientStudies(props.item.uid, props.token)
-                .then((study_list) => {
-                    props.navigation.setOptions({ title: 'Studies' });
-                    props.navigation.navigate('Patients', {
-                        listStudies: true,
-                        items_list: study_list
-                    })
-                })
+            props.navigation.navigate('Studies', {
+                listStudies: true,
+                patientID: props.item.uid,
+            })
         }}
     >
         <Image
