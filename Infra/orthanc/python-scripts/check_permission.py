@@ -5,7 +5,6 @@ from routes.studies import getStudiesForUser, getAllStudies, getStudyData
 from routes.series import getSeries, getSeriesData
 from routes.instances import getInstaces
 from routes.patients import getAssignedPatients, getStudiesForPatient, getAllPatients
-from routes.doctors import getAllDoctors
 
 # logger options
 root = logging.getLogger()
@@ -27,8 +26,4 @@ orthanc.RegisterRestCallback('/all_studies', getAllStudies)
 orthanc.RegisterRestCallback('/series', getSeries)
 orthanc.RegisterRestCallback('/series/(.*)', getSeriesData)
 
-orthanc.RegisterRestCallback('/patients', getAssignedPatients)
-orthanc.RegisterRestCallback('/all_patients', getAllPatients)
 orthanc.RegisterRestCallback('/patients/(.*)', getStudiesForPatient)
-
-orthanc.RegisterRestCallback('/all_doctors', getAllDoctors)

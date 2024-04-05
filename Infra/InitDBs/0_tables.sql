@@ -25,7 +25,7 @@ CREATE TABLE personal_data(
 
 CREATE TABLE profile_pictures(
     username            char(255) NOT NULL,
-    # image stored as base64 string
+    /* image stored as base64 string */
     profile_pic         mediumtext,
     CONSTRAINT username_unique UNIQUE (username),
     CONSTRAINT `fk_profile_picture_username`

@@ -6,10 +6,17 @@ services:
     url: http://account_data:3000/
   - name: jwt
     url: http://auth:3000/
+  - name: users
+    url: http://users:3000/
   - name: orthanc
     url: http://orthanc:8042/
 routes:
-  - name: backend-route
+  - name: users-route
+    service: users
+    strip_path: true
+    paths:
+      - /users
+  - name: acc-route
     service: account_data
     strip_path: true
     paths:
@@ -22,15 +29,20 @@ routes:
       - /series
       - /instances
       - /patients
-      - /all_patients
-      - /all_doctors
   - name: jwt-route
     service: jwt
     paths:
       - /
 plugins:
   - name: jwt
-    route: backend-route
+    route: acc-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+  - name: jwt
+    route: users-route
     enabled: true
     config:
       key_claim_name: kid

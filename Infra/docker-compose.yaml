@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   db_orthanc:
     container_name: db_orthanc
@@ -108,6 +106,27 @@ services:
     volumes:
       - ../Backend:/app
     command: nodemon /app/microservices/account_data.ts
+    depends_on:
+      db_auth:
+        condition: service_healthy
+
+  users:
+    container_name: users
+    build: 
+      context: ..
+      dockerfile: Infra/dockerfile_backend
+    image: users
+    env_file:
+      - .backend.env
+    networks:
+      - kong-net
+      - auth-db
+    volumes:
+      - ../Backend:/app
+    command: nodemon /app/microservices/users.ts
+    depends_on:
+      db_auth:
+        condition: service_healthy
 
   kong-gateway:
     container_name: kong_gateway
