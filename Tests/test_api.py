@@ -6,11 +6,25 @@ token_doctor1 = post(f'{base_url}/login', json={
     "username": "doctor1", "password": "nu"
     }).json()['token']
 
+token_doctor3 = post(f'{base_url}/login', json={
+    "username": "doctor3", "password": "nu"
+    }).json()['token']
+
 token_patient1 = post(f'{base_url}/login', json={
     "username": "patient1", "password": "nu"
     }).json()['token']
 
-# personal_requests = get(f'{base_url}/acc_data/personal_requests', headers={'Authorization': f'Bearer {token_doctor1}'})
-# personal_requests = get(f'{base_url}/patients', headers={'Authorization': f'Bearer {token_doctor1}'})
-personal_requests = put(f'{base_url}/acc_data/request', headers={'Authorization': f'Bearer {token_patient1}'}, json={"to": "doctor1"})
-print(personal_requests.json())
+token_patient3 = post(f'{base_url}/login', json={
+    "username": "patient3", "password": "nu"
+    }).json()['token']
+
+# req_resp = put(f'{base_url}/acc_data/request/assign', headers={'Authorization': f'Bearer {token_doctor3}'},
+#                json={"patient_username": 'patient1'})
+
+# req_resp = get(f'{base_url}/users/patients', headers={'Authorization': f'Bearer {token_doctor3}'})
+req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
+
+# print(req_resp.status_code)
+print(req_resp.json())
+print(len(req_resp.json()))
+
