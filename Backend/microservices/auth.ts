@@ -1,9 +1,9 @@
 import express from 'express';
 import { json } from 'body-parser';
-import loginRouter from '../src/routes/login.route';
-import registerRouter from '../src/routes/register.route';
+import loginRouter from '../src/routes/auth/login.route';
+import registerRouter from '../src/routes/auth/register.route';
 import { errorHandler } from '../src/middlewares/errors.middleware';
-import { get_pool } from '../src/services/db/db-auth.service';
+import { get_pool } from '../src/services/db/db-functions';
 
 
 const app = express();

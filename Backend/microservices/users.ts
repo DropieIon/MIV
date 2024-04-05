@@ -1,8 +1,7 @@
 import express from 'express';
 import { json } from 'body-parser';
 import { errorHandler } from '../src/middlewares/errors.middleware';
-import personal_requests_router from '../src/routes/account_data/personal_requests.route';
-import request_router from '../src/routes/account_data/request.route';
+import patientsRouter from '../src/routes/users/patients.route';
 import { get_pool } from '../src/services/db/db-functions';
 
 const app = express();
@@ -16,15 +15,11 @@ app.get('/', (req, res) => {
   res.json({'message': 'ok'});
 })
 
-app.get('/api', (req, res) => {
-  res.json({'message': 'ok'});
-})
-
-app.use('/personal_requests', personal_requests_router);
-app.use('/request', request_router);
+app.use('/', patientsRouter);
 
 /* Error handler middleware */
 app.use(errorHandler);
+
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
