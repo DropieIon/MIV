@@ -21,8 +21,8 @@ token_patient3 = post(f'{base_url}/login', json={
 # req_resp = put(f'{base_url}/acc_data/request/assign', headers={'Authorization': f'Bearer {token_doctor3}'},
 #                json={"patient_username": 'patient1'})
 
-# req_resp = get(f'{base_url}/users/patients', headers={'Authorization': f'Bearer {token_doctor3}'})
-req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
+req_resp = get(f'{base_url}/users/all_patients', headers={'Authorization': f'Bearer {token_doctor3}'})
+# req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
 
 # print(req_resp.status_code)
 print(req_resp.json())
