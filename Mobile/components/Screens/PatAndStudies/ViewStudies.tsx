@@ -118,7 +118,6 @@ function ViewStudies(props: propsTemplate) {
         }
     }, [, isVisible]);
     let filteredList = [];
-    // props.navigation.setOptions({ title: title });
     const [filter, setFilter] = useState("");
     if(filter !== "") {
         filteredList = items_list.current.filter((item) => {
@@ -174,7 +173,7 @@ function ViewStudies(props: propsTemplate) {
                 ></List>
             }
         </View>
-        {!loading && openDetails &&
+        {/* {!loading && openDetails &&
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -252,7 +251,7 @@ function ViewStudies(props: propsTemplate) {
                     </TouchableOpacity>
                 </View>
             </Modal>
-        }
+        } */}
         <AddEntry/>
     </View>
 }

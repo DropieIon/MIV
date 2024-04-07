@@ -1,41 +1,36 @@
-import { Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Text, TouchableOpacity, View } from "react-native";
+import { DetailsStyles } from "../DetailsStyles";
+import { unassignPatient } from "../../../../../dataRequests/AssignRequestsData";
+import { useSelector } from "react-redux";
+import { selectPatDetails, selectToken } from "../../../../../features/globalStateSlice";
 
+type propsTemplate = {
+    setRefreshPatList,
+    setOpenDetails
+}
 
-export function DetailsFooter(props) {
+export function DetailsFooter(props: propsTemplate) {
+    const token = useSelector(selectToken);
+    const patDetails = useSelector(selectPatDetails);
     return (
         <View
-            style={{
-                width: "100%",
-                height: "20%",
-                backgroundColor: 'yellow',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}
+            style={DetailsStyles.footerMainView}
         >
             <TouchableOpacity
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: 'red'
-                }}
+                style={DetailsStyles.footerUnassignButton}
                 onPress={() => {
-                    console.log("Chiar merge");
-                    
+                    unassignPatient(token, patDetails.username)
+                    .then(() => {
+                        props.setRefreshPatList(Math.random() * 420);
+                        props.setOpenDetails(false);
+                    });
                 }}
             >
                 <View
-                    style={{
-                        // backgroundColor: 'blue',
-                        flex: 1,
-                        justifyContent: 'center'
-                    }}
+                    style={DetailsStyles.footerTextContainer}
                 >
                     <Text
-                        style={{
-                            textAlign: 'center',
-                            textAlignVertical: 'center',
-                        }}
+                        style={DetailsStyles.footerText}
                     >
                         Unassign
                     </Text>

@@ -39,7 +39,7 @@ async function getAllPatients(token: string): Promise<accountDataListEntry[]> {
   return resp.data;
 }
 
-async function make_request(token: string, medic_username: string) {
+async function makeRequest(token: string, medic_username: string) {
   let resp;
   
   try {
@@ -109,10 +109,34 @@ async function assignPatient(token: string, patient_username: string) {
   
 }
 
+async function unassignPatient(token: string, patient_username: string) {
+  let resp;
+  
+  try {
+    if(parseJwt(token)?.isMedic === 'N') {
+      throw new Error('Not a doctor');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/request/unassign`,
+      {
+        patient_username: patient_username
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not unassign patient", error);
+    return null;
+  };
+  return resp.data;
+}
+
 export {
   getRequests,
   getAllPatients,
-  make_request,
+  makeRequest,
   answerReq,
-  assignPatient
+  assignPatient,
+  unassignPatient
 };

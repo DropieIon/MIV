@@ -3,12 +3,9 @@ import {
     View,
     Text,
     StyleSheet,
-    Modal,
-    TouchableOpacity,
 } from 'react-native';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
-import ViewStyles from '@components/ListStyles';
 import { AddEntry } from '../../Patient/AddEntry';
 import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
@@ -17,9 +14,6 @@ import { selectToken } from '../../../features/globalStateSlice';
 import { parseJwt } from '../../../utils/helper';
 import { getStudies } from '../../../dataRequests/DicomData';
 import { getPatients } from '../../../dataRequests/PatientData';
-import { Image } from 'expo-image';
-import { AntDesign } from '@expo/vector-icons';
-import { Fontisto } from '@expo/vector-icons';
 import { DetailsModal } from './OpenDetails/DetailsModal';
 
 const styles = StyleSheet.create({
@@ -60,6 +54,7 @@ function ViewPatients(props: propsTemplate) {
     const isVisible = useIsFocused();
     const token = useSelector(selectToken);
     const [openDetails, setOpenDetails] = useState(false);
+    const [refreshPatList, setRefreshPatList] = useState(0);
     const [loading, setLoading] = useState(true);
     const items_list = useRef<ListEntry[]>([]);
     useEffect(() => {
@@ -88,15 +83,9 @@ function ViewPatients(props: propsTemplate) {
             else {
                 console.error("No token");
             }
-            // const handleBackButtonClick = () => {
-            //     BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-            //     return true;
-            // }
-            // BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
         }
-    }, [, isVisible]);
+    }, [, isVisible, refreshPatList]);
     let filteredList;
-    // props.navigation.setOptions({ title: title });
     const [filter, setFilter] = useState("");
     if(filter !== "") {
         filteredList = items_list.current.filter((item) => {
@@ -162,6 +151,7 @@ function ViewPatients(props: propsTemplate) {
         {!loading && openDetails &&
             <DetailsModal
                 setOpenDetails={setOpenDetails}
+                setRefreshPatList={setRefreshPatList}
             />
         }
         <AddEntry/>

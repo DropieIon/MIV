@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { defaultPfp } from "../configs/defaultUser.b64";
 
 export const globalStateSlice = createSlice({
     name: 'global',
@@ -10,9 +11,18 @@ export const globalStateSlice = createSlice({
             study_id: ""
         },
         loadingProgress: [],
-        fullName: "",
+        patDetails: {
+            fullName: "",
+            username: "",
+            sex: "M",
+            age: 0,
+            profile_pic: "",
+            nrOfStudies: 0,
+        },
         // used for exiting the viewer
-        patientUid: ""
+        // and knowing which patient was
+        // last clicked
+        patientUid: "",
     },
     reducers: {
         setToken: (state, action) => {
@@ -25,10 +35,10 @@ export const globalStateSlice = createSlice({
             state.openViewer = action.payload;
         },
         setLoadingProgress: (state, action) => {
-            state.loadingProgress[action.payload.index] = action.payload.length
+            state.loadingProgress[action.payload.index] = action.payload.length;
         },
-        setFullName: (state, action) => {
-            state.fullName = action.payload;
+        setPatDetails: (state, action) => {
+            state.patDetails = action.payload;
         },
         setPatientUid: (state, action) => {
             state.patientUid = action.payload;
@@ -42,7 +52,7 @@ export const {
     setOpenViewer,
     setLoadingProgress,
     setRefreshList,
-    setFullName,
+    setPatDetails,
     setPatientUid
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
@@ -51,5 +61,6 @@ export const selectToken = (state) => state.token;
 export const selectTokenRefreshRef = (state) => state.tokenRefreshRef;
 export const selectOpenViewer = (state) => state.openViewer;
 export const selectLoadingProgress = (state) => state.loadingProgress;
-export const selectFullName = (state) => state.fullName;
+export const selectFullName = (state) => state.patDetails.fullName;
+export const selectPatDetails = (state) => state.patDetails;
 export const selectPatientUid = (state) => state.patientUid;

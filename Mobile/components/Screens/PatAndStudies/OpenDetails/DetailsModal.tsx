@@ -1,13 +1,15 @@
 import {
     View,
-    Modal,
+    Modal
 } from 'react-native';
 import { DetailsHeader } from './DetailsComps/DetailsHeader';
 import { DetailsInfo } from './DetailsComps/DetailsInfo';
 import { DetailsFooter } from './DetailsComps/DetailsFooter';
+import { DetailsStyles } from './DetailsStyles';
 
 type propsTemplate = {
-    setOpenDetails
+    setOpenDetails,
+    setRefreshPatList
 }
 
 export function DetailsModal(props: propsTemplate) {
@@ -20,19 +22,16 @@ export function DetailsModal(props: propsTemplate) {
 
             }}>
             <View
-                style={{
-                    height: "30%",
-                    top: "70%",
-                    backgroundColor: 'red',
-                    borderTopEndRadius: 50,
-                    borderTopStartRadius: 50
-                }}
+                style={DetailsStyles.modalMainView}
             >
                 <DetailsHeader
                     setOpenDetails={props.setOpenDetails}
                 />
                 <DetailsInfo />
-                <DetailsFooter/>
+                <DetailsFooter
+                    setOpenDetails={props.setOpenDetails}
+                    setRefreshPatList={props.setRefreshPatList}
+                />
             </View>
         </Modal>
     )

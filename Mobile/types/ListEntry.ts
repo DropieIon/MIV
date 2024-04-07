@@ -1,4 +1,3 @@
-import { studiesListEntry } from "../dataRequests/DicomData"
 
 export type ListEntry = {
     study_id?: string,
@@ -15,6 +14,7 @@ export type ListEntry = {
     doctor_username?: string,
     // profile picture in base64 string
     profile_pic?: string,
+    nrOfStudies?: number
 }
 
 export type accountDataListEntry = {
@@ -25,6 +25,7 @@ export type accountDataListEntry = {
     full_name: string,
     // profile picture in base64 string
     profile_pic: string,
+    nrOfStudies: number,
     doctor_username?: string,
 }
 

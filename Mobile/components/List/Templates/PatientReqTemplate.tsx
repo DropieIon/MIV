@@ -11,9 +11,11 @@ import { AntDesign } from '@expo/vector-icons';
 import { parseJwt } from '../../../utils/helper';
 import { Asset, useAssets } from 'expo-asset';
 import { answerReq } from '../../../dataRequests/AssignRequestsData';
+import { defaultPfp } from '../../../configs/defaultUser.b64';
 
 export const patientReqTemplate = (props: propsTemplate) => {
     const medic = parseJwt(props.token)?.isMedic === 'Y';
+    const noPfp = props.item.profile_pic === null;
     return (<TouchableOpacity
         activeOpacity={0.75}
         style={ViewStyles.item}
@@ -26,7 +28,7 @@ export const patientReqTemplate = (props: propsTemplate) => {
         >
             <Image
                 style={ViewStyles.item_img}
-                source={{ uri: `data:image/jpeg;base64,${props.item.profile_pic}` }} />
+                source={{ uri: `data:image/jpeg;base64,${noPfp ? defaultPfp : props.item.profile_pic}` }} />
         </View>
         <Text
             style={[ViewStyles.item_name, { width: "40%" }]}

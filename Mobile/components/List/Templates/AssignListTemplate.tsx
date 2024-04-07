@@ -8,16 +8,13 @@ import ViewStyles from '@components/ListStyles';
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import { parseJwt } from '../../../utils/helper';
 import { propsTemplate } from './PropsTemplate';
-import { answerReq, assignPatient, make_request } from '../../../dataRequests/AssignRequestsData';
+import { answerReq, assignPatient, makeRequest } from '../../../dataRequests/AssignRequestsData';
 import Toast from 'react-native-root-toast';
+import { defaultPfp } from '../../../configs/defaultUser.b64';
 
 export const assignListTemplate = (props: propsTemplate) => {
     const medic = parseJwt(props.token).isMedic === 'Y';
-    // const [successful, setSuccessful] = useState(false);
-    // let toast = Toast.show('Request failed to send.', {
-    //     duration: Toast.durations.LONG,
-    //   });
-    
+    const noPfP = props.item.profile_pic === null;
     return (
         <TouchableOpacity
             activeOpacity={0.7}
@@ -31,7 +28,7 @@ export const assignListTemplate = (props: propsTemplate) => {
             >
                 <Image
                     style={ViewStyles.item_img}
-                    source={{ uri: `data:image/jpeg;base64,${props.item.profile_pic}` }} />
+                    source={{ uri: `data:image/jpeg;base64,${noPfP ? defaultPfp : props.item.profile_pic}` }} />
             </View>
             <Text
                 style={[ViewStyles.item_name, { width: "60%" }]}
@@ -47,10 +44,9 @@ export const assignListTemplate = (props: propsTemplate) => {
                     style={ViewStyles.item_assign_button}
                     onPress={() => {
                         // Request or assign to medic
-                        const funcUsed = medic ? assignPatient : make_request;
+                        const funcUsed = medic ? assignPatient : makeRequest;
                         funcUsed(props.token, props.item.username)
                         .then(() => {
-                            // <Toast visible={true}>Thanks for subscribing!</Toast>
                             // It should always refresh after clicking request or assign
                             props.setRefreshList(Math.random());
                         })
