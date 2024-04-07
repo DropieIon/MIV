@@ -4,5 +4,6 @@ export type patientApiResp = {
     sex: string,
     full_name: string,
     uid: string,
-    profile_pic: string
+    profile_pic: string,
+    nrOfStudies: number
 }

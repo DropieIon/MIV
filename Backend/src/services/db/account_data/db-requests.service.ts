@@ -64,3 +64,16 @@ export async function db_ans_request(acc: boolean, doc_username: string, pat_use
     return "";
 
 }
+
+export async function dbUnassignPat(patUsername: string)
+    : Promise<string> {
+    const queryResp = await sq(
+        'delete from patients_assigned where patient_username=?',
+        [patUsername]);
+    if (queryResp !== "") {
+        if (queryResp instanceof mariadb.SqlError) {
+            return "Database deletion error " + queryResp.sqlMessage;
+        }
+    }
+    return "";
+}

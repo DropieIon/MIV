@@ -1,5 +1,5 @@
 import { resp_common_services } from "../../types/auth/authentication.type";
-import { db_ans_request, db_insert_patient_requests } from '../db/account_data/db-requests.service';
+import { dbUnassignPat, db_ans_request, db_insert_patient_requests } from '../db/account_data/db-requests.service';
 
 export async function insert_personal_requests(username: string, to: string): 
     Promise<resp_common_services>
@@ -17,4 +17,12 @@ export async function svc_ans_req(acc: boolean, doc_username: string, pat_userna
     if(typeof resp_db === "string" && resp_db !== "")
         return {ok: false, data: resp_db};
     return { ok: true, data: `Request ${acc ? 'accepted' : 'declined'}`};
+}
+
+export async function svcUnassignPat(patUsername: string)
+    : Promise<resp_common_services> {
+    const respDb = await dbUnassignPat(patUsername);
+    if(typeof respDb === "string" && respDb !== "")
+        return {ok: false, data: respDb};
+    return { ok: true, data: 'Patient unassigned'};
 }
