@@ -1,19 +1,54 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
+import { requestsApiResp } from '../../../types/account_data/requests.type';
 
-export async function db_get_requests(username: string, isMedic: 'Y' | 'N'): Promise<string | any[]> {
+export async function db_get_requests(username: string, isMedic: 'Y' | 'N'): Promise<string | requestsApiResp[]> {
     const medic = isMedic === 'Y';
     const whichUsername = medic ? 'patient_username' : 'doctor_username';
     const sql_resp = await sq(
-        `select r.${whichUsername}, pd.full_name, r.accepted, r.date, pp.profile_pic \
+        `select r.${whichUsername}, pd.full_name, r.accepted, r.date, pp.profile_pic, \
+        COUNT(sa.study_id) studs, pd.age, pd.sex \
         from requests r \
         left join profile_pictures pp on r.${whichUsername} = pp.username \
         left join personal_data pd on r.${whichUsername} = pd.username \
-        where r.${medic ? 'doctor_username' : 'patient_username'}=?`
+        left join studies_assigned sa on sa.patient_username = r.${whichUsername} \
+        where r.${medic ? 'doctor_username' : 'patient_username'}=? \
+        group by r.${whichUsername}`
         , [username]);
     
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
-        return sql_resp;
+        if(sql_resp.length === 0)
+            return [];
+        let resp_list: requestsApiResp[] = [];
+        for (let i = 0; i < sql_resp.length; i++)
+        {
+            const current_resp = sql_resp[i];
+            resp_list.push(
+                medic ?
+                    {
+                        patient_username: current_resp.patient_username,
+                        full_name: current_resp.full_name,
+                        age: current_resp.age,
+                        sex: current_resp.sex,
+                        date: current_resp.date,
+                        profile_pic: current_resp.profile_pic,
+                        accepted: current_resp.accepted,
+                        nrOfStudies: parseInt(current_resp.studs)
+                    }
+                    :
+                    {
+                        doctor_username: current_resp.doctor_username,
+                        full_name: current_resp.full_name,
+                        age: current_resp.age,
+                        sex: current_resp.sex,
+                        profile_pic: current_resp.profile_pic,
+                        date: current_resp.date,
+                        accepted: current_resp.accepted,
+                        nrOfStudies: parseInt(current_resp.studs)
+                    }
+        );
+        }
+        return resp_list;
     }
     return "";
 }

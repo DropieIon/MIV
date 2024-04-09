@@ -1,12 +1,11 @@
-import { personal_requests_form } from "../../types/account_data/personal_requests.type";
+import { requestsApiResp } from "../../types/account_data/requests.type";
 import {
-    db_insert_patient_requests,
     db_get_requests,
 } from "../db/account_data/db-requests.service";
 
 type resp_presonal_requests = {
     ok: boolean,
-    data: personal_requests_form[] | string
+    data: requestsApiResp[] | string
 }
 
 export async function get_personal_requests(username: string, isMedic: 'Y' | 'N'): Promise<resp_presonal_requests> {

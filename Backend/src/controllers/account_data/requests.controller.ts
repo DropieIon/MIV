@@ -107,3 +107,37 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
         code: 400
     }))
 }
+
+export async function conCancelRequest(req: Request<{}, {}, { doctor_username: string }>,
+    res: Response, next: NextFunction) {
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if(!token) {
+        next(new EmptyField({
+            message: "Token required",
+            code: 400
+        }));
+        return;
+    }
+    if(parseJwt(token)?.isMedic === 'Y'){
+        next(new ControllerError({
+            message: "Only a patient can cancel a request.",
+            code: 400
+        }));
+        return;
+    }
+    if(!req.body.doctor_username)
+    {
+        next(new EmptyField({message: "Doctor username is required!", logging: true}))
+        return;
+    }
+    const resp_db = await svc_ans_req(false, req.body.doctor_username, get_username(token));
+    if(resp_db.ok)
+    {
+        res.json(resp_db.data);
+        return;
+    }
+    next(new ControllerError({
+        message: resp_db.data as string,
+        code: 400
+    }))
+}
