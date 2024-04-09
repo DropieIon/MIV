@@ -9,16 +9,29 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { propsTemplate } from './PropsTemplate';
 import { AntDesign } from '@expo/vector-icons';
 import { parseJwt } from '../../../utils/helper';
-import { Asset, useAssets } from 'expo-asset';
 import { answerReq } from '../../../dataRequests/AssignRequestsData';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
+import { ListEntry } from '../../../types/ListEntry';
+import { setAccountDetails } from '../../../features/globalStateSlice';
 
 export const patientReqTemplate = (props: propsTemplate) => {
+    const currentItem: ListEntry = props.item;
     const medic = parseJwt(props.token)?.isMedic === 'Y';
     const noPfp = props.item.profile_pic === null;
     return (<TouchableOpacity
         activeOpacity={0.75}
         style={ViewStyles.item}
+        onLongPress={() => {
+            props.dispatch(setAccountDetails({
+                fullName: currentItem.full_name,
+                username: medic ? currentItem.username : currentItem.doctor_username,
+                sex: currentItem.sex,
+                age: currentItem.age,
+                profile_pic: currentItem.profile_pic,
+                nrOfStudies: currentItem.nrOfStudies
+            }))
+            props.setOpenDetails(true);
+        }}
     >
         <View
             style={{

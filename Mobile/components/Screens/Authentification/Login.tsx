@@ -9,7 +9,7 @@ import {
 
 import { textSize, marginBottom, auth_styles } from './auth_styles';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setPatDetails, setToken, setTokenRefreshRef } from '../../../features/globalStateSlice';
+import { setAccountDetails, setToken, setTokenRefreshRef } from '../../../features/globalStateSlice';
 import { useDispatch } from 'react-redux';
 import { backend_url } from '../../../configs/backend_url';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
@@ -48,7 +48,7 @@ function Login(props: { passSignUp: () => void }) {
                 const token = respData.token;
                 const fullName = respData.fullName;
                 const current_time = Math.floor(new Date().getTime() / 1000);
-                dispatch(setPatDetails({fullName: fullName}));
+                dispatch(setAccountDetails({fullName: fullName}));
                 // refresh token when it expires
                 dispatch(
                     setTokenRefreshRef(
@@ -171,7 +171,7 @@ function Login(props: { passSignUp: () => void }) {
                                             )
                                         )
                                     );
-                                    dispatch(setPatDetails({fullName: respData.fullName}));
+                                    dispatch(setAccountDetails({fullName: respData.fullName}));
                                     dispatch(setToken(token));
                                 })
                                 .catch((errorResp) => {

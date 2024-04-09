@@ -6,13 +6,9 @@ import { DetailsHeader } from './DetailsComps/DetailsHeader';
 import { DetailsInfo } from './DetailsComps/DetailsInfo';
 import { DetailsFooter } from './DetailsComps/DetailsFooter';
 import { DetailsStyles } from './DetailsStyles';
+import { DetailsPropsTemplate } from './PropsTemplate';
 
-type propsTemplate = {
-    setOpenDetails,
-    setRefreshPatList
-}
-
-export function DetailsModal(props: propsTemplate) {
+export function DetailsModal(props: DetailsPropsTemplate) {
     return (
         <Modal
             animationType="slide"
@@ -28,10 +24,12 @@ export function DetailsModal(props: propsTemplate) {
                     setOpenDetails={props.setOpenDetails}
                 />
                 <DetailsInfo />
-                <DetailsFooter
-                    setOpenDetails={props.setOpenDetails}
-                    setRefreshPatList={props.setRefreshPatList}
-                />
+                {props.type !== 'Requests' &&
+                    <DetailsFooter
+                        setOpenDetails={props.setOpenDetails}
+                        setRefreshPatList={props.setRefreshPatList}
+                        type={props.type}
+                />}
             </View>
         </Modal>
     )

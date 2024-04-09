@@ -152,6 +152,7 @@ function ViewPatients(props: propsTemplate) {
             <DetailsModal
                 setOpenDetails={setOpenDetails}
                 setRefreshPatList={setRefreshPatList}
+                type='PatsAssigned'
             />
         }
         <AddEntry/>

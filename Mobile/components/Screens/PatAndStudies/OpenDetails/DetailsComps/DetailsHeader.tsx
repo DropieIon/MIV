@@ -8,15 +8,15 @@ import { AntDesign } from '@expo/vector-icons';
 import ViewStyles from '@components/ListStyles';
 import { DetailsStyles } from '../DetailsStyles';
 import { useSelector } from 'react-redux';
-import { selectPatDetails } from '../../../../../features/globalStateSlice';
+import { selectAccountDetails } from '../../../../../features/globalStateSlice';
 import { defaultPfp } from '../../../../../configs/defaultUser.b64';
 type propsTemplate = {
     setOpenDetails,
 }
 
 export function DetailsHeader(props: propsTemplate) {
-    const patDetails = useSelector(selectPatDetails);
-    const noPfp = patDetails.profile_pic === null;
+    const accountDetails = useSelector(selectAccountDetails);
+    const noPfp = accountDetails.profile_pic === null;
     return (
         <View
             style={DetailsStyles.headerMainView}
@@ -38,11 +38,11 @@ export function DetailsHeader(props: propsTemplate) {
             >
                 <Image
                     style={[ViewStyles.item_img, DetailsStyles.headerImage]}
-                    source={{ uri: `data:image/jpeg;base64,${noPfp ? defaultPfp : patDetails.profile_pic}` }} />
+                    source={{ uri: `data:image/jpeg;base64,${noPfp ? defaultPfp : accountDetails.profile_pic}` }} />
                 <Text
                     style={DetailsStyles.headerFullName}
                 >
-                    {patDetails.fullName}
+                    {accountDetails.fullName}
                 </Text>
             </View>
         </View>

@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { parseJwt } from '../../../utils/helper';
 import { getAllPatients } from '../../../dataRequests/AssignRequestsData';
 import { useIsFocused } from "@react-navigation/native";
+import { DetailsModal } from '../PatAndStudies/OpenDetails/DetailsModal';
 
 const styles = StyleSheet.create({
     view: {
@@ -48,6 +49,7 @@ export function RequestOrAssign(props: propsTemplate) {
     const token = useSelector(selectToken);
     let [refreshList, setRefreshList] = useState(0);
     const isVisible = useIsFocused();
+    const [openDetails, setOpenDetails] = useState(false);
 
     useEffect(() => {
         // don't trigger unnecessary refreshes
@@ -64,8 +66,6 @@ export function RequestOrAssign(props: propsTemplate) {
             else {
                 getDoctors(token).then((data) => {
                     itemsList.current = data;
-                    // console.log("Refreshed", itemsList.current.length);
-                    
                     setLoading(false);
                 });
             }
@@ -79,14 +79,13 @@ export function RequestOrAssign(props: propsTemplate) {
     else {
         filteredList = itemsList.current;
     }
-    // console.log(Object.keys(filteredList[0]));
-    
+    const opacityVal = 0.6;
     return (
         <View
             style={styles.view}
         >
             <View
-                style={styles.view_search}
+                style={[styles.view_search, openDetails ? {opacity: opacityVal} : {}]}
             >
                 {/* Search, filter and patients View */}
                 <SearchBar
@@ -96,7 +95,7 @@ export function RequestOrAssign(props: propsTemplate) {
                 />
             </View>
             <View
-                style={styles.view_list}
+                style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}
             >
                 {/*/ Patients / Studies list */}
                 {loading && 
@@ -115,11 +114,19 @@ export function RequestOrAssign(props: propsTemplate) {
                         template='assign'
                         navigation={props.navigation}
                         setRefreshList={setRefreshList}
+                        setOpenDetails={setOpenDetails}
                         items={filteredList}
                         listStudies={false}
                     />
                 }
             </View>
+            {!loading && openDetails &&
+            <DetailsModal
+                setOpenDetails={setOpenDetails}
+                setRefreshPatList={setRefreshList}
+                type='AllPats'
+            />
+        }
         </View>
     );
 }

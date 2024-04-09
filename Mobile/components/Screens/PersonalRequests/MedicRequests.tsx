@@ -11,6 +11,8 @@ import { requestsListEntry } from '../../../types/ListEntry';
 import List from '../../List/List';
 import SearchBar from '../../Search/SearchBar';
 import { useIsFocused } from '@react-navigation/native';
+import { DetailsModal } from '../PatAndStudies/OpenDetails/DetailsModal';
+import { parseJwt } from '../../../utils/helper';
 
 const styles = StyleSheet.create({
     view: {
@@ -44,7 +46,9 @@ export function MedicRequests(props: propsTemplate) {
     const itemsList = useRef<requestsListEntry[]>(null);
     let filteredList: requestsListEntry[] = null;
     const token = useSelector(selectToken);
+    const medic = parseJwt(token)?.isMedic === 'Y';
     let [refreshList, setRefreshList] = useState(0);
+    const [openDetails, setOpenDetails] = useState(false);
     const isVisible = useIsFocused();
     useEffect(() => {
         // don't trigger unnecessary refreshes
@@ -65,12 +69,13 @@ export function MedicRequests(props: propsTemplate) {
     else {
         filteredList = itemsList.current;
     }
+    const opacityVal = 0.6;
     return (
         <View
             style={styles.view}
         >
             <View
-                style={styles.view_search}
+                style={[styles.view_search, openDetails ? {opacity: opacityVal} : {}]}
             >
                 {/* Search, filter and patients View */}
                 <SearchBar
@@ -80,7 +85,7 @@ export function MedicRequests(props: propsTemplate) {
                 />
             </View>
             <View
-                style={styles.view_list}
+                style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}
             >
                 {/*/ Patients / Studies list */}
                 {loading &&
@@ -100,10 +105,18 @@ export function MedicRequests(props: propsTemplate) {
                         navigation={props.navigation}
                         items={filteredList}
                         setRefreshList={setRefreshList}
+                        setOpenDetails={setOpenDetails}
                         listStudies={false}
                     />
                 }
             </View>
+            {!loading && openDetails &&
+                <DetailsModal
+                    setOpenDetails={setOpenDetails}
+                    setRefreshPatList={setRefreshList}
+                    type={medic ? 'Requests' : 'My Requests'}
+                />
+            }
         </View>
     );
 }

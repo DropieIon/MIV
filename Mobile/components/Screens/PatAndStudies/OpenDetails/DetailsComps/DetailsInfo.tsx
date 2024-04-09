@@ -7,20 +7,20 @@ import { Fontisto } from '@expo/vector-icons';
 import { DetailsStyles, iconColor } from '../DetailsStyles';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import { selectPatDetails } from '../../../../../features/globalStateSlice';
+import { selectAccountDetails, selectToken } from '../../../../../features/globalStateSlice';
 import { useEffect, useState } from 'react';
+import { parseJwt } from '../../../../../utils/helper';
 
 export function DetailsInfo(props) {
-    const patDetails = useSelector(selectPatDetails);
-    useEffect(() => {
-
-    }, []);
+    const accountDetails = useSelector(selectAccountDetails);
+    const token = useSelector(selectToken);
+    const medic = parseJwt(token)?.isMedic === 'Y';
     return (
         <View
             style={DetailsStyles.infoMainView}
         >
             <View
-                style={DetailsStyles.infoIconAndTextContainer}
+                style={[DetailsStyles.infoIconAndTextContainer, medic ? {} : {width: "50%"}]}
             >
                 <AntDesign
                     style={[DetailsStyles.infoIcon, { flex: 5 }]}
@@ -31,11 +31,11 @@ export function DetailsInfo(props) {
                 <Text
                     style={DetailsStyles.infoText}
                 >
-                    {patDetails.sex === 'M' ? 'Man': 'Woman'}
+                    {accountDetails.sex === 'M' ? 'Man': 'Woman'}
                 </Text>
             </View>
             <View
-                style={DetailsStyles.infoIconAndTextContainer}
+                style={[DetailsStyles.infoIconAndTextContainer, medic ? {} : {width: "50%"}]}
             >
                 <Fontisto
                     style={DetailsStyles.infoIcon}
@@ -46,11 +46,11 @@ export function DetailsInfo(props) {
                 <Text
                     style={DetailsStyles.infoText}
                 >
-                    {patDetails.age === 1 ? `1 year` : `${patDetails.age} years`}
+                    {accountDetails.age === 1 ? `1 year` : `${accountDetails.age} years`}
                 </Text>
             </View>
             <View
-                style={DetailsStyles.infoIconAndTextContainer}
+                style={[DetailsStyles.infoIconAndTextContainer, , medic ? {} : {display: 'none'}]}
             >
                 <FontAwesome5
                     style={DetailsStyles.infoIcon}
@@ -61,7 +61,7 @@ export function DetailsInfo(props) {
                 <Text
                     style={DetailsStyles.infoText}
                 >
-                    {patDetails.nrOfStudies === 1 ? `1 study` : `${patDetails.nrOfStudies} studies`}
+                    {accountDetails.nrOfStudies === 1 ? `1 study` : `${accountDetails.nrOfStudies} studies`}
                 </Text>
             </View>
         </View>

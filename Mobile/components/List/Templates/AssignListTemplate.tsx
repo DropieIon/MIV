@@ -11,14 +11,28 @@ import { propsTemplate } from './PropsTemplate';
 import { answerReq, assignPatient, makeRequest } from '../../../dataRequests/AssignRequestsData';
 import Toast from 'react-native-root-toast';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
+import { setAccountDetails } from '../../../features/globalStateSlice';
+import { ListEntry } from '../../../types/ListEntry';
 
 export const assignListTemplate = (props: propsTemplate) => {
+    const currentItem: ListEntry = props.item;
     const medic = parseJwt(props.token).isMedic === 'Y';
     const noPfP = props.item.profile_pic === null;
     return (
         <TouchableOpacity
             activeOpacity={0.7}
             style={ViewStyles.item}
+            onLongPress={() => {
+                props.dispatch(setAccountDetails({
+                    fullName: currentItem.full_name,
+                    username: currentItem.username,
+                    sex: currentItem.sex,
+                    age: currentItem.age,
+                    profile_pic: currentItem.profile_pic,
+                    nrOfStudies: currentItem.nrOfStudies
+                }))
+                props.setOpenDetails(true);
+            }}
         >
             <View
                 style={{

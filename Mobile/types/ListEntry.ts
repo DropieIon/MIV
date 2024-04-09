@@ -35,6 +35,9 @@ export type requestsListEntry = {
     full_name: string,
     date: string,
     profile_pic: string,
+    nrOfStudies: number,
+    sex: 'M' | 'F',
+    age: number,
     uid: string,
 }
 

@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import ViewStyles from '@components/ListStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { propsTemplate } from './PropsTemplate';
-import { setPatDetails } from '../../../features/globalStateSlice';
+import { setAccountDetails } from '../../../features/globalStateSlice';
 import { ListEntry } from '../../../types/ListEntry';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
 
@@ -16,7 +16,7 @@ export function patientsTemplate(props: propsTemplate) {
     return <TouchableOpacity
         style={ViewStyles.item}
         onLongPress={() => {
-            props.dispatch(setPatDetails({
+            props.dispatch(setAccountDetails({
                 fullName: currentItem.full_name,
                 username: currentItem.username,
                 sex: currentItem.sex,

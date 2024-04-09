@@ -131,6 +131,29 @@ async function unassignPatient(token: string, patient_username: string) {
   };
   return resp.data;
 }
+async function cancelRequest(token: string, doctorUsername: string) {
+  let resp;
+  console.log(doctorUsername);
+  
+  try {
+    if(parseJwt(token)?.isMedic === 'Y') {
+      throw new Error('Only a patient can cancel a request');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/request/cancel`,
+      {
+        doctor_username: doctorUsername
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not cancel request", error);
+    return null;
+  };
+  return resp.data;
+}
 
 export {
   getRequests,
@@ -138,5 +161,6 @@ export {
   makeRequest,
   answerReq,
   assignPatient,
-  unassignPatient
+  unassignPatient,
+  cancelRequest
 };

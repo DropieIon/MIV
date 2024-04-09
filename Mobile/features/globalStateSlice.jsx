@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { defaultPfp } from "../configs/defaultUser.b64";
 
 export const globalStateSlice = createSlice({
     name: 'global',
@@ -11,7 +10,7 @@ export const globalStateSlice = createSlice({
             study_id: ""
         },
         loadingProgress: [],
-        patDetails: {
+        accountDetails: {
             fullName: "",
             username: "",
             sex: "M",
@@ -37,8 +36,8 @@ export const globalStateSlice = createSlice({
         setLoadingProgress: (state, action) => {
             state.loadingProgress[action.payload.index] = action.payload.length;
         },
-        setPatDetails: (state, action) => {
-            state.patDetails = action.payload;
+        setAccountDetails: (state, action) => {
+            state.accountDetails = action.payload;
         },
         setPatientUid: (state, action) => {
             state.patientUid = action.payload;
@@ -52,7 +51,7 @@ export const {
     setOpenViewer,
     setLoadingProgress,
     setRefreshList,
-    setPatDetails,
+    setAccountDetails,
     setPatientUid
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
@@ -61,6 +60,6 @@ export const selectToken = (state) => state.token;
 export const selectTokenRefreshRef = (state) => state.tokenRefreshRef;
 export const selectOpenViewer = (state) => state.openViewer;
 export const selectLoadingProgress = (state) => state.loadingProgress;
-export const selectFullName = (state) => state.patDetails.fullName;
-export const selectPatDetails = (state) => state.patDetails;
+export const selectFullName = (state) => state.accountDetails.fullName;
+export const selectAccountDetails = (state) => state.accountDetails;
 export const selectPatientUid = (state) => state.patientUid;
