@@ -98,7 +98,7 @@ export function PersonalDataForm(props) {
                         <Text
                             style={PDStyles.genderText}
                         >
-                            {savedGender === 'M' ? 'Gentelman' : 'Lady'}
+                            {savedGender === 'M' ? 'Gentleman' : 'Lady'}
                         </Text>
                         <Picker
                             mode='dialog'

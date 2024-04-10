@@ -10,6 +10,7 @@ export const globalStateSlice = createSlice({
             study_id: ""
         },
         loadingProgress: [],
+        currentAccountFullName: "",
         accountDetails: {
             fullName: "",
             username: "",
@@ -39,6 +40,9 @@ export const globalStateSlice = createSlice({
         setAccountDetails: (state, action) => {
             state.accountDetails = action.payload;
         },
+        setCurrentAccountFullName: (state, action) => {
+            state.currentAccountFullName = action.payload;
+        },
         setPatientUid: (state, action) => {
             state.patientUid = action.payload;
         },
@@ -52,7 +56,8 @@ export const {
     setLoadingProgress,
     setRefreshList,
     setAccountDetails,
-    setPatientUid
+    setPatientUid,
+    setCurrentAccountFullName
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
 
@@ -62,4 +67,5 @@ export const selectOpenViewer = (state) => state.openViewer;
 export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
+export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
 export const selectPatientUid = (state) => state.patientUid;

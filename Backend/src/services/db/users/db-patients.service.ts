@@ -12,7 +12,9 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     left join personal_data pd on pa.patient_username=pd.username \
     left join profile_pictures pic on pic.username = pa.patient_username \
     left join studies_assigned sa on sa.patient_username = pa.patient_username \
+    join login l \
     where pa.doctor_username=? \
+    and l.has_completed='Y' \
     group by pa.patient_username \
     " :
     "select l.username, d.full_name, d.age, d.sex, l.uuid, pic.profile_pic, COUNT(sa.study_id) studs \
@@ -21,6 +23,7 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     left join profile_pictures pic on pic.username = l.username \
     left join studies_assigned sa on sa.patient_username = l.username \
     where l.isMedic='N' \
+    and l.has_completed='Y' \
     and l.username not in (select patient_username from patients_assigned where doctor_username = ?) \
     and l.username not in (select patient_username from requests where doctor_username = ?) \
     group by l.username";

@@ -1,12 +1,11 @@
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    selectFullName,
+    selectCurrentAccountFullName,
     selectToken,
     selectTokenRefreshRef,
-    setRefreshList,
     setToken,
     setTokenRefreshRef
 } from '../features/globalStateSlice';
@@ -15,7 +14,7 @@ import { parseJwt } from '../utils/helper';
 export function CustomDrawer(props) {
     const token = useSelector(selectToken);
     const tokenRefreshRef = useSelector(selectTokenRefreshRef);
-    const fullName_split = useSelector(selectFullName).split(' ');
+    const fullName_split = useSelector(selectCurrentAccountFullName).split(' ');
     const dispatch = useDispatch();
 
     const medic = parseJwt(token)?.isMedic === 'Y';
