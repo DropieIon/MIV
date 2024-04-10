@@ -7,11 +7,6 @@ import type { registerForm } from "../../types/auth/authentication.type";
 
 export async function registerController(req: Request<{}, {}, registerForm>, 
     res: Response, next: NextFunction) {
-    if(!req.body.isMedic)
-    {
-        next(new EmptyField({message: "isMedic field cannot be empty! Either 'Y' or 'N' please."}))
-        return;
-    }
     if(!req.body.username || !req.body.password || !req.body.email)
     {
         next(new EmptyField({message: "Username, password and email are required!", logging: true}))

@@ -1,4 +1,4 @@
-# Moc patient data
+/* Moc patient data */
 INSERT INTO personal_data(
     username,
     full_name,
@@ -63,6 +63,19 @@ VALUES (
     40,
     'F'
 );
+
+-- INSERT INTO personal_data(
+--     username,
+--     full_name,
+--     age,
+--     sex
+-- )
+-- VALUES (
+--     'tc',
+--     'SomeBody',
+--     40,
+--     'F'
+-- );
 
 /* Doc personal data */
 

@@ -3,6 +3,7 @@ import { json } from 'body-parser';
 import { errorHandler } from '../src/middlewares/errors.middleware';
 import personal_requests_router from '../src/routes/account_data/personal_requests.route';
 import request_router from '../src/routes/account_data/request.route';
+import details_router from '../src/routes/account_data/details.route';
 import { get_pool } from '../src/services/db/db-functions';
 
 const app = express();
@@ -10,7 +11,7 @@ const port = 3000;
 
 /* Middleware */
 
-app.use(json())
+app.use(json({limit: '50mb'}));
 
 app.get('/', (req, res) => {
   res.json({'message': 'ok'});
@@ -22,6 +23,7 @@ app.get('/api', (req, res) => {
 
 app.use('/personal_requests', personal_requests_router);
 app.use('/request', request_router);
+app.use('/details', details_router);
 
 /* Error handler middleware */
 app.use(errorHandler);

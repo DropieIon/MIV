@@ -133,7 +133,6 @@ async function unassignPatient(token: string, patient_username: string) {
 }
 async function cancelRequest(token: string, doctorUsername: string) {
   let resp;
-  console.log(doctorUsername);
   
   try {
     if(parseJwt(token)?.isMedic === 'Y') {

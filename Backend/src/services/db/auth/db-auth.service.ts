@@ -7,11 +7,11 @@ import { sq } from '../db-functions';
 type checkLogin_resp = { isMedic: yayOrNay, email_validation: yayOrNay, fullName: string }
 
 export async function insert_user(registerData: registerForm, uuid: string): Promise<string> {
-    const { email, username, password, isMedic } = registerData;
+    const { email, username, password } = registerData;
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email))
         return "Invalid email!";
     let query_resp = await sq('insert into login(username, passhash, email, uuid, isMedic) values (?, ?, ?, ?, ?)',
-        [username, sha256(password), email, uuid, isMedic]);
+        [username, sha256(password), email, uuid, 'N']);
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
             if (query_resp.code === "ER_DUP_ENTRY") {
@@ -56,8 +56,18 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
 }
 
 export async function insert_patient_details(username: string, details: patientForm) {
-    let insert_resp = await sq('insert into patients(username, age, sex) values (?, ?, ?)',
-        [username, details.age, details.sex]);
+    let insert_resp = await sq('insert into personal_data (username, full_name, age, sex) values (?, ?, ?, ?)',
+        [username, details.fullName, details.age, details.sex]);
+    if (insert_resp !== "") {
+        if (insert_resp instanceof mariadb.SqlError) {
+            if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                return "Patient already has the required data";
+            }
+            return "Database insertion error";
+        }
+    }
+    insert_resp = await sq('insert into profile_pictures (username, profile_pic) values (?, ?)',
+        [username, details.profile_picB64]);
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
@@ -82,7 +92,7 @@ export async function has_completed(username: string) {
     let sql_resp = await sq<{ has_completed: yayOrNay }>('select has_completed from login where username=?', [username]);
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
         // is the resp list
-        if (sql_resp.length == 0)
+        if (sql_resp.length === 0)
             return "User not found";
         return sql_resp[0].has_completed;
     }

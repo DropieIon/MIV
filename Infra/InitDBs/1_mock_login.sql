@@ -151,3 +151,22 @@ VALUES (
     'Y',
     'Y'
 );
+
+INSERT INTO login(
+    username,
+    uuid,
+    passhash,
+    email,
+    isMedic,
+    has_completed,
+    email_validation
+)
+VALUES (
+    'tc',
+    '5bdc989c-ac10-4ffd-aa06-74cd6972001111111',
+    '3086cf468ccca87cc7840e0755947526a039eea35f486002d7f1c53d7c58686a',
+    'ion5@i.com',
+    'N',
+    'N',
+    'Y'
+);

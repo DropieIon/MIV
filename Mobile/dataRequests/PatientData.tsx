@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { backend_url, orthanc_url } from '../configs/backend_url';
 import { accountDataListEntry } from '../types/ListEntry';
+import { parseJwt } from '../utils/helper';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -32,9 +33,42 @@ async function getPatientStudies(patient_uid: string, token: string) {
   return resp.data;
 }
 
+type patDetails = {
+  fullName: string,
+  age: number,
+  gender: string,
+  profile_picB64: string
+}
+
+async function putPatientDetails(token: string, patDetails: patDetails) {
+  let resp;
+  try {
+    if(parseJwt(token)?.isMedic === 'Y') {
+      throw new Error('Not a patient');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/details/`,
+      {
+        fullName: patDetails.fullName,
+        age: patDetails.age,
+        sex: patDetails.gender,
+        profile_picB64: patDetails.profile_picB64
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not put patient details " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 
 
 export {
   getPatients,
-  getPatientStudies
+  getPatientStudies,
+  putPatientDetails
 };

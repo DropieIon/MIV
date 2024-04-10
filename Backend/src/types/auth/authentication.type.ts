@@ -1,13 +1,14 @@
 export type registerForm = {
     username: string,
     email: string,
-    password: string,
-    isMedic: yayOrNay
+    password: string
 }
 
 export type patientForm = {
+    fullName: string,
     age: number,
-    sex: 'M' | 'F'
+    sex: 'M' | 'F',
+    profile_picB64: string
 }
 
 

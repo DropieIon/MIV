@@ -2,7 +2,7 @@
   "expo": {
     "name": "MIV",
     "slug": "MIV_expo",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "plugins": [
@@ -12,6 +12,12 @@
           "android": {
             "usesCleartextTraffic": true
           }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you pick a profile picture."
         }
       ]
     ],
@@ -29,7 +35,7 @@
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
-        "foregroundImage": "./assets/images/rad.png"
+        "foregroundImage": "./assets/images/miv.jpg"
       },
       "package": "com.dropieion.MIV"
     },

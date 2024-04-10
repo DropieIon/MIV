@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native";
-import { selectToken, selectOpenViewer } from "../../../features/globalStateSlice";
+import { selectToken, selectOpenViewer, selectFullName } from "../../../features/globalStateSlice";
 import { useSelector } from "react-redux";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Authentication from "../Authentification/Authentication";
@@ -12,6 +12,7 @@ import { RequestOrAssign } from "../MedPatLinks/RequestOrAssing";
 import { MedicRequests } from "../PersonalRequests/MedicRequests";
 import { CustomDrawer } from "../../CustomDrawer";
 import ViewStudies from "../PatAndStudies/ViewStudies";
+import { PersonalDataForm } from "../Authentification/PersonalData/PersonalDataForm";
 
 const Drawer = createDrawerNavigator();
 
@@ -27,16 +28,21 @@ const drawerScreenOptions = {
 
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
+    const fullName = useSelector(selectFullName);
+    const hasCompleted = fullName !== null;
     const viewer: viewerState = useSelector(selectOpenViewer);
-    const medic = token ? parseJwt(token)?.isMedic === 'Y' : false;
+    const medic = token !== "" ? parseJwt(token)?.isMedic === 'Y' : false;
     return (
         <SafeAreaView
             style={{ flex: 1 }}
         >
-            {token && viewer.should_open &&
+            {token !== "" && !hasCompleted &&
+                <PersonalDataForm/>
+            }
+            {token !== "" && hasCompleted && viewer.should_open &&
                 <Viewer study_id={viewer.study_id} />
             }
-            {token && !viewer.should_open &&
+            {token !== "" && hasCompleted && !viewer.should_open &&
                 <Drawer.Navigator
                     initialRouteName={medic ? 'Patients' : 'Studies'}
                     drawerContent={(props) => <CustomDrawer {...props} />}
@@ -73,7 +79,7 @@ export function LandingScreen(props) {
                     />
                 </Drawer.Navigator>
             }
-            {!token && !viewer.should_open && <Authentication />}
+            {token === "" && !viewer.should_open && <Authentication />}
         </SafeAreaView>
     )
 }

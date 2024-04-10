@@ -4,13 +4,9 @@ import {
     Text,
     StyleSheet,
     BackHandler,
-    Modal,
-    TouchableOpacity,
 } from 'react-native';
-import { Image } from 'expo-image';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
-import ViewStyles from '@components/ListStyles';
 import { AddEntry } from '../../Patient/AddEntry';
 import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
@@ -19,9 +15,6 @@ import { selectPatientUid, selectToken, setPatientUid } from '../../../features/
 import { parseJwt } from '../../../utils/helper';
 import { getStudies } from '../../../dataRequests/DicomData';
 import { getPatientStudies } from '../../../dataRequests/PatientData';
-import { AntDesign } from '@expo/vector-icons';
-import { Fontisto } from '@expo/vector-icons';
-
 
 const styles = StyleSheet.create({
     view: {

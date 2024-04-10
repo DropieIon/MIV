@@ -6,14 +6,12 @@ import { has_completed } from "../../services/db/auth/db-auth.service";
 import { parseJwt } from "../../utils/helper.util";
 import { patient_details } from "../../services/account_data/details.service";
 
-/* TODO: finish this function */
-
 const get_username = (token: string): string => parseJwt(token)?.username;
 
-export async function patientsController(req: Request<{}, {}, patientForm>,
+export async function conDetailsController(req: Request<{}, {}, patientForm>,
     res: Response, next: NextFunction) {
-    if (!req.body.age || !req.body.sex) {
-        next(new EmptyField({ message: "Age and sex are required!", logging: true }))
+    if (req.body.age === 0 || req.body.sex.length === 0 || req.body.fullName === "") {
+        next(new EmptyField({ message: "FullName, age and sex are required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];
