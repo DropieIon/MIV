@@ -3,8 +3,7 @@ import {
     TextInput,
     View,
     Text,
-    TouchableOpacity,
-    StyleSheet
+    TouchableOpacity
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRef, useState } from 'react';
@@ -14,93 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectToken, setAccountDetails } from '../../../../features/globalStateSlice';
 import { BackendError } from '../../../../../Backend/src/errors/BackendError.error';
 import { AxiosError } from 'axios';
-
-const reallyNiceBlue = "#2F80ED";
-
-const styles = StyleSheet.create({
-    mainView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    detailsText: {
-        padding: 10,
-        fontSize: 24,
-        textAlign: 'center',
-        color: '#6495ED',
-        fontFamily: 'serif'
-    },
-
-    personalDataView: {
-        backgroundColor: reallyNiceBlue,
-        width: "80%",
-        height: "50%",
-        borderRadius: 15,
-        alignItems: 'center',
-        // justifyContent: 'center',
-        padding: 10
-    },
-
-    imageView: {
-        width: "100%",
-        height: "60%",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    image: {
-        width: 200,
-        height: 200,
-        borderRadius: 50,
-    },
-
-    formView: {
-        height: "40%",
-        width: "100%",
-        alignItems: 'center',
-    },
-
-    fullNameInput: {
-        height: "30%",
-        width: "85%",
-        textAlign: 'center',
-        borderRadius: 5,
-        borderWidth: 2
-    },
-    ageInput: {
-        height: "30%",
-        width: "85%",
-        textAlign: 'center'
-    },
-
-    genderButton: {
-        height: "40%",
-        width: "85%",
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    genderText: {
-    },
-
-    submitButton: {
-        top: 10,
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: 'white',
-        padding: 5
-    },
-    submitButtonText: {
-    },
-
-    error: {
-        color: 'red',
-    },
-    loading: {
-        color: reallyNiceBlue,
-    }
-
-
-});
+import { PDStyles } from './PDStyles';
 
 export function PersonalDataForm(props) {
     const token = useSelector(selectToken);
@@ -123,26 +36,26 @@ export function PersonalDataForm(props) {
     };
     return (
         <SafeAreaView
-            style={styles.mainView}
+            style={PDStyles.mainView}
         >
             <Text
-                style={styles.detailsText}
+                style={PDStyles.detailsText}
             >
                 We'll need a few more details
             </Text>
             <View
-                style={styles.personalDataView}
+                style={PDStyles.personalDataView}
             >
                 <PfpPicker
                     setPfpData={setProfilePic}
-                    imageViewStyle={styles.imageView}
-                    imageStyle={styles.image}
+                    imageViewStyle={PDStyles.imageView}
+                    imageStyle={PDStyles.image}
                 />
                 <View
-                    style={styles.formView}
+                    style={PDStyles.formView}
                 >
                     <TextInput
-                        style={[styles.fullNameInput, { borderColor: errFullName ? 'red' : '#2F80ED' }]}
+                        style={[PDStyles.fullNameInput, { borderColor: errFullName ? 'red' : '#2F80ED' }]}
                         placeholder="Full name"
                         returnKeyType='next'
                         onChangeText={(txt) => {
@@ -162,12 +75,12 @@ export function PersonalDataForm(props) {
                                 refAge?.current.focus();
                         }}
                     />
-                    {errFullName && <Text style={styles.error}>{errFullName}</Text>}
+                    {errFullName && <Text style={PDStyles.error}>{errFullName}</Text>}
                     <TextInput
                         placeholder='Age'
                         keyboardType='numeric'
                         ref={refAge}
-                        style={styles.ageInput}
+                        style={PDStyles.ageInput}
                         onChangeText={(nr) => {
                             if (nr !== "") {
                                 setAge(parseInt(nr));
@@ -179,11 +92,11 @@ export function PersonalDataForm(props) {
                         }}
                     />
                     <TouchableOpacity
-                        style={styles.genderButton}
+                        style={PDStyles.genderButton}
                         onPress={handleOpenPickerGender}
                     >
                         <Text
-                            style={styles.genderText}
+                            style={PDStyles.genderText}
                         >
                             {savedGender === 'M' ? 'Gentelman' : 'Lady'}
                         </Text>
@@ -205,12 +118,12 @@ export function PersonalDataForm(props) {
                     </TouchableOpacity>
                 </View>
             </View>
-            {loading && <Text style={styles.loading}>Sending data...</Text>}
-            {errPut !== "" && <Text style={styles.error}>{errPut}</Text>}
-            {errEmpty !== "" && <Text style={styles.error}>{errEmpty}</Text>}
+            {loading && <Text style={PDStyles.loading}>Sending data...</Text>}
+            {errPut !== "" && <Text style={PDStyles.error}>{errPut}</Text>}
+            {errEmpty !== "" && <Text style={PDStyles.error}>{errEmpty}</Text>}
             <TouchableOpacity
                 disabled={errEmpty ? true : false}
-                style={[styles.submitButton, { backgroundColor: errEmpty ? 'lightgrey' : '#33b249' }]}
+                style={[PDStyles.submitButton, { backgroundColor: errEmpty ? 'lightgrey' : '#33b249' }]}
                 onPress={() => {
                     setLoading(true);
                     if (errEmpty === "" &&
@@ -248,7 +161,7 @@ export function PersonalDataForm(props) {
                 }}
             >
                 <Text
-                    style={styles.submitButtonText}
+                    style={PDStyles.submitButtonText}
                 >
                     Submit
                 </Text>
