@@ -16,7 +16,8 @@ export const StudiesTemplate = (props: propsTemplate) => {
         }}
         onPress={() => props.dispatch(props.setOpenViewer({
             should_open: true,
-            study_id: props.item.study_id, patient_username: props.item.patient_username
+            study_id: props.item.study_id,
+            patient_username: props.item.patient_username
         }))}
     >
         <Image
@@ -32,7 +33,7 @@ export const StudiesTemplate = (props: propsTemplate) => {
         <Text
             style={ViewStyles.item_date}
         >
-            {props.item.date}
+            {props.item.date === "//" ? "01/01/1970" : props.item.date}
         </Text>
     </TouchableOpacity>
 }

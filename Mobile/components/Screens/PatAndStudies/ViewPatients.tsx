@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
-import { AddEntry } from '../../Patient/AddEntry';
+import { AddEntry } from './AddEntry/AddEntry';
 import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -155,7 +155,10 @@ function ViewPatients(props: propsTemplate) {
                 type='PatsAssigned'
             />
         }
-        <AddEntry/>
+        <AddEntry
+            type='Patient'
+            navigation={props.navigation}
+        />
     </View>
 }
 

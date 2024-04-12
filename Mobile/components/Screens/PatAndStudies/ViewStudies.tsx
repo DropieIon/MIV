@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
-import { AddEntry } from '../../Patient/AddEntry';
+import { AddEntry } from './AddEntry/AddEntry';
 import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -245,7 +245,10 @@ function ViewStudies(props: propsTemplate) {
                 </View>
             </Modal>
         } */}
-        <AddEntry/>
+        <AddEntry
+            type='Study'
+            navigation={props.navigation}
+        />
     </View>
 }
 

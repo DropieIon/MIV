@@ -80,7 +80,6 @@ export function RequestOrAssign(props: propsTemplate) {
         filteredList = itemsList.current;
     }
     const opacityVal = 0.6;
-    console.log(filteredList);
     
     return (
         <View
