@@ -32,7 +32,9 @@ export type resp_list_services = {
 
 export type jwt_payload = {
     username: string,
-    isMedic: yayOrNay
+    isMedic: yayOrNay,
+    canUpload: boolean,
+    unlimitedUpToday: boolean
 }
 
 export type yayOrNay = "Y" | "N"

@@ -3,14 +3,16 @@ import type { NextFunction, Request, Response } from 'express';
 import { jwt_payload, yayOrNay } from '../../types/auth/authentication.type';
 import { get_GW_Data } from '../../utils/helper.util';
 
-export async function generateAccessToken(username: string, isMedic: yayOrNay): Promise<string | null> {
+export async function generateAccessToken(username: string, isMedic: yayOrNay, canUpload: boolean, unlimitedUpToday: boolean): Promise<string | null> {
     let resp_gateway = await get_GW_Data();
     const secret: string = resp_gateway[0]["secret"];
     const key: string = resp_gateway[0]["key"];
     if (secret && key) {
         const payload: jwt_payload = {
             username: username,
-            isMedic: isMedic
+            isMedic: isMedic,
+            canUpload: canUpload,
+            unlimitedUpToday: unlimitedUpToday
         }
         return jwt.sign(payload, secret, { expiresIn: '15m', keyid: key });
     }
