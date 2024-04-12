@@ -54,3 +54,9 @@ CREATE TABLE requests (
     date                    timestamp,
     PRIMARY KEY(patient_username, doctor_username)
 );
+
+CREATE TABLE unlimitedUploads (
+    patient_username        char(255) NOT NULL,
+    stamp                    timestamp,
+    PRIMARY KEY(patient_username)
+);

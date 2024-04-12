@@ -16,6 +16,11 @@ routes:
     strip_path: true
     paths:
       - /users
+  - name: ws-acc-route
+    service: account_data
+    strip_path: false
+    paths:
+      - /socket.io
   - name: acc-route
     service: account_data
     strip_path: true
@@ -36,6 +41,13 @@ routes:
 plugins:
   - name: jwt
     route: acc-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+  - name: jwt
+    route: ws-acc-route
     enabled: true
     config:
       key_claim_name: kid
