@@ -193,6 +193,8 @@ delete_this*
 unde_am_ramas.txt
 .expo/
 *.env
+*.dcm
+*.DCM
 
 # terraform stuff
 .terragrunt*
