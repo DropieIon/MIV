@@ -8,6 +8,7 @@ import { get_pool } from '../src/services/db/db-functions';
 import fileUpload from 'express-fileupload';
 import { parseDicom } from 'dicom-parser';
 import { Server as ServerIO } from "socket.io";
+import { sfProtocol } from '../src/services/account_data/socket.io/sfProtocol.service';
 
 const app = express();
 const port = 3000;
@@ -15,10 +16,18 @@ const port = 3000;
 const server = app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 });
-const io = new ServerIO(server);
+const io = new ServerIO(server, {
+  maxHttpBufferSize: 1e8,
+});
 
 io.on('connection', function (socket) {
-  socket.on('split-file', () => {});
+  // TODO: check if user canUpload
+  
+  // protocol: sends size and nr of packets first
+  // then sends the n nr of packets
+  // then an EOS (end of stream) and a checksum
+  console.log("Connected");
+  const sf = new sfProtocol(socket);
 });
 
 /* Middleware */
@@ -29,48 +38,6 @@ app.use(fileUpload());
 app.get('/', (req, res) => {
   res.json({'message': 'ok'});
 })
-
-
-app.post('/upload', function(req, res) {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
-  
-  let dicomFile = req.files.uploadDicom;
-
-  if (Array.isArray(dicomFile)) {
-  }
-  else {
-    const StudyInstanceUID = parseDicom(dicomFile.data).string('x0020000d');
-    fetch('http://orthanc:8042/instances', {
-      method: 'POST',
-      body: dicomFile.data
-    })
-      .then(() => {
-        fetch('http://orthanc:8042/tools/find', {
-          method: 'POST',
-          body: `{"Level" : "Study", "Expand":true, "Query" : {"StudyInstanceUID" : "${StudyInstanceUID}"} }`
-        }).
-          then(async (data) => {
-            const resp: any = await data.json();
-            console.log(resp[0].ID);
-
-          })
-          .catch((err) => {
-            console.log(err);
-
-          });
-
-      })
-      .catch((err) => {
-        console.log(err);
-
-      })
-    res.send('File uploaded!');
-  }
-});
-
-
 
 app.use('/personal_requests', personal_requests_router);
 app.use('/request', request_router);

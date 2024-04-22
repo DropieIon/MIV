@@ -15,3 +15,18 @@ export async function dbNewStudy(patUsername: string, studyId: string): Promise<
     }
     return "";
 }
+
+export async function dbCheckStudyID(patUsername: string, studyId: string): Promise<string | boolean> {
+    const queryResp = await sq(
+        'select patient_username from studies_assigned \
+        where patient_username = ? \
+        and study_id = ?',
+        [patUsername, studyId]);
+        if (typeof queryResp !== "string" && !(queryResp instanceof mariadb.SqlError)) {
+            // it's the resp list
+            if(queryResp.length === 0)
+                return true;
+            return false;
+        }
+        return "Cannot get studies list";
+}

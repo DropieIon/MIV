@@ -105,6 +105,7 @@ services:
       - auth-db
     volumes:
       - ../Backend:/app
+      - ../Common:/Common
     command: nodemon /app/microservices/account_data.ts
     depends_on:
       db_auth:

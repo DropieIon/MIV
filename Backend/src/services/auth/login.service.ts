@@ -6,25 +6,26 @@ import { checkLogin, dbCanUpload, dbUnlimitedUploads4h } from '../db/auth/db-aut
 export async function loginUser(loginData: loginForm): Promise<resp_login_service | resp_common_services> {
     let resp_login = await checkLogin(loginData);
     if (typeof resp_login !== "string") {
-        if(resp_login.email_validation === 'N'){
+        if (resp_login.email_validation === 'N') {
             return { ok: false, data: 'Please verify email first' };
         }
+        const medic = resp_login.isMedic === 'Y';
         // a doctor should always be able to upload studies
-        const canUpload = resp_login.isMedic ? true : await dbCanUpload(loginData.username);
-        if(typeof canUpload === "string")
-            return {ok: false, data: canUpload};
-        const unlimitedUploads = resp_login.isMedic ? true : await dbUnlimitedUploads4h(loginData.username);
-        if(typeof unlimitedUploads === "string")
-            return {ok: false, data: unlimitedUploads};
+        const canUpload = medic ? true : await dbCanUpload(loginData.username);
+        if (typeof canUpload === "string")
+            return { ok: false, data: canUpload };
+        const unlimitedUploads = medic ? true : await dbUnlimitedUploads4h(loginData.username);
+        if (typeof unlimitedUploads === "string")
+            return { ok: false, data: unlimitedUploads };
         const token = await generateAccessToken(loginData.username, resp_login.isMedic, canUpload, unlimitedUploads);
         if (token) {
-            return { 
+            return {
                 ok: true,
                 data: {
                     token: token,
                     fullName: resp_login.fullName
                 }
-        };
+            };
         }
         return { ok: false, data: "Cannot generate token" };
     }

@@ -20,8 +20,8 @@ export async function dbUnlimitedUploads4h(username: string)
             // is the resp list
             if (queryResp.length === 0)
                 return false;
-            // TODO: finish this
-            // if(queryResp[0].stamp)
+            if ((Math.abs(new Date().getTime() - new Date(queryResp[0].stamp).getTime()) / 36e5) > 4)
+                return false;
             return true;
         }
     }
@@ -31,7 +31,7 @@ export async function dbUnlimitedUploads4h(username: string)
 export async function dbCanUpload(username: string)
     : Promise<string | boolean> {
     const queryResp = await sq(
-        'select COUNT(*) from patients_assigned where patient_username = ?',
+        'select COUNT(*) c from patients_assigned where patient_username = ?',
         [username]
     );
     if (queryResp !== "") {
@@ -40,7 +40,7 @@ export async function dbCanUpload(username: string)
         }
         if (typeof queryResp !== "string") {
             // is the resp list
-            if (queryResp.length === 0)
+            if(parseInt(queryResp[0].c) === 0)
                 return false;
             return true;
         }

@@ -34,7 +34,7 @@ export type jwt_payload = {
     username: string,
     isMedic: yayOrNay,
     canUpload: boolean,
-    unlimitedUpToday: boolean
+    unlimitedUp4h: boolean
 }
 
 export type yayOrNay = "Y" | "N"
