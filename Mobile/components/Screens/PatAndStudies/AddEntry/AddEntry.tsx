@@ -12,8 +12,6 @@ import { useSelector } from 'react-redux';
 import { selectToken } from '../../../../features/globalStateSlice';
 import * as DocumentPicker from 'expo-document-picker';
 
-
-
 const styles = StyleSheet.create({
     button_view: {
         flex: 1,
@@ -41,6 +39,7 @@ const styles = StyleSheet.create({
 
 type propsTemplate = {
     type: 'Patient' | 'Study',
+    setZipData,
     navigation
 }
 
@@ -64,12 +63,16 @@ export function AddEntry(props: propsTemplate) {
                     if(props.type === 'Study') {
                         DocumentPicker.getDocumentAsync({
                             copyToCacheDirectory: true,
-                            multiple: true
+                            multiple: false
                         })
                         .then((data) => {
-                            console.log(data.assets);
-                            
+                            const { uri, size } = data.assets[0];
+                            props.setZipData({
+                                uri,
+                                size
+                            });
                         })
+                        
                     }
                 }}
             >

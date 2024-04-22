@@ -27,6 +27,14 @@ export function patientsTemplate(props: propsTemplate) {
             props.setOpenDetails(true);
         }}
         onPress={() => {
+            props.dispatch(setAccountDetails({
+                fullName: currentItem.full_name,
+                username: currentItem.username,
+                sex: currentItem.sex,
+                age: currentItem.age,
+                profile_pic: currentItem.profile_pic,
+                nrOfStudies: currentItem.nrOfStudies
+            }));
             props.navigation.navigate('Studies', {
                 listStudies: true,
                 patientID: props.item.uid,

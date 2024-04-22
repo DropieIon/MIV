@@ -15,6 +15,7 @@ import { selectPatientUid, selectToken, setPatientUid } from '../../../features/
 import { parseJwt } from '../../../utils/helper';
 import { getStudies } from '../../../dataRequests/DicomData';
 import { getPatientStudies } from '../../../dataRequests/PatientData';
+import { OpenUpload } from './AddEntry/OpenUpload';
 
 const styles = StyleSheet.create({
     view: {
@@ -56,7 +57,16 @@ function ViewStudies(props: propsTemplate) {
     const items_list = useRef<ListEntry[]>([]);
     const patientUid = useSelector(selectPatientUid);
     const [openDetails, setOpenDetails] = useState(false);
+    const [openUpload, setOpenUpload] = useState(false);
     const medic = parseJwt(token)?.isMedic === 'Y';
+    const [zipData, setZipData] = useState({
+        uri: '',
+        size: 0
+    });
+    useEffect(() => {
+        if (zipData.size !== 0)
+            setOpenUpload(true);
+    }, [zipData]);
     useEffect(() => {
         // don't trigger unnecessary refreshes
         if (isVisible) {
@@ -126,7 +136,7 @@ function ViewStudies(props: propsTemplate) {
         style={styles.view}
     >
         <View
-            style={[styles.view_search, openDetails ? {opacity: opacityVal} : {}]}
+            style={[styles.view_search, openDetails || openUpload ? {opacity: opacityVal} : {}]}
         >
             {/* Search, filter and patients View */}
             <SearchBar 
@@ -136,7 +146,7 @@ function ViewStudies(props: propsTemplate) {
             />
         </View>
         <View
-            style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}
+            style={[styles.view_list, openDetails || openUpload ? {opacity: opacityVal} : {}]}
         >
             {/*/ Patients / Studies list */}
             {loading &&
@@ -166,7 +176,7 @@ function ViewStudies(props: propsTemplate) {
                 ></List>
             }
         </View>
-        {/* {!loading && openDetails &&
+        {/* {!loading && !openUpload && openDetails &&
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -245,7 +255,14 @@ function ViewStudies(props: propsTemplate) {
                 </View>
             </Modal>
         } */}
+        {!loading && !openDetails && openUpload &&
+            <OpenUpload
+                setOpenUpload={setOpenUpload}
+                zipUri={zipData.uri}
+                zipSize={zipData.size}
+            />}
         <AddEntry
+            setZipData={setZipData}
             type='Study'
             navigation={props.navigation}
         />
