@@ -195,6 +195,7 @@ unde_am_ramas.txt
 *.env
 *.dcm
 *.DCM
+Backend/tmp/*
 
 # terraform stuff
 .terragrunt*

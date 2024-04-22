@@ -1,6 +1,10 @@
 from requests import get, post, put
+import base64
+
 base_url = 'http://localhost:8000'
 
+def decodeTokenBody(token: str):
+    return base64.b64decode(token.split('.')[1] + "==")
 
 token_doctor1 = post(f'{base_url}/login', json={
     "username": "doctor1", "password": "nu"
@@ -36,6 +40,8 @@ req_resp = post(f'{base_url}/acc_data/upload', files=files, headers={'Authorizat
 # req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
 
 print(req_resp.status_code)
+print(decodeTokenBody(token_tc))
+print(decodeTokenBody(token_patient1))
 # print(req_resp.json())
 # print(len(req_resp.json()))
 
