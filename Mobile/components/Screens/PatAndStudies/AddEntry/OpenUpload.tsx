@@ -18,6 +18,7 @@ import { parseJwt } from "../../../../utils/helper";
 
 type propsTemplate = {
     setOpenUpload,
+    setErrUpload,
     zipUri: string,
     zipSize: number,
 }
@@ -31,9 +32,6 @@ export function OpenUpload(props: propsTemplate) {
     const medic = parseJwt(token)?.isMedic === 'Y';
     const accDetails = useSelector(selectAccountDetails);
     const [uploadProgress, setUploadProgress] = useState(0.0);
-    // setTimeout(() => {
-    //     setUploadProgress(uploadProgress + 0.5);
-    // }, 1000);
     const [sock, setSock] = useState<Socket>(null);
     let cancelEnabled = true;
     const sendZip = async () => {
@@ -60,12 +58,11 @@ export function OpenUpload(props: propsTemplate) {
 
             });
         } catch (error) {
-            console.error("Could not create socket to server " + error);
+            props.setErrUpload("Could not create socket to server " + error);
             return;
         }
         setSock(socket);
         let rez;
-        // rez = await sendHandShake(socket, token, zipSize, nrPack);
         const mainEv = 'split-file';
         const toSend: handShake = {
             type: 'handshake',
@@ -77,7 +74,7 @@ export function OpenUpload(props: propsTemplate) {
             user: medic ? accDetails.username : ''
         };
         socket.on('err', (err) => {
-            console.error("HandShake error " + err.message);
+            props.setErrUpload("HandShake error " + err.message);
         });
         socket.on('progress', (p: string) => {
             const progress = parseFloat(p);
@@ -99,7 +96,8 @@ export function OpenUpload(props: propsTemplate) {
                 rez = await sendEOS(socket, md5, false);
             }
             else {
-                console.error("Handshake failed");
+                props.setOpenUpload(false);
+                props.setErrUpload("Upload limit reached");
             }
         });
     }

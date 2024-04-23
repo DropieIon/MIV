@@ -16,6 +16,7 @@ import { parseJwt } from '../../../utils/helper';
 import { getStudies } from '../../../dataRequests/DicomData';
 import { getPatientStudies } from '../../../dataRequests/PatientData';
 import { OpenUpload } from './AddEntry/OpenUpload';
+import Toast from 'react-native-root-toast';
 
 const styles = StyleSheet.create({
     view: {
@@ -59,6 +60,7 @@ function ViewStudies(props: propsTemplate) {
     const [openDetails, setOpenDetails] = useState(false);
     const [openUpload, setOpenUpload] = useState(false);
     const medic = parseJwt(token)?.isMedic === 'Y';
+    const [errUpload, setErrUpload] = useState('');
     const [zipData, setZipData] = useState({
         uri: '',
         size: 0
@@ -257,15 +259,27 @@ function ViewStudies(props: propsTemplate) {
         } */}
         {!loading && !openDetails && openUpload &&
             <OpenUpload
+                setErrUpload={setErrUpload}
                 setOpenUpload={setOpenUpload}
                 zipUri={zipData.uri}
                 zipSize={zipData.size}
             />}
         <AddEntry
-            setZipData={setZipData}
             type='Study'
+            setZipData={setZipData}
+            setErrUpload={setErrUpload}
             navigation={props.navigation}
         />
+        <Toast
+            visible={errUpload !== ''}
+            onShow={() => {
+                setTimeout(() => {
+                    setErrUpload('');
+                }, 2000);
+            }}
+        >
+            {errUpload}
+        </Toast>
     </View>
 }
 

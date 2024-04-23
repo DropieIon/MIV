@@ -5,18 +5,44 @@ import { useSelector } from "react-redux";
 import { selectAccountDetails, selectToken } from "../../../../../features/globalStateSlice";
 import { DetailsPropsTemplate } from "../PropsTemplate";
 import { parseJwt } from "../../../../../utils/helper";
+import { allowUnlimUploads4h } from "../../../../../dataRequests/PatientData";
 
 export function DetailsFooter(props: DetailsPropsTemplate) {
     const token = useSelector(selectToken);
     const accountDetails = useSelector(selectAccountDetails);
     const unassign = ['PatsAssigned', 'Study'].includes(props.type);
+    const patsAssigned = props.type === 'PatsAssigned';
     const medic = parseJwt(token)?.isMedic === 'Y';
     return (
         <View
-            style={DetailsStyles.footerMainView}
+            style={
+                [DetailsStyles.footerMainViewNormal,
+                    patsAssigned ? DetailsStyles.footerMainViewPatsAssigned : {}]}
         >
+            {medic && props.type === 'PatsAssigned' &&
             <TouchableOpacity
-                style={DetailsStyles.footerUnassignButton}
+                style={DetailsStyles.footerUnlimUploadsButton}
+                onPress={() => {
+                    allowUnlimUploads4h(token, accountDetails.username)
+                    .then((resp) => {
+                        if(resp === null) {
+                            props.setRespUnlim4h('Could not allow patient');
+                            return;
+                        }
+                        props.setRespUnlim4h(`${accountDetails.fullName} now has unlimited uploads for 4h`);
+                    })
+                }}
+            >
+                <Text
+                    style={[DetailsStyles.footerText, DetailsStyles.footerUnlimUploadsText]}
+                >
+                    Unlimited uploads 4h
+                </Text>
+            </TouchableOpacity>}
+            <TouchableOpacity
+                style={[DetailsStyles.footerUnassignButtonNormal,
+                    patsAssigned ? DetailsStyles.footerUnassignButtonPatsAssigned : {}
+                ]}
                 onPress={() => {
                     props.type === 'My Requests' ? 
                     cancelRequest(token, accountDetails.username)

@@ -6,11 +6,11 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PfpPicker } from './PfpPicker';
 import { putPatientDetails } from '../../../../dataRequests/PatientData';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, setAccountDetails } from '../../../../features/globalStateSlice';
+import { selectToken, setCurrentAccountFullName } from '../../../../features/globalStateSlice';
 import { BackendError } from '../../../../../Backend/src/errors/BackendError.error';
 import { AxiosError } from 'axios';
 import { PDStyles } from './PDStyles';
@@ -30,6 +30,9 @@ export function PersonalDataForm(props) {
 
     let refGenderPicker = useRef(null);
     let refAge = useRef(null);
+    useEffect(() => {
+        setErrEmpty("");
+    }, [profile_pic]);
 
     const handleOpenPickerGender = () => {
         refGenderPicker.current.focus();
@@ -125,11 +128,12 @@ export function PersonalDataForm(props) {
                 disabled={errEmpty ? true : false}
                 style={[PDStyles.submitButton, { backgroundColor: errEmpty ? 'lightgrey' : '#33b249' }]}
                 onPress={() => {
-                    setLoading(true);
+                    // console.log(profile_pic.length);
                     if (errEmpty === "" &&
-                        errFullName === "")
+                        errFullName === "" && profile_pic.length !== 0)
+                        setLoading(true);
                         // no errors
-                        if (fullName !== "" && age !== 0) {
+                        if (fullName !== "" && age !== 0 && profile_pic !== "") {
                             // it's not empty
                             setErrEmpty("");
                             putPatientDetails(token, {
@@ -139,12 +143,8 @@ export function PersonalDataForm(props) {
                                 profile_picB64: profile_pic
                             })
                             .then(() => {
+                                dispatch(setCurrentAccountFullName(fullName));
                                 setLoading(false);
-                                dispatch(setAccountDetails({
-                                    fullName: fullName,
-                                    sex: savedGender,
-                                    age: age,
-                                }));
                             })
                             .catch((errorResp) => {
                                 const errMsg = (errorResp as AxiosError<BackendError>).response.data

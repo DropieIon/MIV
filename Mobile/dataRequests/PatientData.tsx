@@ -65,10 +65,33 @@ async function putPatientDetails(token: string, patDetails: patDetails) {
   return resp.data;
 }
 
+async function allowUnlimUploads4h(token: string, patUsername: string) {
+  let resp;
+  try {
+    if (parseJwt(token)?.isMedic === 'N') {
+      throw new Error('Not a medic');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/upload/allowUnlim/`,
+      {
+        patient_username: patUsername
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not grant permission to patient " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 
 
 export {
   getPatients,
   getPatientStudies,
-  putPatientDetails
+  putPatientDetails,
+  allowUnlimUploads4h
 };

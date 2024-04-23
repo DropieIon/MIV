@@ -5,18 +5,25 @@ const textColor = "white";
 export const iconColor = "white";
 
 export const DetailsStyles = StyleSheet.create({
-    modalMainView: {
+    modalMainViewNormal: {
         height: "30%",
         top: "70%",
         backgroundColor: '#16171B',
         borderTopEndRadius: 50,
         borderTopStartRadius: 50
     },
+    modalMainViewPatsAssigned: {
+        height: "35%",
+        top: "65%",
+    },
 
-    headerMainView: {
+    headerMainViewNormal: {
         flexDirection: 'row',
         justifyContent: 'center',
         height: "60%"
+    },
+    headerMainViewPatsAssigned: {
+        height: "45%"
     },
     headercloseButton: {
         position: 'absolute',
@@ -65,16 +72,31 @@ export const DetailsStyles = StyleSheet.create({
         color: textColor
     },
 
-    footerMainView: {
+    footerMainViewNormal: {
         width: "100%",
         height: "20%",
         alignItems: 'center',
         justifyContent: 'center'
     },
-    footerUnassignButton: {
+    footerMainViewPatsAssigned: {
+        height: "35%",
+    },
+    footerUnassignButtonNormal: {
         width: "100%",
         height: "100%",
+        backgroundColor: '#EB5160'
+    },
+    footerUnassignButtonPatsAssigned: {
+        height: "50%"
+    },
+    footerUnlimUploadsButton: {
+        width: "100%",
+        height: "50%",
+        justifyContent: 'center',
         backgroundColor: '#26272C'
+    },
+    footerUnlimUploadsText: {
+        verticalAlign: 'middle',
     },
     footerTextContainer: {
         flex: 1,

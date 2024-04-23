@@ -39,7 +39,8 @@ const styles = StyleSheet.create({
 
 type propsTemplate = {
     type: 'Patient' | 'Study',
-    setZipData,
+    setZipData?,
+    setErrUpload?,
     navigation
 }
 
@@ -61,6 +62,10 @@ export function AddEntry(props: propsTemplate) {
                         return;
                     }
                     if(props.type === 'Study') {
+                        if(!parseJwt(token)?.canUpload) {
+                            props.setErrUpload("Cannot upload study");
+                            return;
+                        }
                         DocumentPicker.getDocumentAsync({
                             copyToCacheDirectory: true,
                             multiple: false
@@ -72,6 +77,7 @@ export function AddEntry(props: propsTemplate) {
                                 size
                             });
                         })
+                        .catch(() => {});
                         
                     }
                 }}

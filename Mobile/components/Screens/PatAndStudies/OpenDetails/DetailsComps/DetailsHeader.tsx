@@ -12,6 +12,7 @@ import { selectAccountDetails } from '../../../../../features/globalStateSlice';
 import { defaultPfp } from '../../../../../configs/defaultUser.b64';
 type propsTemplate = {
     setOpenDetails,
+    type: 'PatsAssigned' | 'AllPats' | 'Study' | 'Requests' | 'My Requests'
 }
 
 export function DetailsHeader(props: propsTemplate) {
@@ -19,7 +20,9 @@ export function DetailsHeader(props: propsTemplate) {
     const noPfp = accountDetails.profile_pic === null;
     return (
         <View
-            style={DetailsStyles.headerMainView}
+            style={[DetailsStyles.headerMainViewNormal,
+                props.type === 'PatsAssigned' ? DetailsStyles.headerMainViewPatsAssigned : {}
+            ]}
         >
             <TouchableOpacity
                 style={DetailsStyles.headercloseButton}
