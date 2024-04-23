@@ -4,29 +4,7 @@ import { sha256 } from '../../../utils/helper.util';
 import { patientForm } from "../../../types/auth/authentication.type";
 import { sq } from '../db-functions';
 
-type checkLogin_resp = { isMedic: yayOrNay, email_validation: yayOrNay, fullName: string }
-
-export async function dbUnlimitedUploads4h(username: string)
-    : Promise<string | boolean> {
-    const queryResp = await sq(
-        'select stamp from unlimitedUploads where patient_username = ?',
-        [username]
-    );
-    if (queryResp !== "") {
-        if (queryResp instanceof mariadb.SqlError) {
-            return "Database unlimitedUploads check error";
-        }
-        if (typeof queryResp !== "string") {
-            // is the resp list
-            if (queryResp.length === 0)
-                return false;
-            if ((Math.abs(new Date().getTime() - new Date(queryResp[0].stamp).getTime()) / 36e5) > 4)
-                return false;
-            return true;
-        }
-    }
-    return "";
-}
+type checkLogin_resp = { isMedic: yayOrNay, email_validation: yayOrNay, fullName: string };
 
 export async function dbCanUpload(username: string)
     : Promise<string | boolean> {

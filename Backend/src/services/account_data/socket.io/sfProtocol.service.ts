@@ -1,4 +1,4 @@
-import { appendFileSync, createWriteStream, mkdir, mkdirSync, readFileSync, rmSync, unlink } from "fs";
+import { appendFileSync, rmSync, unlink } from "fs";
 import { Socket } from "socket.io";
 import jwt from 'jsonwebtoken';
 import { createMD5, get_GW_Data, parseJwt } from "../../../utils/helper.util";
@@ -6,7 +6,7 @@ import { handShake, splitFile, EOS } from '../../../../../Common/types';
 import { v4 as uuidv4 } from 'uuid';
 import { extractZip } from "./sZip.service";
 import { parseDICOMFolder } from "./parseUpload.service";
-
+import { dbCheckUnlimUploads4h, dbCheckUpload } from "../../db/account_data/db-upload.service";
 
 export class sfProtocol {
     private size: number = 0;
@@ -34,24 +34,50 @@ export class sfProtocol {
                         get_GW_Data()
                             .then((resp_gateway) => {
                                 const secret: string = resp_gateway[0]["secret"];
-                                jwt.verify(data.token, secret, (err: any) => {
+                                jwt.verify(data.token, secret, async (err: any) => {
                                     if (err !== null) {
                                         this.sock.emit('err', { message: 'Invalid token' });
+                                        this.sock.disconnect();
                                         return;
                                     }
-                                    // TODO: check if the user can upload requested size
-                                    this.size = data.size;
-                                    this.nrOfPackets = data.nrOfPackets;
-                                    this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
                                     const tknBody = parseJwt(data.token);
                                     const medic = tknBody?.isMedic === 'Y';
                                     this.user = medic ? data.user : tknBody?.username;
-                                    this.folderName = `${this.user}_${uuidv4()}`;
-                                    this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
-                                    console.log("Handshake successfull");
-                                    callback({
-                                        success: true 
-                                    });
+                                    const allowedUnlim4h = medic ? true : await dbCheckUnlimUploads4h(this.user);
+                                    if(typeof allowedUnlim4h === 'string')
+                                    {
+                                        callback({
+                                            success: false
+                                        });
+                                        this.sock.disconnect();
+                                        return;
+                                    }
+                                    this.size = data.size;
+                                    if(!medic) {
+                                        if (!allowedUnlim4h) {
+                                            const canUpload = await dbCheckUpload(this.user, this.size)
+                                            if (typeof canUpload === 'string') {
+                                                this.sock.emit('err', canUpload);
+                                                this.sock.disconnect();
+                                                return;
+                                            }
+                                            if (!canUpload) {
+                                                callback({
+                                                    success: false
+                                                });
+                                                this.sock.disconnect();
+                                                return;
+                                            }
+                                        }
+                                        this.nrOfPackets = data.nrOfPackets;
+                                        this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
+                                        this.folderName = `${this.user}_${uuidv4()}`;
+                                        this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
+                                        console.log("Handshake successfull");
+                                        callback({
+                                            success: true
+                                        });
+                                    }
                                 });
                             });
                         break;
@@ -70,18 +96,16 @@ export class sfProtocol {
                         }
                         this.pkgNr++;
                         if (this.pkgNr > this.nrOfPackets) {
-                            console.log("bad");
-
                             this.sock.emit('err', { message: 'Way too many packets' });
                             this.sock.disconnect();
                             return;
                         }
-                        // console.log("Checked", this.pkgNr);
                         appendFileSync(this.zipName, pkg);
                         socket.emit('progress', (this.pkgNr / this.nrOfPackets).toFixed(2));
                         break;
                     case 'EOS':
                         if (!this.checkHandshake()) {
+                            this.sock.disconnect();
                             return;
                         }
                         if(data.canceled) {
@@ -90,6 +114,7 @@ export class sfProtocol {
                                     console.error("Err deleting file" + err);
                                 else
                                     console.log("File deleted.");
+                                this.sock.disconnect();
                             });
                         }
                         else {
@@ -103,7 +128,7 @@ export class sfProtocol {
                                                 console.error("Err deleting file" + err);
                                             else
                                                 console.log("File deleted.");
-                                        })
+                                        });
                                     }
                                     else {
                                         extractZip(this.zipName, this.folderName)

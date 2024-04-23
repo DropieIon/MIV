@@ -1,40 +1,41 @@
 import { Request, Response, NextFunction } from "express";
 import RegisterError from "../../errors/RegisterError.error";
 import EmptyField from "../../errors/EmptyField.error";
-import { patientForm } from "../../types/auth/authentication.type";
-import { patient_details } from "../../services/account_data/details.service";
 import { parseJwt } from "../../utils/helper.util";
+import ControllerError from "../../errors/RegisterError.error";
+import { svcAllowUnlim4h } from "../../services/account_data/upload.service";
 
-const get_username = (token: string): string => parseJwt(token)?.username;
-
-type uploadStudyForm = {
-    studyID: string,
-    patUsername?: string
+type allowUnlim4hForm = {
+    patient_username: string
 }
 
-//TODO: finish this function
-
-export async function conUploadController(req: Request<{}, {}, patientForm>,
+export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
     res: Response, next: NextFunction) {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if(!token) {
-            next(new EmptyField({
-                message: "Token required",
-                code: 400
-            }));
-            return;
-        }
-        // if (req.body.age === 0 || req.body.sex.length === 0 || req.body.fullName === "") {
-        //     next(new EmptyField({ message: "FullName, age and sex are required!", logging: true }))
-        //     return;
-        // }
-        if(parseJwt(token)?.isMedic === 'Y') {
-
-        }
-    const resp_insert = await patient_details(get_username(token), req.body);
-    if(resp_insert.ok)
-    {
-        res.json({message: resp_insert.data});
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if (!token) {
+        next(new EmptyField({
+            message: "Token required",
+            code: 400
+        }));
+        return;
+    }
+    if (parseJwt(token)?.isMedic === 'N') {
+        next(new ControllerError({
+            message: "Not a medic",
+            code: 400
+        }));
+        return;
+    }
+    if (!req.body.patient_username) {
+        next(new EmptyField({
+            message: "Patient username required",
+            code: 400
+        }));
+        return;
+    }
+    const resp_insert = await svcAllowUnlim4h(req.body.patient_username);
+    if (resp_insert.ok) {
+        res.json({ message: resp_insert.data });
         return;
     }
     next(new RegisterError({

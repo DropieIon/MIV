@@ -22,12 +22,13 @@ export async function conDetailsController(req: Request<{}, {}, patientForm>,
         }));
         return;
     }
+    
     const resp_insert = await patient_details(get_username(token), req.body);
-    if(resp_insert.ok)
-    {
-        res.json({message: resp_insert.data});
+    if (resp_insert.ok) {
+        res.json({ message: resp_insert.data });
         return;
     }
+    console.error(resp_insert.data);
     next(new RegisterError({
         message: resp_insert.data,
         code: 400

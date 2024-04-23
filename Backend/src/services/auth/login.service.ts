@@ -1,6 +1,7 @@
 import { generateAccessToken } from './jwt.service';
 import { loginForm, resp_common_services, resp_login_service } from '../../types/auth/authentication.type';
-import { checkLogin, dbCanUpload, dbUnlimitedUploads4h } from '../db/auth/db-auth.service';
+import { checkLogin, dbCanUpload } from '../db/auth/db-auth.service';
+import { dbCheckUnlimUploads4h } from '../db/account_data/db-upload.service';
 
 
 export async function loginUser(loginData: loginForm): Promise<resp_login_service | resp_common_services> {
@@ -14,7 +15,7 @@ export async function loginUser(loginData: loginForm): Promise<resp_login_servic
         const canUpload = medic ? true : await dbCanUpload(loginData.username);
         if (typeof canUpload === "string")
             return { ok: false, data: canUpload };
-        const unlimitedUploads = medic ? true : await dbUnlimitedUploads4h(loginData.username);
+        const unlimitedUploads = medic ? true : await dbCheckUnlimUploads4h(loginData.username);
         if (typeof unlimitedUploads === "string")
             return { ok: false, data: unlimitedUploads };
         const token = await generateAccessToken(loginData.username, resp_login.isMedic, canUpload, unlimitedUploads);

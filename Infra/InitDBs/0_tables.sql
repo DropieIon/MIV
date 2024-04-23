@@ -57,6 +57,13 @@ CREATE TABLE requests (
 
 CREATE TABLE unlimitedUploads (
     patient_username        char(255) NOT NULL,
-    stamp                    timestamp,
+    stamp                   timestamp,
+    PRIMARY KEY(patient_username)
+);
+
+CREATE TABLE bytesUploadedToday (
+    patient_username        char(255) NOT NULL,
+    bytes                   bigint,
+    stamp                   timestamp,
     PRIMARY KEY(patient_username)
 );

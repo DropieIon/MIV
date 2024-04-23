@@ -4,9 +4,9 @@ import { errorHandler } from '../src/middlewares/errors.middleware';
 import personal_requests_router from '../src/routes/account_data/personal_requests.route';
 import request_router from '../src/routes/account_data/request.route';
 import details_router from '../src/routes/account_data/details.route';
+import upload_router from '../src/routes/account_data/upload.route';
 import { get_pool } from '../src/services/db/db-functions';
 import fileUpload from 'express-fileupload';
-import { parseDicom } from 'dicom-parser';
 import { Server as ServerIO } from "socket.io";
 import { sfProtocol } from '../src/services/account_data/socket.io/sfProtocol.service';
 
@@ -21,12 +21,10 @@ const io = new ServerIO(server, {
 });
 
 io.on('connection', function (socket) {
-  // TODO: check if user canUpload
-  
   // protocol: sends size and nr of packets first
   // then sends the n nr of packets
   // then an EOS (end of stream) and a checksum
-  console.log("Connected");
+  console.log("Upload client connected");
   const sf = new sfProtocol(socket);
 });
 
@@ -42,6 +40,7 @@ app.get('/', (req, res) => {
 app.use('/personal_requests', personal_requests_router);
 app.use('/request', request_router);
 app.use('/details', details_router);
+app.use('/upload', upload_router);
 
 /* Error handler middleware */
 app.use(errorHandler);
