@@ -28,12 +28,13 @@ def StudyListForUser(request):
     cursor, pconn = cursorWithStudyIds(patient_username)
     study_ids = []
     study_metadata = None
-    for (study_id,) in cursor:
+    for (study_id, uploaded,) in cursor:
         study_metadata = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))
         study_ids.append(Study(study_id, 
                                getModalityForSeries(study_metadata["Series"]), 
                                getPreviewForStudy(study_id),
-                               convertDate(study_metadata["MainDicomTags"]["StudyDate"]))
+                               convertDate(study_metadata["MainDicomTags"]["StudyDate"]),
+                               uploaded)
                                )
     pconn.close()
     return study_ids
@@ -42,14 +43,15 @@ def AllStudiesList():
     cursor, pconn = cursorWithAllStudies()
     study_ids = []
     study_metadata = None
-    for (study_id, patient_id) in cursor:
+    for (study_id, patient_id, uploaded,) in cursor:
         study_metadata = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))
         study_ids.append(StudyAssigned(
                                 study_id, 
                                 getModalityForSeries(study_metadata["Series"]), 
                                 convertDate(study_metadata["MainDicomTags"]["StudyDate"]),
                                 getPreviewForStudy(study_id),
-                                patient_id
+                                patient_id,
+                                uploaded
                                )
                         )
     pconn.close()

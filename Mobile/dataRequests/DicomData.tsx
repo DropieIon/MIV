@@ -12,7 +12,8 @@ type studiesListEntry = {
     modality: string,
     date: string,
     preview: string,
-    assignee: string
+    assignee: string,
+    uploaded: string,
   }
   
 

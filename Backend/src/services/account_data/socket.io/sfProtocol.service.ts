@@ -69,7 +69,8 @@ export class sfProtocol {
                                                 return;
                                             }
                                         }
-                                        this.nrOfPackets = data.nrOfPackets;
+                                    }
+                                    this.nrOfPackets = data.nrOfPackets;
                                         this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
                                         this.folderName = `${this.user}_${uuidv4()}`;
                                         this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
@@ -77,7 +78,6 @@ export class sfProtocol {
                                         callback({
                                             success: true
                                         });
-                                    }
                                 });
                             });
                         break;

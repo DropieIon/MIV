@@ -29,7 +29,7 @@ def convertDate(date: str):
 def checkAccess(parent_study, patient_username):
     cursor, pconn = cursorWithStudyIds(patient_username)
     has_access = False
-    for (study_id,) in cursor:
+    for (study_id, uploaded,) in cursor:
         if study_id == parent_study:
             has_access = True
             break

@@ -40,12 +40,13 @@ def getStudiesForPatient(output: orthanc_sdk.RestOutput, uri: str, **request):
         patient_id = uri.split("/")[2]
         cursor, pconn = cursorWithStudiesForPatient(patient_id, doc_username)
         studies_list = []
-        for (study_id,) in cursor:
+        for (study_id, uploaded,) in cursor:
             study_metadata = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))
             studies_list.append(Study(study_id, 
                                getModalityForSeries(study_metadata["Series"]), 
                                getPreviewForStudy(study_id),
-                               convertDate(study_metadata["MainDicomTags"]["StudyDate"]))
+                               convertDate(study_metadata["MainDicomTags"]["StudyDate"]),
+                               uploaded)
                                )
         pconn.close()
         output.AnswerBuffer(json.dumps(studies_list, cls=Encoder), 'application/json')

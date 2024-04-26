@@ -42,9 +42,10 @@ CREATE TABLE patients_assigned (
 );
 
 CREATE TABLE studies_assigned (
-    patient_username        char(255) NOT NULL,
     study_id                char(255) NOT NULL,
-    PRIMARY KEY(patient_username, study_id)
+    patient_username        char(255) NOT NULL,
+    uploaded                timestamp,
+    PRIMARY KEY(study_id)
 );
 
 CREATE TABLE requests (

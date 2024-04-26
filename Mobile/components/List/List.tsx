@@ -6,9 +6,9 @@ import {
     FlatList,
 } from 'react-native';
 import ViewStyles from '../ListStyles';
-import { ListEntry } from '@types/ListEntry';
+import { ListEntry } from '../../types/ListEntry';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, setOpenViewer } from '@features/globalStateSlice';
+import { selectToken, setOpenViewer } from '../../features/globalStateSlice';
 import { patientsTemplate } from './Templates/PatientsTemplate'
 import { assignListTemplate } from './Templates/AssignListTemplate';
 import { StudiesTemplate } from './Templates/StudiesTemplate';
@@ -79,7 +79,7 @@ function List(props: propsTemplate) {
             {!no_items &&
                 <FlatList
                     ItemSeparatorComponent={() => <View style={{ paddingTop: "5%" }} />}
-                    keyExtractor={(item) => props.listStudies ? item.study_id : item.uid}
+                    keyExtractor={(item) => props.listStudies ? item.uploaded : item.uid}
                     style={props.items.length == 0 ? { display: 'none' } : {}}
                     data={props.items}
                     renderItem={(item) => templateToUse({

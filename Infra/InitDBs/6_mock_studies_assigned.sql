@@ -2,56 +2,68 @@
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient1',
-    '14d74df9-be0fb9f4-a88c5382-55c94913-b46b297a'
+    '14d74df9-be0fb9f4-a88c5382-55c94913-b46b297a',
+    NOW()
 );
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient1',
-    '8fb3d973-4449cad4-c21bb79d-81c41b56-b9412373'
+    '8fb3d973-4449cad4-c21bb79d-81c41b56-b9412373',
+    DATE_SUB(NOW(), INTERVAL 1 SECOND)
 );
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient1',
-    '941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3'
+    '941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3',
+    DATE_SUB(NOW(), INTERVAL 2 SECOND)
 );
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient2',
-    '9fcadbc3-58807fe5-05a2969e-ab4aafaa-af735eaa'
+    '9fcadbc3-58807fe5-05a2969e-ab4aafaa-af735eaa',
+    DATE_SUB(NOW(), INTERVAL 3 SECOND)
 );
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient2',
-    'aa938400-09e9f0df-8ba95f68-e21f98dd-0c6e0cf0'
+    'aa938400-09e9f0df-8ba95f68-e21f98dd-0c6e0cf0',
+    DATE_SUB(NOW(), INTERVAL 4 SECOND)
 );
 
 INSERT INTO studies_assigned(
     patient_username,
-    study_id
+    study_id,
+    uploaded
     )
 VALUES (
     'patient2',
-    '750255f1-a6d57cdf-6f7692af-b6eb20e8-76b2cd54'
+    '750255f1-a6d57cdf-6f7692af-b6eb20e8-76b2cd54',
+    DATE_SUB(NOW(), INTERVAL 5 SECOND)
 );
 
 /*

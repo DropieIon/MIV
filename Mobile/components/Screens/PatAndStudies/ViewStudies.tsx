@@ -60,7 +60,7 @@ function ViewStudies(props: propsTemplate) {
     const [openDetails, setOpenDetails] = useState(false);
     const [openUpload, setOpenUpload] = useState(false);
     const medic = parseJwt(token)?.isMedic === 'Y';
-    const [errUpload, setErrUpload] = useState('');
+    const [err, setErr] = useState('');
     const [zipData, setZipData] = useState({
         uri: '',
         size: 0
@@ -79,7 +79,7 @@ function ViewStudies(props: propsTemplate) {
                 if (!medic) {
                     getStudies(token)
                         .then((data) => {
-                            items_list.current = data;
+                            items_list.current = data.sort((e1, e2) => { return parseInt(e2.uploaded) - parseInt(e1.uploaded) });
                             const timeDiff = performance.now() - startTime;
                             if(timeDiff > msToWait)
                                 setTimeout(() => setLoading(false), timeDiff);
@@ -100,7 +100,7 @@ function ViewStudies(props: propsTemplate) {
                     }
                     getPatientStudies(patID, token)
                     .then((studiesList) => {
-                        items_list.current = studiesList;
+                        items_list.current = studiesList.sort((e1, e2) => { return parseInt(e2.uploaded) - parseInt(e1.uploaded) });;
                         const timeDiff = performance.now() - startTime;
                             if(timeDiff < msToWait)
                                 setTimeout(() => setLoading(false), timeDiff);
@@ -111,7 +111,7 @@ function ViewStudies(props: propsTemplate) {
                 }
             }
             else {
-                console.error("No token");
+                setErr("No token");
             }
             const handleBackButtonClick = () => {
                 BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
@@ -259,7 +259,7 @@ function ViewStudies(props: propsTemplate) {
         } */}
         {!loading && !openDetails && openUpload &&
             <OpenUpload
-                setErrUpload={setErrUpload}
+                setErrUpload={setErr}
                 setOpenUpload={setOpenUpload}
                 zipUri={zipData.uri}
                 zipSize={zipData.size}
@@ -267,18 +267,18 @@ function ViewStudies(props: propsTemplate) {
         <AddEntry
             type='Study'
             setZipData={setZipData}
-            setErrUpload={setErrUpload}
+            setErrUpload={setErr}
             navigation={props.navigation}
         />
         <Toast
-            visible={errUpload !== ''}
+            visible={err !== ''}
             onShow={() => {
                 setTimeout(() => {
-                    setErrUpload('');
+                    setErr('');
                 }, 2000);
             }}
         >
-            {errUpload}
+            {err}
         </Toast>
     </View>
 }

@@ -4,6 +4,7 @@ export type ListEntry = {
     modality?: string,
     date?: string,
     previewB64?: string,
+    uploaded?: string,
 
     username?: string,
     uid?: string,
