@@ -26,17 +26,15 @@ token_tc = post(f'{base_url}/login', json={
     "username": "tc", "password": "nu"
     }).json()['token']
 
-req_resp = put(f'{base_url}/acc_data/details/', headers={'Authorization': f'Bearer {token_tc}'},
-               json={
-                   "fullName":'test',
-                    "age": 1,
-                    "sex": 'M',
-                   "profile_picB64": ''
-               })
-files = {'uploadDicom': open('./00000001.DCM','rb')}
+# req_resp = put(f'{base_url}/acc_data/details/', headers={'Authorization': f'Bearer {token_tc}'},
+#                json={
+#                    "fullName":'test',
+#                     "age": 1,
+#                     "sex": 'M',
+#                    "profile_picB64": ''
+#                })
 
-req_resp = post(f'{base_url}/acc_data/upload', files=files, headers={'Authorization': f'Bearer {token_patient1}'})
-# req_resp = get(f'{base_url}/users/all_patients', headers={'Authorization': f'Bearer {token_doctor3}'})
+req_resp = get(f'{base_url}/users/all_patients', headers={'Authorization': f'Bearer {token_doctor3}'})
 # req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
 
 print(req_resp.status_code)

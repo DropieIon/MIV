@@ -198,6 +198,11 @@ vezi_aci.txt
 *.DCM
 Backend/tmp/*
 
+# security stuff
+
+*.crt
+*.key
+
 # terraform stuff
 .terragrunt*
 .terraform*
