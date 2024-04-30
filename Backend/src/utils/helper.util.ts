@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { createReadStream } from 'fs';
+import { token_data } from '../../../Common/types';
 
 export const sha256 = (x: string) => createHash('sha256').update(x, 'utf8').digest('hex');
 
@@ -8,7 +9,7 @@ type kong_resp = {
     secret: string
 }
 
-export function parseJwt (token: string):  {username: string, exp: number, isMedic: 'Y'| 'N'} {
+export function parseJwt (token: string):  token_data {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 

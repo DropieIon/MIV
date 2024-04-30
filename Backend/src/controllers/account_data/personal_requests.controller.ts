@@ -14,7 +14,7 @@ export async function get_personal_requestsController(req: Request<{}, {}, {}>,
         }));
         return;
     }
-    const resp_db = await get_personal_requests(get_username(token), parseJwt(token)?.isMedic);
+    const resp_db = await get_personal_requests(get_username(token), parseJwt(token)?.role);
     if(resp_db.ok)
     {
         res.json(resp_db.data);

@@ -30,13 +30,6 @@ export type resp_list_services = {
     data: string[] | string
 }
 
-export type jwt_payload = {
-    username: string,
-    isMedic: yayOrNay,
-    canUpload: boolean,
-    unlimitedUp4h: boolean
-}
-
 export type yayOrNay = "Y" | "N"
 
 export type loginForm = {

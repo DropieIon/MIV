@@ -8,7 +8,7 @@ export async function dbAllDocs(patUsername: string)
     from login l \
     left join personal_data d on l.username = d.username \
     left join profile_pictures pic on pic.username = l.username \
-    where isMedic='Y' \
+    where role='med' \
     and l.username not in (select doctor_username from patients_assigned where patient_username = ?) \
     and l.username not in (select doctor_username from requests where patient_username = ?) ",
     [patUsername, patUsername]);

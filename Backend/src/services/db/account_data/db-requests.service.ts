@@ -2,8 +2,8 @@ import mariadb from 'mariadb';
 import { sq } from '../db-functions';
 import { requestsApiResp } from '../../../types/account_data/requests.type';
 
-export async function db_get_requests(username: string, isMedic: 'Y' | 'N'): Promise<string | requestsApiResp[]> {
-    const medic = isMedic === 'Y';
+export async function db_get_requests(username: string, role: string): Promise<string | requestsApiResp[]> {
+    const medic = role === 'med';
     const whichUsername = medic ? 'patient_username' : 'doctor_username';
     const sql_resp = await sq(
         `select r.${whichUsername}, pd.full_name, r.accepted, r.date, pp.profile_pic, \

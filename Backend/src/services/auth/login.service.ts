@@ -10,7 +10,7 @@ export async function loginUser(loginData: loginForm): Promise<resp_login_servic
         if (resp_login.email_validation === 'N') {
             return { ok: false, data: 'Please verify email first' };
         }
-        const medic = resp_login.isMedic === 'Y';
+        const medic = resp_login.role === 'med';
         // a doctor should always be able to upload studies
         const canUpload = medic ? true : await dbCanUpload(loginData.username);
         if (typeof canUpload === "string")
@@ -18,7 +18,7 @@ export async function loginUser(loginData: loginForm): Promise<resp_login_servic
         const unlimitedUploads = medic ? true : await dbCheckUnlimUploads4h(loginData.username);
         if (typeof unlimitedUploads === "string")
             return { ok: false, data: unlimitedUploads };
-        const token = await generateAccessToken(loginData.username, resp_login.isMedic, canUpload, unlimitedUploads);
+        const token = await generateAccessToken(loginData.username, resp_login.role, canUpload, unlimitedUploads);
         if (token) {
             return {
                 ok: true,

@@ -22,7 +22,7 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     left join personal_data d on l.username = d.username \
     left join profile_pictures pic on pic.username = l.username \
     left join studies_assigned sa on sa.patient_username = l.username \
-    where l.isMedic='N' \
+    where l.role='pat' \
     and l.has_completed='Y' \
     and l.username not in (select patient_username from patients_assigned where doctor_username = ?) \
     and l.username not in (select patient_username from requests where doctor_username = ?) \

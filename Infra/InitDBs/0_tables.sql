@@ -2,10 +2,11 @@ CREATE TABLE login(
     username            char(255) NOT NULL,
     uuid                char(255) not null,
     passhash            char(255) NOT NULL,
+    salt                char(16) NOT NULL,
     email               char(255) NOT NULL,
-    isMedic             char(1) not null, # Y or N
-    has_completed       char(1) not null default 'N', # Y or N
-    email_validation    char(1) not null default 'N', # Y or N
+    role                char(5) not null, /* pat, med, admin, or proxy */
+    has_completed       char(1) not null default 'N', /* Y or N */
+    email_validation    char(1) not null default 'N', /* Y or N */
     primary key (username),
     CONSTRAINT uuid_unique UNIQUE (uuid),
     CONSTRAINT email_unique UNIQUE (email)
@@ -43,7 +44,7 @@ CREATE TABLE patients_assigned (
 
 CREATE TABLE studies_assigned (
     study_id                char(255) NOT NULL,
-    patient_username        char(255) NOT NULL,
+    patient_username        char(255),
     uploaded                timestamp,
     PRIMARY KEY(study_id)
 );

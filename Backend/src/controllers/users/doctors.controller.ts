@@ -14,7 +14,7 @@ export async function conDocAll(req: Request<{}, {}, {}>,
         }));
         return;
     };
-    if (parseJwt(token)?.isMedic === 'Y') {
+    if (parseJwt(token)?.role === 'med') {
         next(new ControllerError({
             message: "Only a patient can view all docs.",
             code: 400

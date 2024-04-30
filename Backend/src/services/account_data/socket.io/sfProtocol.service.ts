@@ -41,7 +41,7 @@ export class sfProtocol {
                                         return;
                                     }
                                     const tknBody = parseJwt(data.token);
-                                    const medic = tknBody?.isMedic === 'Y';
+                                    const medic = tknBody?.role === 'med';
                                     this.user = medic ? data.user : tknBody?.username;
                                     const allowedUnlim4h = medic ? true : await dbCheckUnlimUploads4h(this.user);
                                     if(typeof allowedUnlim4h === 'string')

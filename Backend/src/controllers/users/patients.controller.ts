@@ -14,7 +14,7 @@ export async function conPatAssigned(req: Request<{}, {}, {}>,
         }));
         return;
     }
-    if(parseJwt(token)?.isMedic === 'N'){
+    if(parseJwt(token)?.role === 'pat'){
         next(new ControllerError({
             message: "Only a doctor can view his assigned patients.",
             code: 400

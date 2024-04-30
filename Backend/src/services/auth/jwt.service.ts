@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken';
 import type { NextFunction, Request, Response } from 'express';
-import { jwt_payload, yayOrNay } from '../../types/auth/authentication.type';
 import { get_GW_Data } from '../../utils/helper.util';
+import { token_data } from '../../../../Common/types';
 
-export async function generateAccessToken(username: string, isMedic: yayOrNay, canUpload: boolean, unlimitedUp4h: boolean): Promise<string | null> {
+export async function generateAccessToken(username: string, role: string, canUpload: boolean, unlimitedUp4h: boolean): Promise<string | null> {
     let resp_gateway = await get_GW_Data();
     const secret: string = resp_gateway[0]["secret"];
     const key: string = resp_gateway[0]["key"];
     if (secret && key) {
-        const payload: jwt_payload = {
+        const payload: token_data = {
             username,
-            isMedic,
+            role,
             canUpload,
             unlimitedUp4h
         }

@@ -1,7 +1,9 @@
 from pyorthanc import orthanc_sdk
 import json
 import orthanc
-from helpers import checkAccess, getUsername, getDocUsername
+from helpers import checkAccess, getUsername, getDocUsername, getRole
+from logging import info
+
 def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
     instance_id = uri.split("/")[2]
     if request['method'] == 'GET':
@@ -28,3 +30,13 @@ def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
     else:
         output.SendMethodNotAllowed('Not allowed')
         
+def postInstances(output: orthanc_sdk.RestOutput, uri: str, **request):
+    if request['method'] == 'POST':
+        if getRole(request) != 'proxy':
+            output.SendUnauthorized('Not allowed')
+        else:
+            orthanc.RestApiPost('/instances', request['body']["data"])
+            output.AnswerBuffer('oki', 'text')
+    else:
+        output.SendMethodNotAllowed('Not allowed')
+    

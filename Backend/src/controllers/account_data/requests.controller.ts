@@ -14,7 +14,7 @@ export async function pat_make_request(req: Request<{}, {}, {to: string}>,
         }));
         return;
     }
-    if(parseJwt(token)?.isMedic === 'Y'){
+    if(parseJwt(token)?.role === 'med'){
         next(new ControllerError({
             message: "Only a patient can request a medic.",
             code: 400
@@ -50,7 +50,7 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
         }));
         return;
     }
-    if(parseJwt(token)?.isMedic === 'N'){
+    if(parseJwt(token)?.role === 'med'){
         next(new ControllerError({
             message: "Only a doctor can answer a request.",
             code: 400
@@ -84,7 +84,7 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
         }));
         return;
     }
-    if(parseJwt(token)?.isMedic === 'N'){
+    if(parseJwt(token)?.role === 'pat'){
         next(new ControllerError({
             message: "Only a doctor can unassign a patient.",
             code: 400
@@ -118,7 +118,7 @@ export async function conCancelRequest(req: Request<{}, {}, { doctor_username: s
         }));
         return;
     }
-    if(parseJwt(token)?.isMedic === 'Y'){
+    if(parseJwt(token)?.role === 'med'){
         next(new ControllerError({
             message: "Only a patient can cancel a request.",
             code: 400

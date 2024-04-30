@@ -17,8 +17,16 @@ type EOS = {
     md5?: string;
 }
 
+type token_data = {
+    username: string,
+    role: string,
+    canUpload: boolean,
+    unlimitedUp4h: boolean
+}
+
 export {
     handShake,
     splitFile,
-    EOS
+    EOS,
+    token_data
 }

@@ -34,6 +34,11 @@ routes:
       - /series
       - /instances
       - /patients
+  - name: peer-route
+    service: orthanc
+    strip_path: true
+    paths:
+      - /peer
   - name: jwt-route
     service: jwt
     paths:
@@ -67,7 +72,15 @@ plugins:
       key_claim_name: kid
       claims_to_verify:
         - exp
+  - name: jwt
+    route: peer-route
+    enabled: true
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
 consumers:
   - username: backend-jwt
 jwt_secrets:
   - consumer: backend-jwt
+

@@ -46,6 +46,30 @@ services:
       MARIADB_DATABASE: miv
       MARIADB_ROOT_PASSWORD: miv-root
 
+  orth_proxy:
+    container_name: orth_proxy
+    build:
+      context: ./orthanc
+      dockerfile: dockerfile_orthanc
+    image: orthanc-with-modules
+    depends_on:
+      db_orthanc:
+          condition: service_healthy
+      db_auth:
+          condition: service_healthy
+    volumes:
+      - ./orthProxy/python/:/etc/orthanc/python-scripts/
+    ports: 
+    # TODO: change this
+      - "8043:8042"
+      - "4243:4242"
+    networks:
+      - orthanc-db
+      - kong-net
+    env_file:
+      - ./orthProxy/.orth_proxy.env
+
+
   orthanc:
     container_name: orthanc
     build:
@@ -67,9 +91,7 @@ services:
       - kong-net
       - auth-db
     volumes:
-      # - ./orthanc/configs/:/etc/orthanc/configs:ro
       - ./orthanc/python-scripts/:/etc/orthanc/python-scripts/
-    # command: /etc/orthanc/configs
     env_file:
       - ./orthanc/.orthanc.env
       
@@ -87,6 +109,7 @@ services:
       - auth-db
     volumes:
       - ../Backend:/app
+      - ../Common:/Common
     command: nodemon /app/microservices/auth.ts
     depends_on:
       db_auth:
@@ -124,6 +147,7 @@ services:
       - auth-db
     volumes:
       - ../Backend:/app
+      - ../Common:/Common
     command: nodemon /app/microservices/users.ts
     depends_on:
       db_auth:

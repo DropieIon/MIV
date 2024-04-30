@@ -19,7 +19,7 @@ export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
         }));
         return;
     }
-    if (parseJwt(token)?.isMedic === 'N') {
+    if (parseJwt(token)?.role === 'pat') {
         next(new ControllerError({
             message: "Not a medic",
             code: 400
