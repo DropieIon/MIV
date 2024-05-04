@@ -31,6 +31,7 @@ routes:
     strip_path: false
     paths:
       - /studies
+      - /all_studies
       - /series
       - /instances
       - /patients

@@ -30,10 +30,9 @@ def OnChange(changeType, level, resourceId):
             'Authorization': f'Bearer {token_proxy}'
         }
         info("Sending instance: %s" % resourceId)
-        resp = post(f'{base_url}/instances', {
-            "data" : orthanc.RestApiGet(f'/instances/{resourceId}/file'), 
-            "id": resourceId
-            }, headers=headers)
+        resp = post(f'{base_url}/instances', 
+                    orthanc.RestApiGet(f'/instances/{resourceId}/file'), 
+                    headers=headers)
         if resp.status_code != 200:
             info("Failed sending instance, status code %s" % resp.status_code)
         # delete instance

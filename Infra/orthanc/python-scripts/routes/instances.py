@@ -2,6 +2,9 @@ from pyorthanc import orthanc_sdk
 import json
 import orthanc
 from helpers import checkAccess, getUsername, getDocUsername, getRole
+from pydicom import dcmread
+import io
+from services.InstanceService import registerStudy
 from logging import info
 
 def getInstaces(output: orthanc_sdk.RestOutput, uri: str, **request):
@@ -35,7 +38,9 @@ def postInstances(output: orthanc_sdk.RestOutput, uri: str, **request):
         if getRole(request) != 'proxy':
             output.SendUnauthorized('Not allowed')
         else:
-            orthanc.RestApiPost('/instances', request['body']["data"])
+            orthanc.RestApiPost('/instances', request['body'])
+            StudyInstanceUID = dcmread(io.BytesIO(request['body'])).get('StudyInstanceUID')
+            registerStudy(StudyInstanceUID)
             output.AnswerBuffer('oki', 'text')
     else:
         output.SendMethodNotAllowed('Not allowed')

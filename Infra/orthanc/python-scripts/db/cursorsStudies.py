@@ -16,8 +16,8 @@ where pa.patient_id=? and pa.doctor_username=?",
 
 def cursorWithAllStudies():
     return query(
-"select distinct sa.study_id, pa.patient_id, sa.uploaded \
+"select distinct sa.study_id, sa.uploaded \
 from studies_assigned sa \
-join patients_assigned pa on sa.patient_username=pa.patient_username",
+where sa.patient_username IS NULL",
         None
     )
