@@ -4,7 +4,7 @@ import {
     View
 } from 'react-native';
 import { Image } from 'expo-image';
-import ViewStyles from '@components/ListStyles';
+import ViewStyles from '../../../components/ListStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { propsTemplate } from './PropsTemplate';
 import { AntDesign } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ import { setAccountDetails } from '../../../features/globalStateSlice';
 
 export const patientReqTemplate = (props: propsTemplate) => {
     const currentItem: ListEntry = props.item;
-    const medic = parseJwt(props.token)?.isMedic === 'Y';
+    const medic = parseJwt(props.token)?.role === 'med';
     const noPfp = props.item.profile_pic === null;
     return (<TouchableOpacity
         activeOpacity={0.75}

@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native";
-import { selectToken, selectOpenViewer, selectFullName, selectCurrentAccountFullName } from "../../../features/globalStateSlice";
+import { selectToken, selectOpenViewer, selectCurrentAccountFullName } from "../../../features/globalStateSlice";
 import { useSelector } from "react-redux";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Authentication from "../Authentification/Authentication";
@@ -31,7 +31,7 @@ export function LandingScreen(props) {
     const fullName = useSelector(selectCurrentAccountFullName);
     const hasCompleted = fullName !== null;
     const viewer: viewerState = useSelector(selectOpenViewer);
-    const medic = token !== "" ? parseJwt(token)?.isMedic === 'Y' : false;
+    const medic = token !== "" ? parseJwt(token)?.role === 'med' : false;
     return (
         <SafeAreaView
             style={{ flex: 1 }}
@@ -64,12 +64,12 @@ export function LandingScreen(props) {
                         }}
                     />
                     <Drawer.Screen
-                        name={parseJwt(token).isMedic === 'N' ? 'All Doctors' : 'All Patients'}
+                        name={!medic ? 'All Doctors' : 'All Patients'}
                         options={drawerScreenOptions}
                         component={RequestOrAssign}
                     />
                     <Drawer.Screen
-                        name={parseJwt(token).isMedic === 'N' ? 'My Requests' : 'Requests'}
+                        name={!medic ? 'My Requests' : 'Requests'}
                         options={drawerScreenOptions}
                         component={MedicRequests}
                     />

@@ -46,7 +46,7 @@ export function MedicRequests(props: propsTemplate) {
     const itemsList = useRef<requestsListEntry[]>(null);
     let filteredList: requestsListEntry[] = null;
     const token = useSelector(selectToken);
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     let [refreshList, setRefreshList] = useState(0);
     const [openDetails, setOpenDetails] = useState(false);
     const isVisible = useIsFocused();

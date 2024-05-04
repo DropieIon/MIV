@@ -14,7 +14,7 @@ import { parseJwt } from '../../../../../utils/helper';
 export function DetailsInfo(props) {
     const accountDetails = useSelector(selectAccountDetails);
     const token = useSelector(selectToken);
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     return (
         <View
             style={DetailsStyles.infoMainView}

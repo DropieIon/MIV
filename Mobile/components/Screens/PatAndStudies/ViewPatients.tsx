@@ -63,7 +63,7 @@ function ViewPatients(props: propsTemplate) {
         if (isVisible) {
             setLoading(true);
             if (token !== "") {
-                if (parseJwt(token).isMedic === 'N') {
+                if (parseJwt(token).role === 'pat') {
                     getStudies(token)
                         .then((data) => {
                             items_list.current = data;

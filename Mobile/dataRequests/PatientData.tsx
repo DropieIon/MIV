@@ -43,7 +43,7 @@ type patDetails = {
 async function putPatientDetails(token: string, patDetails: patDetails) {
   let resp;
   try {
-    if(parseJwt(token)?.isMedic === 'Y') {
+    if(parseJwt(token)?.role === 'med') {
       throw new Error('Not a patient');
     }
     resp = await axios.put(`${backend_url}/acc_data/details/`,
@@ -68,7 +68,7 @@ async function putPatientDetails(token: string, patDetails: patDetails) {
 async function allowUnlimUploads4h(token: string, patUsername: string) {
   let resp;
   try {
-    if (parseJwt(token)?.isMedic === 'N') {
+    if (parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
     resp = await axios.put(`${backend_url}/acc_data/upload/allowUnlim/`,

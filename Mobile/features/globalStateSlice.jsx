@@ -22,7 +22,10 @@ export const globalStateSlice = createSlice({
         // used for exiting the viewer
         // and knowing which patient was
         // last clicked
-        patientUid: "",
+        viewStudies: {
+            type: "",
+            patientID: "",
+        },
     },
     reducers: {
         setToken: (state, action) => {
@@ -43,8 +46,8 @@ export const globalStateSlice = createSlice({
         setCurrentAccountFullName: (state, action) => {
             state.currentAccountFullName = action.payload;
         },
-        setPatientUid: (state, action) => {
-            state.patientUid = action.payload;
+        setViewStudies: (state, action) => {
+            state.viewStudies = action.payload;
         },
     }
 });
@@ -56,7 +59,7 @@ export const {
     setLoadingProgress,
     setRefreshList,
     setAccountDetails,
-    setPatientUid,
+    setViewStudies,
     setCurrentAccountFullName
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
@@ -68,4 +71,4 @@ export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
 export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
-export const selectPatientUid = (state) => state.patientUid;
+export const selectViewStudies = (state) => state.viewStudies;

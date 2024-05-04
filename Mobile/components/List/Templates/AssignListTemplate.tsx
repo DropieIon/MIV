@@ -4,7 +4,7 @@ import {
     Text,
 } from 'react-native';
 import { Image } from 'expo-image';
-import ViewStyles from '@components/ListStyles';
+import ViewStyles from '../../../components/ListStyles';
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import { parseJwt } from '../../../utils/helper';
 import { propsTemplate } from './PropsTemplate';
@@ -16,7 +16,7 @@ import { ListEntry } from '../../../types/ListEntry';
 
 export const assignListTemplate = (props: propsTemplate) => {
     const currentItem: ListEntry = props.item;
-    const medic = parseJwt(props.token).isMedic === 'Y';
+    const medic = parseJwt(props.token).role === 'med';
     const noPfP = props.item.profile_pic === null;
     return (
         <TouchableOpacity

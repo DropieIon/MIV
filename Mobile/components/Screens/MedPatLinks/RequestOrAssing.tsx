@@ -56,7 +56,7 @@ export function RequestOrAssign(props: propsTemplate) {
         if(isVisible)
         {
             setLoading(true);
-            const isMedic = parseJwt(token)?.isMedic === 'Y';
+            const isMedic = parseJwt(token)?.role === 'med';
             if(isMedic) {
                 getAllPatients(token).then((data) => {
                     itemsList.current = data;

@@ -25,7 +25,7 @@ async function getAllPatients(token: string): Promise<accountDataListEntry[]> {
   let resp;
 
   try {
-    if(parseJwt(token)?.isMedic === 'N') {
+    if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
     resp = await axios.get(`${backend_url}/users/all_patients/`,
@@ -43,7 +43,7 @@ async function makeRequest(token: string, medic_username: string) {
   let resp;
   
   try {
-    if(parseJwt(token)?.isMedic === 'Y') {
+    if(parseJwt(token)?.role === 'med') {
       throw new Error('Not a patient');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/`,
@@ -66,7 +66,7 @@ async function answerReq(token: string, patient_username: string, isAccepted: bo
   let resp;
   
   try {
-    if(parseJwt(token)?.isMedic === 'N') {
+    if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/${isAccepted ? 'accept' : 'decline'}`,
@@ -89,7 +89,7 @@ async function assignPatient(token: string, patient_username: string) {
   let resp;
   
   try {
-    if(parseJwt(token)?.isMedic === 'N') {
+    if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a doctor');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/assign`,
@@ -113,7 +113,7 @@ async function unassignPatient(token: string, patient_username: string) {
   let resp;
   
   try {
-    if(parseJwt(token)?.isMedic === 'N') {
+    if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a doctor');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/unassign`,
@@ -135,7 +135,7 @@ async function cancelRequest(token: string, doctorUsername: string) {
   let resp;
   
   try {
-    if(parseJwt(token)?.isMedic === 'Y') {
+    if(parseJwt(token)?.role === 'med') {
       throw new Error('Only a patient can cancel a request');
     }
     resp = await axios.put(`${backend_url}/acc_data/request/cancel`,

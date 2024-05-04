@@ -12,7 +12,7 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
     const accountDetails = useSelector(selectAccountDetails);
     const unassign = ['PatsAssigned', 'Study'].includes(props.type);
     const patsAssigned = props.type === 'PatsAssigned';
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     return (
         <View
             style={

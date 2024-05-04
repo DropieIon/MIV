@@ -46,7 +46,7 @@ type propsTemplate = {
 
 export function AddEntry(props: propsTemplate) {
     const token = useSelector(selectToken);
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     return (
         <View
             style={[styles.button_view]}

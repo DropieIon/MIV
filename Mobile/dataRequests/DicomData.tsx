@@ -49,10 +49,11 @@ type stateFunctions = {
     setProgress,
 }
 
-async function getStudies(token: string): Promise<Array<studiesListEntry>> {
+async function getStudies(token: string, type: "personal" | "unassigned"): Promise<Array<studiesListEntry>> {
     let resp: AxiosResponse<studiesListEntry[]>;
     try {
-        resp = await axios.get(`${orthanc_url}/studies`,
+        const url =  `${orthanc_url}/${type === "personal" ?"studies" : "all_studies"}`
+        resp = await axios.get(url,
             { headers: { 'Authorization': 'Bearer ' + token } }
         )
     }
@@ -66,7 +67,7 @@ async function getStudies(token: string): Promise<Array<studiesListEntry>> {
 async function getSeries(study_id: string, token: string): Promise<Array<string>> {
     let resp: studies_resp;
     try {
-        if(parseJwt(token).isMedic === 'Y') {
+        if(parseJwt(token).role === 'med') {
             resp = await axios.post(`${orthanc_url}/studies/${study_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
@@ -87,7 +88,7 @@ async function getSeries(study_id: string, token: string): Promise<Array<string>
 async function getInstances(serie_id: string, token: string): Promise<Array<string>> {
     let resp: series_resp;
     try {
-        if(parseJwt(token).isMedic === 'Y') {
+        if(parseJwt(token).role === 'med') {
             resp = await axios.post(`${orthanc_url}/series/${serie_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )    
@@ -107,7 +108,7 @@ async function getInstances(serie_id: string, token: string): Promise<Array<stri
 async function getJpeg(instance_id: string, token: string): Promise<string> {
     let resp;
     try {
-        if(parseJwt(token).isMedic === 'Y') {
+        if(parseJwt(token).role === 'med') {
             resp = await axios.post(`${orthanc_url}/instances/${instance_id}`, {},
                 { responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token } }
             )    

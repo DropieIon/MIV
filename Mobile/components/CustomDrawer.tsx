@@ -7,7 +7,8 @@ import {
     selectToken,
     selectTokenRefreshRef,
     setToken,
-    setTokenRefreshRef
+    setTokenRefreshRef,
+    setViewStudies
 } from '../features/globalStateSlice';
 import { parseJwt } from '../utils/helper';
 
@@ -17,7 +18,7 @@ export function CustomDrawer(props) {
     const fullName_split = useSelector(selectCurrentAccountFullName).split(' ');
     const dispatch = useDispatch();
 
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     const studOrPatients = medic ? 'Patients' : 'Studies';
     const allPatsOrMeds = medic ? 'All Patients' : 'All Doctors';
     const reqTxt = (medic ? '' : 'My ') + 'Requests';
@@ -35,12 +36,33 @@ export function CustomDrawer(props) {
             <DrawerContentScrollView {...props} contentContainerStyle={styles.s}>
                 <DrawerItem label={studOrPatients} 
                     onPress={() => {
+                        if (studOrPatients === "Studies") {
+                            dispatch(setViewStudies({
+                                type: 'personal',
+                                patientID: ""
+                            }));
+                        }
                         props.navigation.navigate(studOrPatients);
                     }} />
                 <DrawerItem label={allPatsOrMeds}
                     onPress={() => {
                         props.navigation.navigate(allPatsOrMeds);
                     }} />
+                {medic ? 
+                    <DrawerItem label={"Unassigned Studies"}
+                        onPress={() => {
+                            dispatch(setViewStudies({
+                                type: 'unassigned',
+                                patientID: ""
+                            }));
+                            props.navigation.navigate("Studies", {
+                                type: 'unassigned'
+                            })
+                        }}
+                    /> 
+                    :
+                    <></>
+                }
                 <DrawerItem label={reqTxt} 
                     onPress={() => {
                         props.navigation.navigate(reqTxt);

@@ -29,7 +29,7 @@ type callbackRet = {
 
 export function OpenUpload(props: propsTemplate) {
     const token = useSelector(selectToken);
-    const medic = parseJwt(token)?.isMedic === 'Y';
+    const medic = parseJwt(token)?.role === 'med';
     const accDetails = useSelector(selectAccountDetails);
     const [uploadProgress, setUploadProgress] = useState(0.0);
     const [sock, setSock] = useState<Socket>(null);
