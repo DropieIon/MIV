@@ -50,7 +50,7 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
         }));
         return;
     }
-    if(parseJwt(token)?.role === 'med'){
+    if(parseJwt(token)?.role !== 'med'){
         next(new ControllerError({
             message: "Only a doctor can answer a request.",
             code: 400
