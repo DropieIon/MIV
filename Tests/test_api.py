@@ -34,12 +34,10 @@ token_tc = post(f'{base_url}/login', json={
 #                    "profile_picB64": ''
 #                })
 
-req_resp = get(f'{base_url}/users/all_patients', headers={'Authorization': f'Bearer {token_doctor3}'})
+req_resp = get(f'{base_url}/all_studies', headers={'Authorization': f'Bearer {token_doctor3}'})
 # req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
 
 print(req_resp.status_code)
-print(decodeTokenBody(token_tc))
-print(decodeTokenBody(token_patient1))
-# print(req_resp.json())
+print(req_resp.json())
 # print(len(req_resp.json()))
 
