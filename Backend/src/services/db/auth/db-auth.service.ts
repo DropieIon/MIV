@@ -1,6 +1,6 @@
 import mariadb from 'mariadb';
 import { loginForm, registerForm, yayOrNay } from '../../../types/auth/authentication.type';
-import { sha256 } from '../../../utils/helper.util';
+import { formatName, sha256 } from '../../../utils/helper.util';
 import { patientForm } from "../../../types/auth/authentication.type";
 import { sq } from '../db-functions';
 import { randomBytes } from 'crypto'
@@ -80,15 +80,21 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
         return { 
             role: sqlResp[0].role,
             email_validation: sqlResp[0].email_validation,
-            fullName: sqlResp[0].full_name
+            fullName: formatName(sqlResp[0].full_name)
         };
     }
     return "Cannot login";
 }
 
+function parseDateToMariadb(date: string) {
+    const splitDate = date.split('/')
+    // Mariadb format: yyyy-mm-dd
+    return `${splitDate[2]}-${splitDate[0]}-${splitDate[1]}`
+}
+
 export async function insert_patient_details(username: string, details: patientForm) {
-    let insert_resp = await sq('insert into personal_data (username, full_name, age, sex) values (?, ?, ?, ?)',
-        [username, details.fullName, details.age, details.sex]);
+    let insert_resp = await sq('insert into personal_data (username, full_name, birthday, sex) values (?, ?, ?, ?)',
+        [username, details.fullName.toLowerCase(), parseDateToMariadb(details.birthday), details.sex]);
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {

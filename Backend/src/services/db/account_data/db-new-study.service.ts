@@ -30,3 +30,15 @@ export async function dbCheckStudyID(patUsername: string, studyId: string): Prom
         }
         return "Cannot get studies list";
 }
+
+export async function dbAssignStudy(studyID: string, patUsername: string): Promise<string> {
+    const queryResp = await sq(
+        'update studies_assigned set patient_username = ?, uploaded = uploaded where study_id = ?',
+        [patUsername, studyID]);
+    if (queryResp !== "") {
+        if (queryResp instanceof mariadb.SqlError) {
+            return "Database insertion error " + queryResp.sqlMessage;
+        }
+    }
+    return "";
+}

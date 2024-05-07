@@ -42,16 +42,14 @@ export function createMD5(filePath: string): Promise<string> {
   })
 }
 
-// export function parseSize(size: string): number {
-//   if(!/^[0-9]+(K|M|G)?/.test(size.toUpperCase()))
-//     return -1;
-//   if(size.includes('K'))
-//     return parseInt(size.split('K')[0]) * 1024;
-//   if(size.includes('M'))
-//     // * 1024 * 1024
-//     return parseInt(size.split('M')[0]) * 1048576;
-//   if(size.includes('G'))
-//     // * 1024 * 1024 * 1024
-//     return parseInt(size.split('G')[0]) * 1073741824;
-//   return -1;
-// }
+function firstLetterToUpper(name: string) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+export function formatName(name: string): string {
+  if(!name)
+    return "";
+  const name_split = name.split(' ');
+  return firstLetterToUpper(name_split[0]) + 
+      (name_split.length === 1 ? '' : ' ' + firstLetterToUpper(name_split[1]));
+}

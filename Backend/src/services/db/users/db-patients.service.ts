@@ -1,12 +1,13 @@
 import mariadb from 'mariadb';
 import { sq } from "../db-functions";
 import { patientApiResp } from '../../../types/users/patients.type'
+import { formatName } from '../../../utils/helper.util';
 
 export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     : Promise<string | patientApiResp[]> {
     const assigned = type === 'assigned';
     const querry_sql = assigned ? 
-    "select pa.patient_username, pd.full_name, pd.age, pd.sex, \
+    "select pa.patient_username, pd.full_name, pd.birthday, pd.sex, \
     pa.patient_id, pic.profile_pic, COUNT(DISTINCT sa.study_id) studs \
     from patients_assigned pa \
     left join personal_data pd on pa.patient_username=pd.username \
@@ -17,7 +18,7 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     and l.has_completed='Y' \
     group by pa.patient_username \
     " :
-    "select l.username, d.full_name, d.age, d.sex, l.uuid, pic.profile_pic, COUNT(DISTINCT sa.study_id) studs \
+    "select l.username, d.full_name, d.birthday, d.sex, l.uuid, pic.profile_pic, COUNT(DISTINCT sa.study_id) studs \
     from login l \
     left join personal_data d on l.username = d.username \
     left join profile_pictures pic on pic.username = l.username \
@@ -35,12 +36,11 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
         for (let i = 0; i < query_resp.length; i++)
         {
             const current_resp = query_resp[i];
-            console.log(current_resp.studs);
-            
+            const full_name = formatName(current_resp.full_name);
             resp_list.push({
                 username: assigned ? current_resp.patient_username : current_resp.username,
-                full_name: current_resp.full_name,
-                age: current_resp.age,
+                full_name,
+                birthday: current_resp.birthday,
                 sex: current_resp.sex,
                 uid: assigned ? current_resp.patient_id : current_resp.uuid,
                 profile_pic: current_resp.profile_pic,

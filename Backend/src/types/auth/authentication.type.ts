@@ -6,7 +6,7 @@ export type registerForm = {
 
 export type patientForm = {
     fullName: string,
-    age: number,
+    birthday: string,
     sex: 'M' | 'F',
     profile_picB64: string
 }

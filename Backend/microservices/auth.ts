@@ -12,6 +12,9 @@ const port = 3000;
 
 /* Middleware */
 
+/* Error handler middleware */
+app.use(errorHandler);
+
 app.use(json())
 
 app.get('/', (req, res) => {
@@ -22,8 +25,6 @@ app.use('/login', loginRouter);
 
 app.use('/register', registerRouter);
 
-/* Error handler middleware */
-app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)

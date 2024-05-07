@@ -10,8 +10,8 @@ const get_username = (token: string): string => parseJwt(token)?.username;
 
 export async function conDetailsController(req: Request<{}, {}, patientForm>,
     res: Response, next: NextFunction) {
-    if (req.body.age === 0 || req.body.sex.length === 0 || req.body.fullName === "") {
-        next(new EmptyField({ message: "FullName, age and sex are required!", logging: true }))
+    if (!req.body.birthday || !req.body.sex.length || !req.body.fullName) {
+        next(new EmptyField({ message: "FullName, birthday and sex are required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];

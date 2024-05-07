@@ -1,13 +1,14 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
 import { requestsApiResp } from '../../../types/account_data/requests.type';
+import { formatName } from '../../../utils/helper.util'
 
 export async function db_get_requests(username: string, role: string): Promise<string | requestsApiResp[]> {
     const medic = role === 'med';
     const whichUsername = medic ? 'patient_username' : 'doctor_username';
     const sql_resp = await sq(
         `select r.${whichUsername}, pd.full_name, r.accepted, r.date, pp.profile_pic, \
-        COUNT(sa.study_id) studs, pd.age, pd.sex \
+        COUNT(sa.study_id) studs, pd.birthday, pd.sex \
         from requests r \
         left join profile_pictures pp on r.${whichUsername} = pp.username \
         left join personal_data pd on r.${whichUsername} = pd.username \
@@ -27,8 +28,8 @@ export async function db_get_requests(username: string, role: string): Promise<s
                 medic ?
                     {
                         patient_username: current_resp.patient_username,
-                        full_name: current_resp.full_name,
-                        age: current_resp.age,
+                        full_name: formatName(current_resp.full_name),
+                        birthday: current_resp.birthday,
                         sex: current_resp.sex,
                         date: current_resp.date,
                         profile_pic: current_resp.profile_pic,
@@ -39,7 +40,7 @@ export async function db_get_requests(username: string, role: string): Promise<s
                     {
                         doctor_username: current_resp.doctor_username,
                         full_name: current_resp.full_name,
-                        age: current_resp.age,
+                        birthday: current_resp.birthday,
                         sex: current_resp.sex,
                         profile_pic: current_resp.profile_pic,
                         date: current_resp.date,

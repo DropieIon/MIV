@@ -10,15 +10,20 @@ export async function loginController(req: Request<{}, {}, loginForm>,
         next(new EmptyField({ message: "Username and password are required!", logging: true }))
         return;
     }
-    let resp_login = await loginUser(req.body);
-    if(resp_login.ok)
-    {
-        res.json(resp_login.data);
-        return;
+    try {
+        const resp_login = await loginUser(req.body);
+        if(resp_login.ok)
+            {
+                res.json(resp_login.data);
+                return;
+            }
+            next(new ControllerError({
+                // Only enters here if ok is set to false
+                message: (resp_login as resp_common_services).data,
+                code: 400
+            }))
+    } catch (error) {
+        console.error("Login error " + error);
+        
     }
-    next(new ControllerError({
-        // Only enters here if ok is set to false
-        message: (resp_login as resp_common_services).data,
-        code: 400
-    }))
 }

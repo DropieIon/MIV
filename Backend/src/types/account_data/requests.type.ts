@@ -7,5 +7,5 @@ export type requestsApiResp = {
     profile_pic: string,
     nrOfStudies: number,
     sex: 'M' | 'F',
-    age: number,
+    birthday: string,
 }

@@ -1,6 +1,6 @@
 export type patientApiResp = {
     username: string,
-    age: number,
+    birthday: string,
     sex: string,
     full_name: string,
     uid: string,

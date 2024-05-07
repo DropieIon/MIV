@@ -4,7 +4,7 @@ import mariadb from 'mariadb';
 
 export async function dbAllDocs(patUsername: string) 
     : Promise<string | doctorApiResp[]> {
-    const queryResp = await sq("select l.username, d.full_name, d.age, d.sex, l.uuid, pic.profile_pic \
+    const queryResp = await sq("select l.username, d.full_name, d.birthday, d.sex, l.uuid, pic.profile_pic \
     from login l \
     left join personal_data d on l.username = d.username \
     left join profile_pictures pic on pic.username = l.username \
@@ -20,7 +20,7 @@ export async function dbAllDocs(patUsername: string)
             respList.push({
                 username: current_resp.username,
                 full_name: current_resp.full_name,
-                age: current_resp.age,
+                birthday: current_resp.birthday,
                 sex: current_resp.sex,
                 uid: current_resp.uuid,
                 profile_pic: current_resp.profile_pic
