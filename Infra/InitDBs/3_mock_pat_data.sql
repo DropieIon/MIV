@@ -2,78 +2,78 @@
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'patient1',
-    'James Blond',
-    22,
+    'james blond',
+    '1999-04-20',
     'M'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'patient2',
-    'Elodia',
-    40,
+    'margaret hamilton',
+    '1976-01-19',
     'F'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'patient3',
-    'Testulescu',
-    42,
+    'testulescu',
+    '1982-04-21',
     'M'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'accept_me1',
-    'Johny',
-    36,
+    'johny',
+    '1988-04-20',
     'M'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'accept_me2',
-    'Margaret',
-    40,
+    'margaret',
+    '1984-05-20',
     'F'
 );
 
 -- INSERT INTO personal_data(
 --     username,
 --     full_name,
---     age,
+--     birthday,
 --     sex
 -- )
 -- VALUES (
 --     'tc',
 --     'SomeBody',
---     40,
+--     '1980-05-20',
 --     'F'
 -- );
 
@@ -82,38 +82,38 @@ VALUES (
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'doctor1',
-    'Juanito Pecados',
-    45,
+    'juanito pecados',
+    '1979-04-20',
     'M'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'doctor2',
-    'Margaret Hamilton',
-    420,
+    'margareta hamiltoana',
+    '1966-01-19',
     'F'
 );
 
 INSERT INTO personal_data(
     username,
     full_name,
-    age,
+    birthday,
     sex
 )
 VALUES (
     'doctor3',
-    'Marius Nasta',
-    74,
+    'marius nasta',
+    '1950-04-20',
     'M'
 );

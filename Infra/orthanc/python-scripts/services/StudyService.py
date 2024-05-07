@@ -4,7 +4,6 @@ from classes.StudyAssigned import StudyAssigned
 from classes.Study import Study
 import orthanc, json
 from base64 import b64encode
-from logging import info
 
 def getPreviewForStudy(study_id: str) -> str:
     series_id = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))\
@@ -42,11 +41,9 @@ def StudyListForUser(request):
 
 def AllStudiesList():
     cursor, pconn = cursorWithAllStudies()
-    info("cursor: %s" % cursor)
     study_ids = []
     study_metadata = None
     for (study_id, uploaded,) in cursor:
-        info(study_id)
         study_metadata = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))
         study_ids.append(Study(
                                 study_id, 

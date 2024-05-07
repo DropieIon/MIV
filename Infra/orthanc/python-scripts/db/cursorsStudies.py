@@ -18,6 +18,6 @@ def cursorWithAllStudies():
     return query(
 "select distinct sa.study_id, sa.uploaded \
 from studies_assigned sa \
-where sa.patient_username IS NULL",
+where sa.patient_username = ''",
         None
     )

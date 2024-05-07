@@ -40,7 +40,10 @@ def postInstances(output: orthanc_sdk.RestOutput, uri: str, **request):
         else:
             orthanc.RestApiPost('/instances', request['body'])
             StudyInstanceUID = dcmread(io.BytesIO(request['body'])).get('StudyInstanceUID')
-            registerStudy(StudyInstanceUID)
+            patName = str(dcmread(io.BytesIO(request['body'])).get('PatientName'))
+            patBDay = str(dcmread(io.BytesIO(request['body'])).get('PatientBirthDate'))
+            patSex  = str(dcmread(io.BytesIO(request['body'])).get('PatientSex'))
+            registerStudy(StudyInstanceUID, patName, patBDay, patSex)
             output.AnswerBuffer('oki', 'text')
     else:
         output.SendMethodNotAllowed('Not allowed')

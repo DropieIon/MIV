@@ -35,7 +35,6 @@ def getStudyData(output: orthanc_sdk.RestOutput, uri: str, **request):
             output.SendUnauthorized('Not allowed')
     elif request['method'] == 'POST':
         if not getDocUsername(request):
-            logging.info("Nasol")
             output.SendUnauthorized('Not allowed')
             return
         output.AnswerBuffer(

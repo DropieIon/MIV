@@ -15,9 +15,10 @@ CREATE TABLE login(
 CREATE TABLE personal_data(
     username            char(255) NOT NULL,
     full_name           char(255) not null,
-    age                 int NOT NULL,
+    birthday            date NOT NULL,
     sex                 char(1) NOT NULL,
     CONSTRAINT username_unique UNIQUE (username),
+    constraint check_lowercase_full_name check (lower(full_name) = full_name),
     CONSTRAINT `fk_personal_data_username`
         FOREIGN KEY (username) REFERENCES login (username)
         ON DELETE CASCADE
@@ -44,7 +45,7 @@ CREATE TABLE patients_assigned (
 
 CREATE TABLE studies_assigned (
     study_id                char(255) NOT NULL,
-    patient_username        char(255),
+    patient_username        char(255) NOT NULL,
     uploaded                timestamp,
     PRIMARY KEY(study_id)
 );
