@@ -43,6 +43,7 @@ type propsTemplate = {
     route: {
         params: {
             listStudies: boolean,
+            viewPatientsType: "personal" | 'assign_study',
         }
     }
 }
@@ -64,7 +65,7 @@ function ViewPatients(props: propsTemplate) {
             setLoading(true);
             if (token !== "") {
                 if (parseJwt(token).role === 'pat') {
-                    getStudies(token)
+                    getStudies(token, 'personal')
                         .then((data) => {
                             items_list.current = data;
                             setLoading(false);
@@ -144,6 +145,7 @@ function ViewPatients(props: propsTemplate) {
                     navigation={props.navigation}
                     items={filteredList}
                     setOpenDetails={setOpenDetails}
+                    viewPatientsType={props.route.params.viewPatientsType}
                     listStudies={listStudies}
                 ></List>
             }

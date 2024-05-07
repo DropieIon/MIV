@@ -26,6 +26,8 @@ export const globalStateSlice = createSlice({
             type: "",
             patientID: "",
         },
+        // used for unassigned studies
+        req_study_id: "",
     },
     reducers: {
         setToken: (state, action) => {
@@ -49,6 +51,9 @@ export const globalStateSlice = createSlice({
         setViewStudies: (state, action) => {
             state.viewStudies = action.payload;
         },
+        setReq_study_id: (state, action) => {
+            state.req_study_id = action.payload;
+        },
     }
 });
 
@@ -60,7 +65,8 @@ export const {
     setRefreshList,
     setAccountDetails,
     setViewStudies,
-    setCurrentAccountFullName
+    setCurrentAccountFullName,
+    setReq_study_id,
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
 
@@ -72,3 +78,4 @@ export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
 export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
 export const selectViewStudies = (state) => state.viewStudies;
+export const selectReq_study_id = (state) => state.req_study_id;

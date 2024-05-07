@@ -52,10 +52,20 @@ export const PDStyles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 2
     },
-    ageInput: {
+
+    pickBirthdayButton: {
+        backgroundColor: '#5783db',
+        borderRadius: 5,
+        elevation: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
         height: "30%",
-        width: "85%",
+        width: "auto",
+        padding: 10,
         textAlign: 'center'
+    },
+    BirthdayText: {
+        color: 'black'
     },
 
     genderButton: {

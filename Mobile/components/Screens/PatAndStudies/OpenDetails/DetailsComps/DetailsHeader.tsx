@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { AntDesign } from '@expo/vector-icons';
-import ViewStyles from '@components/ListStyles';
+import ViewStyles from '../../../../../components/ListStyles';
 import { DetailsStyles } from '../DetailsStyles';
 import { useSelector } from 'react-redux';
 import { selectAccountDetails } from '../../../../../features/globalStateSlice';

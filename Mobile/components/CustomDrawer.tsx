@@ -23,8 +23,8 @@ export function CustomDrawer(props) {
     const allPatsOrMeds = medic ? 'All Patients' : 'All Doctors';
     const reqTxt = (medic ? '' : 'My ') + 'Requests';
 
-    const fname = fullName_split[0];
-    const lname = fullName_split[1];
+    const fname: string = fullName_split[0];
+    const lname: string = fullName_split[1];
     return (
         <View style={styles.container}>
             <View style={styles.drawHead}>
@@ -41,8 +41,14 @@ export function CustomDrawer(props) {
                                 type: 'personal',
                                 patientID: ""
                             }));
+                            props.navigation.navigate(studOrPatients);
                         }
-                        props.navigation.navigate(studOrPatients);
+                        else {
+                            // it's about patients
+                            props.navigation.navigate(studOrPatients, {
+                                viewPatientsType: 'personal'
+                            });
+                        }
                     }} />
                 <DrawerItem label={allPatsOrMeds}
                     onPress={() => {

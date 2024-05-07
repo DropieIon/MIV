@@ -14,6 +14,7 @@ import { selectToken, setCurrentAccountFullName } from '../../../../features/glo
 import { BackendError } from '../../../../../Backend/src/errors/BackendError.error';
 import { AxiosError } from 'axios';
 import { PDStyles } from './PDStyles';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export function PersonalDataForm(props) {
     const token = useSelector(selectToken);
@@ -21,7 +22,8 @@ export function PersonalDataForm(props) {
 
     const [errFullName, setErrFullName] = useState("");
     const [fullName, setFullName] = useState("");
-    const [age, setAge] = useState(0);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [birthday, setBirthday] = useState<Date>(null);
     const [loading, setLoading] = useState(false);
     const [errPut, setErrPut] = useState("");
     const [errEmpty, setErrEmpty] = useState("");
@@ -29,7 +31,6 @@ export function PersonalDataForm(props) {
     const [profile_pic, setProfilePic] = useState("");
 
     let refGenderPicker = useRef(null);
-    let refAge = useRef(null);
     useEffect(() => {
         setErrEmpty("");
     }, [profile_pic]);
@@ -37,6 +38,10 @@ export function PersonalDataForm(props) {
     const handleOpenPickerGender = () => {
         refGenderPicker.current.focus();
     };
+    const saveDate = (event, selectedDate) => {
+        setShowDatePicker(false);
+        setBirthday(selectedDate);
+      };
     return (
         <SafeAreaView
             style={PDStyles.mainView}
@@ -60,7 +65,7 @@ export function PersonalDataForm(props) {
                     <TextInput
                         style={[PDStyles.fullNameInput, { borderColor: errFullName ? 'red' : '#2F80ED' }]}
                         placeholder="Full name"
-                        returnKeyType='next'
+                        returnKeyType='done'
                         onChangeText={(txt) => {
                             const fname = txt.toLowerCase();
                             if (/^[a-z ,.'-]+\ [a-z ,.'-]+$/.test(fname)) {
@@ -73,27 +78,25 @@ export function PersonalDataForm(props) {
                                 setErrFullName("Format: <F_name> <L_name>");
                             }
                         }}
-                        onSubmitEditing={() => {
-                            if (errFullName === "")
-                                refAge?.current.focus();
-                        }}
                     />
                     {errFullName && <Text style={PDStyles.error}>{errFullName}</Text>}
-                    <TextInput
-                        placeholder='Age'
-                        keyboardType='numeric'
-                        ref={refAge}
-                        style={PDStyles.ageInput}
-                        onChangeText={(nr) => {
-                            if (nr !== "") {
-                                setAge(parseInt(nr));
-                                setErrEmpty("");
-                            }
-                            else {
-                                setAge(0);
-                            }
-                        }}
-                    />
+                    <TouchableOpacity
+                        onPress={() => setShowDatePicker(true)}
+                        style={PDStyles.pickBirthdayButton}
+                    >
+                        <Text
+                            style={PDStyles.BirthdayText}
+                        >
+                            {!birthday ? "Birthday" : birthday.toDateString()}
+                        </Text>
+                    </TouchableOpacity>
+                    {showDatePicker &&
+                        <DateTimePicker
+                            value={new Date()}
+                            mode={'date'}
+                            is24Hour={true}
+                            onChange={saveDate}
+                    />}
                     <TouchableOpacity
                         style={PDStyles.genderButton}
                         onPress={handleOpenPickerGender}
@@ -133,12 +136,12 @@ export function PersonalDataForm(props) {
                         errFullName === "" && profile_pic.length !== 0)
                         setLoading(true);
                         // no errors
-                        if (fullName !== "" && age !== 0 && profile_pic !== "") {
+                        if (fullName !== "" && birthday && profile_pic !== "") {
                             // it's not empty
                             setErrEmpty("");
                             putPatientDetails(token, {
                                 fullName: fullName,
-                                age: age,
+                                birthday: birthday.toLocaleDateString(),
                                 gender: savedGender,
                                 profile_picB64: profile_pic
                             })

@@ -8,11 +8,12 @@ export type ListEntry = {
 
     username?: string,
     uid?: string,
-    age?: number,
+    birthday?: string,
     sex?: 'M' | 'F',
     full_name?: string,
     // username of the doctor to which he's assigned
     doctor_username?: string,
+    patient_username?: string,
     // profile picture in base64 string
     profile_pic?: string,
     nrOfStudies?: number

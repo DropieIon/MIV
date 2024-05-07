@@ -11,12 +11,13 @@ import { AddEntry } from './AddEntry/AddEntry';
 import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, selectViewStudies, setViewStudies } from '../../../features/globalStateSlice';
+import { selectToken, selectViewStudies, setRefreshList, setViewStudies } from '../../../features/globalStateSlice';
 import { parseJwt } from '../../../utils/helper';
 import { getStudies } from '../../../dataRequests/DicomData';
 import { getPatientStudies } from '../../../dataRequests/PatientData';
 import { OpenUpload } from './AddEntry/OpenUpload';
 import Toast from 'react-native-root-toast';
+import { AssignModal } from './AssignToPat/AssignModal';
 
 const styles = StyleSheet.create({
     view: {
@@ -61,7 +62,11 @@ function ViewStudies(props: propsTemplate) {
     const patientUid = viewStudies.patientID;
     const [openDetails, setOpenDetails] = useState(false);
     const [openUpload, setOpenUpload] = useState(false);
+    // this will store study_id
+    const [openAssignment, setOpenAssignment] = useState(false);
+    const [refreshStudList, setRefreshStudList] = useState(0);
     const medic = parseJwt(token)?.role === 'med';
+    const unassignedStudies = viewStudies.type === "unassigned";
     const [err, setErr] = useState('');
     const [zipData, setZipData] = useState({
         uri: '',
@@ -92,7 +97,7 @@ function ViewStudies(props: propsTemplate) {
                 } else {
                     let patID: string;
                     if (medic) {
-                        if (viewStudies.type === "unassigned") {
+                        if (unassignedStudies) {
                             getStudies(token, 'unassigned')
                                 .then((studiesList) => {
                                     items_list.current = studiesList.sort((e1, e2) => { return parseInt(e2.uploaded) - parseInt(e1.uploaded) });;
@@ -140,7 +145,7 @@ function ViewStudies(props: propsTemplate) {
             }
             BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
         }
-    }, [, isVisible, props.route.params]);
+    }, [, isVisible, props.route.params, refreshStudList]);
     let filteredList = [];
     const [filter, setFilter] = useState("");
     if(filter !== "") {
@@ -153,11 +158,12 @@ function ViewStudies(props: propsTemplate) {
         filteredList = items_list.current;
     }
     const opacityVal = 0.6;
+    const shouldBlur = openDetails || openUpload || openAssignment;
     return <View
         style={styles.view}
     >
         <View
-            style={[styles.view_search, openDetails || openUpload ? {opacity: opacityVal} : {}]}
+            style={[styles.view_search, shouldBlur ? {opacity: opacityVal} : {}]}
         >
             {/* Search, filter and patients View */}
             <SearchBar 
@@ -167,7 +173,7 @@ function ViewStudies(props: propsTemplate) {
             />
         </View>
         <View
-            style={[styles.view_list, openDetails || openUpload ? {opacity: opacityVal} : {}]}
+            style={[styles.view_list, shouldBlur ? {opacity: opacityVal} : {}]}
         >
             {/*/ Patients / Studies list */}
             {loading &&
@@ -193,11 +199,12 @@ function ViewStudies(props: propsTemplate) {
                     navigation={props.navigation}
                     items={filteredList}
                     setOpenDetails={setOpenDetails}
+                    setOpenAssignment={setOpenAssignment}
                     listStudies={true}
                 ></List>
             }
         </View>
-        {!loading && !openDetails && openUpload &&
+        {!loading && !openDetails && !openAssignment && openUpload &&
             <OpenUpload
                 setErrUpload={setErr}
                 setOpenUpload={setOpenUpload}
@@ -224,6 +231,12 @@ function ViewStudies(props: propsTemplate) {
         >
             {err}
         </Toast>
+        {!loading && !openDetails && !openUpload && openAssignment &&
+            <AssignModal
+                setRefreshList={setRefreshStudList}
+                setOpenAssignment={setOpenAssignment}
+            />
+        }
     </View>
 }
 

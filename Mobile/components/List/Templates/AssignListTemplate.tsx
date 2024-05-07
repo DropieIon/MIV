@@ -8,7 +8,7 @@ import ViewStyles from '../../../components/ListStyles';
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import { parseJwt } from '../../../utils/helper';
 import { propsTemplate } from './PropsTemplate';
-import { answerReq, assignPatient, makeRequest } from '../../../dataRequests/AssignRequestsData';
+import { assignPatient, makeRequest } from '../../../dataRequests/AssignRequestsData';
 import Toast from 'react-native-root-toast';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
 import { setAccountDetails } from '../../../features/globalStateSlice';
@@ -18,6 +18,8 @@ export const assignListTemplate = (props: propsTemplate) => {
     const currentItem: ListEntry = props.item;
     const medic = parseJwt(props.token).role === 'med';
     const noPfP = props.item.profile_pic === null;
+    const timeDiff = new Date().getTime() - new Date(currentItem.birthday).getTime()
+    const age = Math.floor(Math.ceil(timeDiff / (1000 * 3600 * 24)) / 365);
     return (
         <TouchableOpacity
             activeOpacity={0.7}
@@ -27,7 +29,7 @@ export const assignListTemplate = (props: propsTemplate) => {
                     fullName: currentItem.full_name,
                     username: currentItem.username,
                     sex: currentItem.sex,
-                    age: currentItem.age,
+                    age: age,
                     profile_pic: currentItem.profile_pic,
                     nrOfStudies: currentItem.nrOfStudies
                 }))

@@ -1,21 +1,23 @@
 import React from 'react';
 import {
     Text,
+    TouchableOpacity
 } from 'react-native';
 import { Image } from 'expo-image';
 import ViewStyles from '../../../components/ListStyles';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { propsTemplate } from './PropsTemplate';
+import { setOpenViewer, setReq_study_id } from '../../../features/globalStateSlice';
 
 
 export const StudiesTemplate = (props: propsTemplate) => {
+    const unassignedStudies = props.viewStudiesType === 'unassigned';
     return <TouchableOpacity
         style={ViewStyles.item}
+        activeOpacity={0.9}
         onLongPress={() => {
             props.setOpenDetails(true);
         }}
-        onPress={() => 
-        {
+        onPress={() => {
             props.dispatch(props.setOpenViewer({
                 should_open: true,
                 study_id: props.item.study_id,
@@ -29,14 +31,36 @@ export const StudiesTemplate = (props: propsTemplate) => {
             cachePolicy='memory'
         />
         <Text
-            style={ViewStyles.item_name}
+            style={[ViewStyles.item_name, { left: "15%" },
+            unassignedStudies ? { width: "30%" } : {}]}
         >
             {props.item.modality}
         </Text>
         <Text
-            style={ViewStyles.item_date}
+            style={[ViewStyles.item_date,
+            unassignedStudies ? { width: "30%" } : {}]}
         >
             {props.item.date === "//" ? "01/01/1970" : props.item.date}
         </Text>
+        {unassignedStudies ?
+            <TouchableOpacity
+                style={[ViewStyles.item_assign_button, { flex: 0.7 }]}
+                onPress={() => {
+                    // save the study_id so we can make the request
+                    props.dispatch(setReq_study_id(props.item.study_id))
+                    props.setOpenAssignment(true);
+                }}
+            >
+                <Text
+                    style={{
+                        textAlign: 'center',
+                    }}
+                >
+                    Assign
+                </Text>
+            </TouchableOpacity>
+            :
+            <></>
+        }
     </TouchableOpacity>
 }

@@ -77,7 +77,9 @@ export function AddEntry(props: propsTemplate) {
                                 size
                             });
                         })
-                        .catch(() => {});
+                        .catch((err) => {
+                            console.error("Cannot get zip: ", err);
+                        });
                         
                     }
                 }}

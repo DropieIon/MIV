@@ -8,7 +8,6 @@ import { DetailsStyles, iconColor } from '../DetailsStyles';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { selectAccountDetails, selectToken } from '../../../../../features/globalStateSlice';
-import { useEffect, useState } from 'react';
 import { parseJwt } from '../../../../../utils/helper';
 
 export function DetailsInfo(props) {

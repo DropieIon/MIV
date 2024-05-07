@@ -61,6 +61,7 @@ export function LandingScreen(props) {
                         options={drawerScreenOptions}
                         initialParams={{
                             listStudies: !medic,
+                            viewPatientsType: 'personal'
                         }}
                     />
                     <Drawer.Screen

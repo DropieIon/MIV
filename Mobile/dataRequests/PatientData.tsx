@@ -35,7 +35,7 @@ async function getPatientStudies(patient_uid: string, token: string) {
 
 type patDetails = {
   fullName: string,
-  age: number,
+  birthday: string,
   gender: string,
   profile_picB64: string
 }
@@ -49,7 +49,7 @@ async function putPatientDetails(token: string, patDetails: patDetails) {
     resp = await axios.put(`${backend_url}/acc_data/details/`,
       {
         fullName: patDetails.fullName,
-        age: patDetails.age,
+        birthday: patDetails.birthday,
         sex: patDetails.gender,
         profile_picB64: patDetails.profile_picB64
       },
@@ -87,11 +87,35 @@ async function allowUnlimUploads4h(token: string, patUsername: string) {
   return resp.data;
 }
 
+async function assignToPatient(token: string, studyID: string, patUsername: string) {
+  let resp;
+  try {
+    if (parseJwt(token)?.role === 'pat') {
+      throw new Error('Not a medic');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/studies/assign`,
+      {
+        patient_username: patUsername,
+        study_id: studyID
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not assign study to patient " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;  
+}
+
 
 
 export {
   getPatients,
   getPatientStudies,
   putPatientDetails,
-  allowUnlimUploads4h
+  allowUnlimUploads4h,
+  assignToPatient
 };

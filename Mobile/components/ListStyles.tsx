@@ -19,14 +19,14 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderColor: "#F1F1F1",
     },
-    item_name: {
+    item_name: {        
         width: "45%",
         height: "80%",
         textAlignVertical: 'center',
         textAlign: 'center'
     },
     item_age: {
-        width: "20%",
+        width: "15%",
         height: "80%",
         textAlignVertical: 'center',
         textAlign: 'center',
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     item_sex: {
-        width: "17%",
+        width: "15%",
         height: "80%",
         textAlignVertical: 'center',
         textAlign: 'center',
