@@ -39,7 +39,7 @@ export async function db_get_requests(username: string, role: string): Promise<s
                     :
                     {
                         doctor_username: current_resp.doctor_username,
-                        full_name: current_resp.full_name,
+                        full_name: formatName(current_resp.full_name),
                         birthday: current_resp.birthday,
                         sex: current_resp.sex,
                         profile_pic: current_resp.profile_pic,

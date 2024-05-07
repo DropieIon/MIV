@@ -1,6 +1,7 @@
 import { doctorApiResp } from "../../../types/users/doctors.type";
 import { sq } from "../db-functions";
 import mariadb from 'mariadb';
+import { formatName } from '../../../utils/helper.util';
 
 export async function dbAllDocs(patUsername: string) 
     : Promise<string | doctorApiResp[]> {
@@ -19,7 +20,7 @@ export async function dbAllDocs(patUsername: string)
             const current_resp = queryResp[i];
             respList.push({
                 username: current_resp.username,
-                full_name: current_resp.full_name,
+                full_name: formatName(current_resp.full_name),
                 birthday: current_resp.birthday,
                 sex: current_resp.sex,
                 uid: current_resp.uuid,

@@ -18,6 +18,8 @@ export const patientReqTemplate = (props: propsTemplate) => {
     const currentItem: ListEntry = props.item;
     const medic = parseJwt(props.token)?.role === 'med';
     const noPfp = props.item.profile_pic === null;
+    const timeDiff = new Date().getTime() - new Date(currentItem.birthday).getTime()
+    const age = Math.floor(Math.ceil(timeDiff / (1000 * 3600 * 24)) / 365);
     return (<TouchableOpacity
         activeOpacity={0.75}
         style={ViewStyles.item}
@@ -26,7 +28,7 @@ export const patientReqTemplate = (props: propsTemplate) => {
                 fullName: currentItem.full_name,
                 username: medic ? currentItem.username : currentItem.doctor_username,
                 sex: currentItem.sex,
-                age: currentItem.age,
+                age,
                 profile_pic: currentItem.profile_pic,
                 nrOfStudies: currentItem.nrOfStudies
             }))
