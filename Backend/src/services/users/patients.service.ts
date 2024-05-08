@@ -7,14 +7,14 @@ type respAssignedPatients = {
 }
 
 export async function svcGetAssignedPatients(username: string): Promise<respAssignedPatients> {
-    const resp_db = await dbPatients(username, 'assigned');
+    const resp_db = await dbPatients(username, 'assigned', false);
     if(typeof resp_db === "string")
         return {ok: false, data: resp_db};
     return { ok: true, data: resp_db};
 }
 
-export async function svcGetAllPatients(username: string): Promise<respAssignedPatients> {
-    const resp_db = await dbPatients(username, 'all');
+export async function svcGetAllPatients(username: string, admin: boolean): Promise<respAssignedPatients> {
+    const resp_db = await dbPatients(username, 'all', admin);
     if(typeof resp_db === "string")
         return {ok: false, data: resp_db};
     return { ok: true, data: resp_db};

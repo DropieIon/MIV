@@ -40,6 +40,28 @@ type patDetails = {
   profile_picB64: string
 }
 
+async function promotePat(token: string, patUsername: string) {
+  let resp;
+  try {
+    if(parseJwt(token)?.role !== 'admin') {
+      throw new Error('Not the admin');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/admin/promote`,
+      {
+        patient_username: patUsername
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not promote patient " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 async function putPatientDetails(token: string, patDetails: patDetails) {
   let resp;
   try {
@@ -117,5 +139,6 @@ export {
   getPatientStudies,
   putPatientDetails,
   allowUnlimUploads4h,
-  assignToPatient
+  assignToPatient,
+  promotePat
 };

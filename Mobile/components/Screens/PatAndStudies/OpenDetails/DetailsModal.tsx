@@ -33,6 +33,7 @@ export function DetailsModal(props: DetailsPropsTemplate) {
                         setRespUnlim4h={setRespUnlim4h}
                         setOpenDetails={props.setOpenDetails}
                         setRefreshPatList={props.setRefreshPatList}
+                        adminList={props.adminList}
                         type={props.type}
                 />}
                 <Toast

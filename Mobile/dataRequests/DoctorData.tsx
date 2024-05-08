@@ -1,6 +1,7 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { orthanc_url } from '../configs/backend_url';
+import { backend_url, orthanc_url } from '../configs/backend_url';
 import { accountDataListEntry } from '../types/ListEntry';
+import { parseJwt } from '../utils/helper';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -18,6 +19,29 @@ async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
   return resp.data;
 }
 
+async function demoteDoc(token: string, docUsername: string) {
+  let resp;
+  try {
+    if(parseJwt(token)?.role !== 'admin') {
+      throw new Error('Not the admin');
+    }
+    resp = await axios.put(`${backend_url}/acc_data/admin/demote`,
+      {
+        doc_username: docUsername
+      },
+      {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }
+    )
+  }
+  catch (error) {
+    console.error("Could not promote patient " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 export {
-    getDoctors
+    getDoctors,
+    demoteDoc
 };

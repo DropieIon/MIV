@@ -3,6 +3,7 @@ export type propsTemplate = {
     token: string,
     item: ListEntry,
     req_study_id?: string,
+    adminList?: 'med' | 'pat',
     viewStudiesType?: 'unassigned' | 'personal',
     viewPatientsType?: 'assign_study' | 'personal',
     dispatch?,

@@ -43,7 +43,7 @@ export async function conPatAll(req: Request<{}, {}, {}>,
         }));
         return;
     }
-    const respSvc = await svcGetAllPatients(get_username(token));
+    const respSvc = await svcGetAllPatients(get_username(token), parseJwt(token)?.role === "admin");
     if(respSvc.ok)
     {
         res.json(respSvc.data);

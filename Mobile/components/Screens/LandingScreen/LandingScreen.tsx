@@ -31,7 +31,13 @@ export function LandingScreen(props) {
     const fullName = useSelector(selectCurrentAccountFullName);
     const hasCompleted = fullName !== null;
     const viewer: viewerState = useSelector(selectOpenViewer);
-    const medic = token !== "" ? parseJwt(token)?.role === 'med' : false;
+    let admin, medic, initialRouteName;
+    if(token !== "") {
+        const jwtBody = parseJwt(token);
+        admin = jwtBody?.role === "admin";
+        medic = admin ? false : jwtBody?.role === 'med';
+        initialRouteName = admin ? 'All Patients' : medic ? 'Patients' : 'Studies';
+    }
     return (
         <SafeAreaView
             style={{ flex: 1 }}
@@ -44,17 +50,23 @@ export function LandingScreen(props) {
             }
             {token !== "" && hasCompleted && !viewer.should_open &&
                 <Drawer.Navigator
-                    initialRouteName={medic ? 'Patients' : 'Studies'}
+                    initialRouteName={initialRouteName}
                     drawerContent={(props) => <CustomDrawer {...props} />}
                     screenOptions={({ route }) => ({
                         activeTintColor: '#8772BC',
                         headerShown: true,
                     })}>
+                    {admin ?
+                    <></>
+                    :
                     <Drawer.Screen
                         name={'Studies'}
                         component={ViewStudies}
                         options={drawerScreenOptions}
-                    />
+                    />}
+                    {admin ?
+                    <></>
+                    :
                     <Drawer.Screen
                         name={'Patients'}
                         component={ViewPatients}
@@ -63,17 +75,29 @@ export function LandingScreen(props) {
                             listStudies: !medic,
                             viewPatientsType: 'personal'
                         }}
-                    />
+                    />}
                     <Drawer.Screen
-                        name={!medic ? 'All Doctors' : 'All Patients'}
+                        name={admin ? 'All Patients' : !medic ? 'All Doctors' : 'All Patients'}
                         options={drawerScreenOptions}
                         component={RequestOrAssign}
                     />
+                    {admin ?
+                        <Drawer.Screen
+                            name={'All Docs'}
+                            options={drawerScreenOptions}
+                            component={RequestOrAssign}
+                        />
+                        :
+                        <></>
+                    }
+                    {admin ?
+                    <></>
+                    :
                     <Drawer.Screen
                         name={!medic ? 'My Requests' : 'Requests'}
                         options={drawerScreenOptions}
                         component={MedicRequests}
-                    />
+                    />}
                     <Drawer.Screen
                         name='Settings'
                         component={SettingsScreen}

@@ -3,10 +3,22 @@ import { sq } from "../db-functions";
 import { patientApiResp } from '../../../types/users/patients.type'
 import { formatName } from '../../../utils/helper.util';
 
-export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
+export async function dbPatients(docUsername: string, type: 'assigned' | 'all', admin: boolean)
     : Promise<string | patientApiResp[]> {
     const assigned = type === 'assigned';
-    const querry_sql = assigned ? 
+    const querry_sql = 
+    admin ?
+    "select l.username, d.full_name, d.birthday, d.sex, l.uuid, pic.profile_pic, COUNT(DISTINCT sa.study_id) studs \
+    from login l \
+    left join personal_data d on l.username = d.username \
+    left join profile_pictures pic on pic.username = l.username \
+    left join studies_assigned sa on sa.patient_username = l.username \
+    where l.role='pat' \
+    and l.has_completed='Y' \
+    and l.username not in (select patient_username from patients_assigned) \
+    group by l.username"
+    :
+    assigned ? 
     "select pa.patient_username, pd.full_name, pd.birthday, pd.sex, \
     pa.patient_id, pic.profile_pic, COUNT(DISTINCT sa.study_id) studs \
     from patients_assigned pa \
@@ -28,7 +40,9 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all')
     and l.username not in (select patient_username from patients_assigned where doctor_username = ?) \
     and l.username not in (select patient_username from requests where doctor_username = ?) \
     group by l.username";
-    const querry_params = assigned ? [docUsername] : [docUsername, docUsername];
+    const querry_params = admin ? [] :
+        assigned ? [docUsername] : [docUsername, docUsername];
+    console.log(querry_sql);
     
     let query_resp = await sq(querry_sql, querry_params);
     if (typeof query_resp !== "string" && !(query_resp instanceof mariadb.SqlError)) {

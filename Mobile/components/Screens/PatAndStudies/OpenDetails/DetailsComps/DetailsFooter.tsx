@@ -5,14 +5,16 @@ import { useSelector } from "react-redux";
 import { selectAccountDetails, selectToken } from "../../../../../features/globalStateSlice";
 import { DetailsPropsTemplate } from "../PropsTemplate";
 import { parseJwt } from "../../../../../utils/helper";
-import { allowUnlimUploads4h } from "../../../../../dataRequests/PatientData";
+import { allowUnlimUploads4h, promotePat } from "../../../../../dataRequests/PatientData";
 import { deleteStudy, unassignStudy } from "../../../../../dataRequests/DicomData";
+import { demoteDoc } from "../../../../../dataRequests/DoctorData";
 
 export function DetailsFooter(props: DetailsPropsTemplate) {
     const token = useSelector(selectToken);
     const accountDetails = useSelector(selectAccountDetails);
-    const unassign = ['PatsAssigned', 'Study'].includes(props.type);
-    const medic = parseJwt(token)?.role === 'med';
+    const jwtBody = parseJwt(token);
+    const admin = jwtBody?.role === "admin";
+    const medic = jwtBody?.role === 'med';
     const twoButtons = ['PatsAssigned', 'Study'].includes(props.type) && medic;
     let redButtonText: string;
     switch (props.type) {
@@ -29,7 +31,7 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
             redButtonText = medic ? 'Assign' : 'Request';
             break;
         case "AllPats":
-            redButtonText = medic ? 'Assign' : 'Request';
+            redButtonText = admin ? props.adminList === "med" ? "Demote" : "Promote" : medic ? "Assign" : "Request"
             break;
         default:
             break;
@@ -140,6 +142,26 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
                                         props.setRefreshPatList(Math.random() * 420);
                                         props.setOpenDetails(false);
                                     })
+                            else if (admin) {
+                                if (props.adminList === "pat") {
+                                    promotePat(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    });
+                                }
+                                else if(props.adminList === "med") {
+                                    demoteDoc(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    })
+                                }
+                                else {
+                                    console.error("Bad adminList value");
+                                    return;
+                                }
+                            }
                             else
                                 makeRequest(token, accountDetails.username)
                                     .then(() => {

@@ -13,10 +13,14 @@ import Toast from 'react-native-root-toast';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
 import { setAccountDetails } from '../../../features/globalStateSlice';
 import { ListEntry } from '../../../types/ListEntry';
+import { promotePat } from '../../../dataRequests/PatientData';
+import { demoteDoc } from '../../../dataRequests/DoctorData';
 
 export const assignListTemplate = (props: propsTemplate) => {
     const currentItem: ListEntry = props.item;
-    const medic = parseJwt(props.token).role === 'med';
+    const jwtBody = parseJwt(props.token);
+    const admin = jwtBody?.role === "admin";
+    const medic = jwtBody?.role === 'med';
     const noPfP = props.item.profile_pic === null;
     const timeDiff = new Date().getTime() - new Date(currentItem.birthday).getTime()
     const age = Math.floor(Math.ceil(timeDiff / (1000 * 3600 * 24)) / 365);
@@ -60,7 +64,9 @@ export const assignListTemplate = (props: propsTemplate) => {
                     style={ViewStyles.item_assign_button}
                     onPress={() => {
                         // Request or assign to medic
-                        const funcUsed = medic ? assignPatient : makeRequest;
+                        const funcUsed = admin ? props.adminList === "pat" ? promotePat : demoteDoc
+                            :
+                            medic ? assignPatient : makeRequest;
                         funcUsed(props.token, props.item.username)
                         .then(() => {
                             // It should always refresh after clicking request or assign
@@ -73,7 +79,7 @@ export const assignListTemplate = (props: propsTemplate) => {
                 >
                     <Text
                     >
-                        {medic ? "Assign" : "Request"}
+                        {admin ? props.adminList === "med" ? "Demote" : "Promote" : medic ? "Assign" : "Request"}
                     </Text>
                 </TouchableOpacity>
                 {/* <Toast visible={true}>Thanks for subscribing!</Toast> */}

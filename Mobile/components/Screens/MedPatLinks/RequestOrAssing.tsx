@@ -4,6 +4,7 @@ import {
     Text,
     StyleSheet,
 } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
 import { ListEntry, accountDataListEntry } from '../../../types/ListEntry';
@@ -50,18 +51,49 @@ export function RequestOrAssign(props: propsTemplate) {
     let [refreshList, setRefreshList] = useState(0);
     const isVisible = useIsFocused();
     const [openDetails, setOpenDetails] = useState(false);
+    const route = useRoute();
+    let adminList: 'med' | 'pat';
+    switch (route.name) {
+        case "All Patients":
+            adminList = "pat";
+            break;
+        case "All Docs":
+            adminList = "med";
+            break;
+        default:
+            console.error("Wrong route name in admin");
+            break;
+    }
 
     useEffect(() => {
         // don't trigger unnecessary refreshes
-        if(isVisible)
-        {
+        if (isVisible) {
             setLoading(true);
-            const isMedic = parseJwt(token)?.role === 'med';
-            if(isMedic) {
+            const jwtBody = parseJwt(token);
+            const admin = jwtBody?.role === "admin";
+            const isMedic = jwtBody?.role === 'med';
+            if (admin) {
+                if (adminList === "pat") {
+                    getAllPatients(token).then((data) => {
+                        itemsList.current = data;
+                        setLoading(false);
+                    });
+                }
+                else if (adminList === "med") {
+                    getDoctors(token).then((data) => {
+                        itemsList.current = data;
+                        setLoading(false);
+                    });
+                }
+                else {
+                    console.error("Wrong route name in admin");
+                }
+            }
+            else if (isMedic) {
                 getAllPatients(token).then((data) => {
                     itemsList.current = data;
                     setLoading(false);
-                })
+                });
             }
             else {
                 getDoctors(token).then((data) => {
@@ -71,7 +103,7 @@ export function RequestOrAssign(props: propsTemplate) {
             }
         }
     }, [, isVisible, refreshList]);
-    if(filter !== "") {
+    if (filter !== "") {
         filteredList = itemsList.current.filter((item) => {
             return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.full_name.toLowerCase());
         })
@@ -80,13 +112,13 @@ export function RequestOrAssign(props: propsTemplate) {
         filteredList = itemsList.current;
     }
     const opacityVal = 0.6;
-    
+
     return (
         <View
             style={styles.view}
         >
             <View
-                style={[styles.view_search, openDetails ? {opacity: opacityVal} : {}]}
+                style={[styles.view_search, openDetails ? { opacity: opacityVal } : {}]}
             >
                 {/* Search, filter and patients View */}
                 <SearchBar
@@ -96,10 +128,10 @@ export function RequestOrAssign(props: propsTemplate) {
                 />
             </View>
             <View
-                style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}
+                style={[styles.view_list, openDetails ? { opacity: opacityVal } : {}]}
             >
                 {/*/ Patients / Studies list */}
-                {loading && 
+                {loading &&
                     <Text
                         style={{
                             flex: 1,
@@ -117,17 +149,19 @@ export function RequestOrAssign(props: propsTemplate) {
                         setRefreshList={setRefreshList}
                         setOpenDetails={setOpenDetails}
                         items={filteredList}
+                        adminList={adminList}
                         listStudies={false}
                     />
                 }
             </View>
             {!loading && openDetails &&
-            <DetailsModal
-                setOpenDetails={setOpenDetails}
-                setRefreshPatList={setRefreshList}
-                type='AllPats'
-            />
-        }
+                <DetailsModal
+                    setOpenDetails={setOpenDetails}
+                    setRefreshPatList={setRefreshList}
+                    adminList={adminList}
+                    type='AllPats'
+                />
+            }
         </View>
     );
 }

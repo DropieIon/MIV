@@ -19,6 +19,7 @@ type propsTemplate = {
     items: ListEntry[],
     listStudies: boolean,
     template: string,
+    adminList?: 'pat' | 'med',
     viewPatientsType?: 'assign_study' | 'personal',
     setRefreshList?: any,
     // propagate the openModal state to
@@ -85,13 +86,14 @@ function List(props: propsTemplate) {
             }
             {!no_items &&
                 <FlatList
-                    ItemSeparatorComponent={() => <View style={{ paddingTop: "5%" }} />}
+                    ItemSeparatorComponent={() => <View style={{ paddingTop: "3%" }} />}
                     keyExtractor={(item) => props.listStudies ? item.uploaded : item.uid}
                     style={props.items.length == 0 ? { display: 'none' } : {}}
                     data={props.items}
                     renderItem={(item) => templateToUse({
                         token: token,
                         item: item.item,
+                        adminList: props.adminList,
                         viewStudiesType: viewStudies.type,
                         viewPatientsType: props.viewPatientsType,
                         dispatch: dispatch,

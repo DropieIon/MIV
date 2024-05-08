@@ -6,6 +6,7 @@ import request_router from '../src/routes/account_data/request.route';
 import details_router from '../src/routes/account_data/details.route';
 import upload_router from '../src/routes/account_data/upload.route';
 import studies_router from '../src/routes/account_data/studies.route';
+import admin_router from '../src/routes/account_data/admin.route';
 import { get_pool } from '../src/services/db/db-functions';
 import fileUpload from 'express-fileupload';
 import { Server as ServerIO } from "socket.io";
@@ -46,6 +47,7 @@ app.use('/request', request_router);
 app.use('/details', details_router);
 app.use('/upload', upload_router);
 app.use('/studies', studies_router);
+app.use('/admin', admin_router);
 
 
 /* Cleanup */
