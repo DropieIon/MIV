@@ -3,7 +3,7 @@ import { readdir } from "fs/promises";
 import { extname } from "path";
 import dcmDimse from 'dcmjs-dimse';
 import { parseDicom } from "dicom-parser";
-import { dbCheckStudyID, dbNewStudy } from "../../db/account_data/db-new-study.service";
+import { dbCheckStudyID, dbNewStudy } from "../../db/account_data/db-studies.service";
 
 const { Client } = dcmDimse;
 const { CStoreRequest } = dcmDimse.requests;

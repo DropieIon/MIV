@@ -81,6 +81,9 @@ export const DetailsStyles = StyleSheet.create({
     footerMainViewPatsAssigned: {
         height: "35%",
     },
+    footerMainViewStudies: {
+        height: "40%"
+    },
     footerUnassignButtonNormal: {
         width: "100%",
         height: "100%",
@@ -89,7 +92,7 @@ export const DetailsStyles = StyleSheet.create({
     footerUnassignButtonPatsAssigned: {
         height: "50%"
     },
-    footerUnlimUploadsButton: {
+    footerUnlimUploadsOrUnAssignStudyButton: {
         width: "100%",
         height: "50%",
         justifyContent: 'center',

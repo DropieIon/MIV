@@ -6,15 +6,21 @@ import {
 import { Image } from 'expo-image';
 import ViewStyles from '../../../components/ListStyles';
 import { propsTemplate } from './PropsTemplate';
-import { setOpenViewer, setReq_study_id } from '../../../features/globalStateSlice';
-
+import { setAccountDetails, setOpenViewer, setReq_study_id } from '../../../features/globalStateSlice';
+import { ListEntry } from '../../../types/ListEntry';
 
 export const StudiesTemplate = (props: propsTemplate) => {
     const unassignedStudies = props.viewStudiesType === 'unassigned';
+    const currentItem: ListEntry = props.item;
     return <TouchableOpacity
         style={ViewStyles.item}
         activeOpacity={0.9}
         onLongPress={() => {
+            props.dispatch(setAccountDetails({
+                fullName: currentItem.modality,
+                username: currentItem.study_id,
+                profile_pic: currentItem.previewB64,
+            }));
             props.setOpenDetails(true);
         }}
         onPress={() => {

@@ -17,9 +17,7 @@ export function DetailsModal(props: DetailsPropsTemplate) {
             animationType="slide"
             transparent={true}
             visible={true}
-            onRequestClose={() => {
-
-            }}>
+        >
             <View
                 style={[DetailsStyles.modalMainViewNormal,
                     props.type === 'PatsAssigned' ?
@@ -29,7 +27,7 @@ export function DetailsModal(props: DetailsPropsTemplate) {
                     type={props.type}
                     setOpenDetails={props.setOpenDetails}
                 />
-                <DetailsInfo />
+                {props.type !== "Study" && <DetailsInfo />}
                 {props.type !== 'Requests' &&
                     <DetailsFooter
                         setRespUnlim4h={setRespUnlim4h}

@@ -6,70 +6,150 @@ import { selectAccountDetails, selectToken } from "../../../../../features/globa
 import { DetailsPropsTemplate } from "../PropsTemplate";
 import { parseJwt } from "../../../../../utils/helper";
 import { allowUnlimUploads4h } from "../../../../../dataRequests/PatientData";
+import { deleteStudy, unassignStudy } from "../../../../../dataRequests/DicomData";
 
 export function DetailsFooter(props: DetailsPropsTemplate) {
     const token = useSelector(selectToken);
     const accountDetails = useSelector(selectAccountDetails);
     const unassign = ['PatsAssigned', 'Study'].includes(props.type);
-    const patsAssigned = props.type === 'PatsAssigned';
     const medic = parseJwt(token)?.role === 'med';
+    const twoButtons = ['PatsAssigned', 'Study'].includes(props.type) && medic;
+    let redButtonText: string;
+    switch (props.type) {
+        case "My Requests":
+            redButtonText = 'Cancel Request'
+            break;
+        case "PatsAssigned":
+            redButtonText = 'Unassign';
+            break;
+        case "Study":
+            redButtonText = medic ? 'Delete' : 'Unassign';
+            break;
+        case "Requests":
+            redButtonText = medic ? 'Assign' : 'Request';
+            break;
+        case "AllPats":
+            redButtonText = medic ? 'Assign' : 'Request';
+            break;
+        default:
+            break;
+    }
     return (
         <View
             style={
                 [DetailsStyles.footerMainViewNormal,
-                    patsAssigned ? DetailsStyles.footerMainViewPatsAssigned : {}]}
+                props.type === "PatsAssigned" ? DetailsStyles.footerMainViewPatsAssigned : {},
+                props.type === "Study" ? DetailsStyles.footerMainViewStudies : {}
+                ]}
         >
-            {medic && props.type === 'PatsAssigned' &&
-            <TouchableOpacity
-                style={DetailsStyles.footerUnlimUploadsButton}
-                onPress={() => {
-                    allowUnlimUploads4h(token, accountDetails.username)
-                    .then((resp) => {
-                        if(resp === null) {
-                            props.setRespUnlim4h('Could not allow patient');
-                            return;
+            {medic && twoButtons &&
+                <TouchableOpacity
+                    style={DetailsStyles.footerUnlimUploadsOrUnAssignStudyButton}
+                    onPress={() => {
+                        switch (props.type) {
+                            case 'Study':
+                                unassignStudy(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    });
+                                break;
+                            case 'PatsAssigned':
+                                allowUnlimUploads4h(token, accountDetails.username)
+                                    .then((resp) => {
+                                        if (resp === null) {
+                                            props.setRespUnlim4h('Could not allow patient');
+                                            return;
+                                        }
+                                        props.setRespUnlim4h(`${accountDetails.fullName} now has unlimited uploads for 4h`);
+                                    })
+                                break;
+                            default:
+                                break;
                         }
-                        props.setRespUnlim4h(`${accountDetails.fullName} now has unlimited uploads for 4h`);
-                    })
-                }}
-            >
-                <Text
-                    style={[DetailsStyles.footerText, DetailsStyles.footerUnlimUploadsText]}
+                    }}
                 >
-                    Unlimited uploads 4h
-                </Text>
-            </TouchableOpacity>}
+                    <Text
+                        style={[DetailsStyles.footerText, DetailsStyles.footerUnlimUploadsText]}
+                    >
+                        {props.type === "PatsAssigned" ? 'Unlimited uploads 4h' : 'Unassign Study'}
+                    </Text>
+                </TouchableOpacity>}
             <TouchableOpacity
                 style={[DetailsStyles.footerUnassignButtonNormal,
-                    patsAssigned ? DetailsStyles.footerUnassignButtonPatsAssigned : {}
+                twoButtons ? DetailsStyles.footerUnassignButtonPatsAssigned : {},
+                (props.type === "Study" && !medic) ?
+                        {
+                            height: "50%",
+                            top: "30%"
+                        }
+                        :
+                        {},
                 ]}
                 onPress={() => {
-                    props.type === 'My Requests' ? 
-                    cancelRequest(token, accountDetails.username)
-                    .then(() => {
-                        props.setRefreshPatList(Math.random() * 420);
-                        props.setOpenDetails(false);
-                    })
-                    :
-                    unassign ?
-                    unassignPatient(token, accountDetails.username)
-                    .then(() => {
-                        props.setRefreshPatList(Math.random() * 420);
-                        props.setOpenDetails(false);
-                    })
-                    :
-                    medic ?
-                    assignPatient(token, accountDetails.username)
-                    .then(() => {
-                        props.setRefreshPatList(Math.random() * 420);
-                        props.setOpenDetails(false);
-                    })
-                    :
-                    makeRequest(token, accountDetails.username)
-                    .then(() => {
-                        props.setRefreshPatList(Math.random() * 420);
-                        props.setOpenDetails(false);
-                    });
+                    switch (props.type) {
+                        case "My Requests":
+                            cancelRequest(token, accountDetails.username)
+                                .then(() => {
+                                    props.setRefreshPatList(Math.random() * 420);
+                                    props.setOpenDetails(false);
+                                })
+                            break;
+                        case "PatsAssigned":
+                            unassignPatient(token, accountDetails.username)
+                                .then(() => {
+                                    props.setRefreshPatList(Math.random() * 420);
+                                    props.setOpenDetails(false);
+                                })
+                            break;
+                        case "Study":
+                            // username is also used for study_id
+                            if(medic) {
+                                deleteStudy(token, accountDetails.username)
+                                .then(() => {
+                                    props.setRefreshPatList(Math.random() * 420);
+                                    props.setOpenDetails(false);
+                                });
+                            }
+                            else {
+                                unassignStudy(token, accountDetails.username)
+                                .then(() => {
+                                    props.setRefreshPatList(Math.random() * 420);
+                                    props.setOpenDetails(false);
+                                });
+                            }
+                            break;
+                        case "Requests":
+                            if (medic)
+                                assignPatient(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    })
+                            else
+                                makeRequest(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    });
+                            break;
+                        case "AllPats":
+                            if (medic)
+                                assignPatient(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    })
+                            else
+                                makeRequest(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    });
+                            break;
+                        default:
+                            break;
+                    }
                 }}
             >
                 <View
@@ -78,7 +158,7 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
                     <Text
                         style={DetailsStyles.footerText}
                     >
-                        {props.type === 'My Requests' ? 'Cancel request' : unassign ? 'Unassign' : medic ? 'Assign' : 'Request'}
+                        {redButtonText}
                     </Text>
                 </View>
             </TouchableOpacity>

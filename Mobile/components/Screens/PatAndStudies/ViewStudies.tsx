@@ -18,6 +18,7 @@ import { getPatientStudies } from '../../../dataRequests/PatientData';
 import { OpenUpload } from './AddEntry/OpenUpload';
 import Toast from 'react-native-root-toast';
 import { AssignModal } from './AssignToPat/AssignModal';
+import { DetailsModal } from './OpenDetails/DetailsModal';
 
 const styles = StyleSheet.create({
     view: {
@@ -122,7 +123,7 @@ function ViewStudies(props: propsTemplate) {
                             }
                             getPatientStudies(patID, token)
                                 .then((studiesList) => {
-                                    items_list.current = studiesList.sort((e1, e2) => { return parseInt(e2.uploaded) - parseInt(e1.uploaded) });;
+                                    items_list.current = studiesList.sort((e1, e2) => { return parseInt(e2.uploaded) - parseInt(e1.uploaded) });
                                     const timeDiff = performance.now() - startTime;
                                     if (timeDiff < msToWait)
                                         setTimeout(() => setLoading(false), timeDiff);
@@ -204,6 +205,13 @@ function ViewStudies(props: propsTemplate) {
                 ></List>
             }
         </View>
+        {!loading && openDetails && !openAssignment && !openUpload &&
+            <DetailsModal
+                setOpenDetails={setOpenDetails}
+                setRefreshPatList={setRefreshStudList}
+                type='Study'
+            />
+        }
         {!loading && !openDetails && !openAssignment && openUpload &&
             <OpenUpload
                 setErrUpload={setErr}

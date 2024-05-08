@@ -37,8 +37,46 @@ export async function dbAssignStudy(studyID: string, patUsername: string): Promi
         [patUsername, studyID]);
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
-            return "Database insertion error " + queryResp.sqlMessage;
+            return "Database update error " + queryResp.sqlMessage;
         }
     }
     return "";
+}
+
+export async function dbUnssignStudy(studyID: string, patUsername: string | null): Promise<string> {
+    // patUsername is null if it's a medic
+    const med = patUsername === null;
+    const query = 'update studies_assigned set patient_username = "", uploaded = uploaded where study_id = ?' + 
+        (med ? '' : ' and patient_username = ?');
+    const queryParams = med ? [studyID] : [studyID, patUsername];
+    const queryResp = await sq(
+        query,
+        queryParams
+    );
+    if (queryResp !== "") {
+        if (queryResp instanceof mariadb.SqlError) {
+            return "Database update error " + queryResp.sqlMessage;
+        }
+    }
+    return "";
+}
+
+export async function dbDeleteStudy(token: string, studyID: string): Promise<string> {
+    const queryResp = await sq(
+        'delete from studies_assigned where study_id = ?',
+        [studyID]);
+    if (queryResp !== "") {
+        if (queryResp instanceof mariadb.SqlError) {
+            return "Database deletion error " + queryResp.sqlMessage;
+        }
+    }
+    try {
+        const orthResp = await fetch(`http://orthanc:8042/studies/${studyID}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }, 
+        });
+        return "";
+    } catch (err) {
+        return "Cannot delete study: " + err;
+    }
 }

@@ -3,7 +3,7 @@ import orthanc
 from helpers import getDocUsername, Encoder, getUsername, checkAccess
 from services.StudyService import StudyListForUser, AllStudiesList
 import json
-import logging
+from logging import error
 
 def getStudiesForUser(output: orthanc_sdk.RestOutput, uri: str, **request):
     if request['method'] == 'GET':
@@ -40,5 +40,14 @@ def getStudyData(output: orthanc_sdk.RestOutput, uri: str, **request):
         output.AnswerBuffer(
                 orthanc.RestApiGet(f'/studies/{study_id}'),
                 'application/json')
+    elif request['method'] == 'DELETE':
+        if not getDocUsername(request):
+            output.SendUnauthorized('Not allowed')
+            return
+        try:
+            orthanc.RestApiDelete(f'/studies/{study_id}')
+        except Exception as e:
+            error("Cannot delete study: " + str(e))
+        output.AnswerBuffer('oki', 'text')
     else:
         output.SendMethodNotAllowed('Not allowed')

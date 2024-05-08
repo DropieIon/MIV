@@ -1,5 +1,5 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { orthanc_url } from '../configs/backend_url';
+import { backend_url, orthanc_url } from '../configs/backend_url';
 import { imageListItem } from '../types/ListEntry';
 import { viewerData } from '../types/ViewerData';
 import { AnyAction, Dispatch } from 'redux';
@@ -49,16 +49,66 @@ type stateFunctions = {
     setProgress,
 }
 
+async function deleteStudy(token: string, studyID: string) {
+    const jwtBody = parseJwt(token);
+    let resp: AxiosResponse;
+    if(jwtBody?.role === "med") {
+        try {
+            resp = await axios.delete(`${backend_url}/acc_data/studies/`,
+                {
+                    headers: { 'Authorization': 'Bearer ' + token }, 
+                    data: {
+                        study_id: studyID
+                    }
+                }
+            );
+        }
+        catch (error) {
+            console.error("Could not delete study ", error);
+            return null;
+        };
+        return "";
+    }
+    else {
+        throw new Error('Not a medic');
+    }
+    
+}
+
+async function unassignStudy(token: string, studyID: string) {
+    const jwtBody = parseJwt(token);
+    let resp: AxiosResponse;
+    if(['med', 'pat'].includes(jwtBody?.role)) {
+        try {
+            resp = await axios.put(`${backend_url}/acc_data/studies/unassign`,
+                {
+                    study_id: studyID
+                },
+                { headers: { 'Authorization': 'Bearer ' + token } }
+            );
+        }
+        catch (error) {
+            console.error("Could not unassign study ", error);
+            return null;
+        };
+        return "";
+    }
+    else {
+        throw new Error('Not a medic or pat');
+    }
+    
+}
+
 async function getStudies(token: string, type: "personal" | "unassigned"): Promise<Array<studiesListEntry>> {
     let resp: AxiosResponse<studiesListEntry[]>;
     try {
-        const url =  `${orthanc_url}/${type === "personal" ?"studies" : "all_studies"}`
+        const url = `${orthanc_url}/${type === "personal" ? "studies" : "all_studies"}`
         resp = await axios.get(url,
             { headers: { 'Authorization': 'Bearer ' + token } }
         )
     }
     catch (error) {
-        console.error("Could not get studies", error);
+        console.error("Could not get studies ", error);
         return null;
     };
     return resp.data;
@@ -191,5 +241,7 @@ async function getViewerImages(study_id: string, token: string,
 export {
     getStudies,
     studiesListEntry,
-    getViewerImages
+    getViewerImages,
+    unassignStudy,
+    deleteStudy
 };

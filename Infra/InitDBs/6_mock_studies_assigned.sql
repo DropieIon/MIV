@@ -19,7 +19,7 @@ INSERT INTO studies_assigned(
 VALUES (
     'patient1',
     '8fb3d973-4449cad4-c21bb79d-81c41b56-b9412373',
-    DATE_SUB(NOW(), INTERVAL 1 SECOND)
+    DATE_SUB(NOW(), INTERVAL 1 HOUR)
 );
 
 INSERT INTO studies_assigned(
@@ -30,7 +30,7 @@ INSERT INTO studies_assigned(
 VALUES (
     'patient1',
     '941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3',
-    DATE_SUB(NOW(), INTERVAL 2 SECOND)
+    DATE_SUB(NOW(), INTERVAL 2 HOUR)
 );
 
 INSERT INTO studies_assigned(
@@ -41,7 +41,7 @@ INSERT INTO studies_assigned(
 VALUES (
     'patient2',
     '9fcadbc3-58807fe5-05a2969e-ab4aafaa-af735eaa',
-    DATE_SUB(NOW(), INTERVAL 3 SECOND)
+    DATE_SUB(NOW(), INTERVAL 3 HOUR)
 );
 
 -- INSERT INTO studies_assigned(
@@ -52,7 +52,7 @@ VALUES (
 -- VALUES (
 --     'patient2',
 --     'aa938400-09e9f0df-8ba95f68-e21f98dd-0c6e0cf0',
---     DATE_SUB(NOW(), INTERVAL 4 SECOND)
+--     DATE_SUB(NOW(), INTERVAL 4 HOUR)
 -- );
 
 INSERT INTO studies_assigned(
@@ -63,7 +63,7 @@ INSERT INTO studies_assigned(
 VALUES (
     'patient2',
     '750255f1-a6d57cdf-6f7692af-b6eb20e8-76b2cd54',
-    DATE_SUB(NOW(), INTERVAL 5 SECOND)
+    DATE_SUB(NOW(), INTERVAL 5 HOUR)
 );
 
 /*
