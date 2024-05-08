@@ -9,6 +9,7 @@ import { ViewerImage } from "./ViewerImage";
 import { useEffect, useRef, useState } from "react";
 import { imageListItem } from "../../../types/ListEntry";
 import { InstanceStatus } from "./InstanceStatus";
+import { ChatModal } from "./Chat/ChatModal";
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -132,6 +133,7 @@ export function MainImageView(props: propsTemplate) {
                     }}
                     series_length={props.route.params.length}
                 />
+                <ChatModal />
             </SafeAreaView>
         );
     }
