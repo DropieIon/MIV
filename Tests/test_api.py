@@ -6,6 +6,10 @@ base_url = 'http://localhost:8000'
 def decodeTokenBody(token: str):
     return base64.b64decode(token.split('.')[1] + "==")
 
+token_admin = post(f'{base_url}/login', json={
+    "username": "talent", "password": "nu"
+    }).json()['token']
+
 token_doctor1 = post(f'{base_url}/login', json={
     "username": "doctor1", "password": "nu"
     }).json()['token']
@@ -42,12 +46,10 @@ token_tc = post(f'{base_url}/login', json={
 #                       "patient_username": "patient1"
 #                   })
 
-req_resp = put(f'{base_url}/acc_data/studies/unassign', headers={'Authorization': f'Bearer {token_patient1}'},
-                  json={
-                      "study_id": "941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3",
-                    #   "study_id": "750255f1-a6d57cdf-6f7692af-b6eb20e8-76b2cd54",
-                      "patient_username": "patient1"
-                  })
+req_resp = put(f'{base_url}/acc_data/admin/promote', headers={'Authorization': f'Bearer {token_admin}'},
+               json={
+                   "patient_username": "patient1"
+               })
 
 print(req_resp.status_code)
 print(req_resp.json())

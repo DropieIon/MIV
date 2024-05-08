@@ -117,3 +117,18 @@ VALUES (
     '1950-04-20',
     'M'
 );
+
+/* Admin */
+
+INSERT INTO personal_data(
+    username,
+    full_name,
+    birthday,
+    sex
+)
+VALUES (
+    'talent',
+    'sir talentus',
+    '0000-04-20',
+    'M'
+);
