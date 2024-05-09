@@ -29,7 +29,18 @@ type messageData = {
     message: string,
     read?: boolean,
     timestamp: number,
-    senderUsername: string
+    senderUsername?: string
+}
+
+type getMessageListReq = {
+    recvUser: string,
+    study_id: string
+}
+
+type messageOverWS = {
+    recv: string,
+    study_id: string,
+    message: string,
 }
 
 export {
@@ -37,5 +48,7 @@ export {
     splitFile,
     EOS,
     token_data,
-    messageData
+    messageData,
+    messageOverWS,
+    getMessageListReq
 }

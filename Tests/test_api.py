@@ -46,9 +46,9 @@ token_tc = post(f'{base_url}/login', json={
 #                       "patient_username": "patient1"
 #                   })
 
-req_resp = put(f'{base_url}/acc_data/admin/promote', headers={'Authorization': f'Bearer {token_admin}'},
+req_resp = post(f'{base_url}/acc_data/details/pfp', headers={'Authorization': f'Bearer {token_admin}'},
                json={
-                   "patient_username": "patient1"
+                   "username": "patient1"
                })
 
 print(req_resp.status_code)
