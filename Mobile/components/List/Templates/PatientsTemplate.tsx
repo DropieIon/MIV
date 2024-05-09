@@ -6,7 +6,7 @@ import {
 import { Image } from 'expo-image';
 import ViewStyles from '../../../components/ListStyles';
 import { propsTemplate } from './PropsTemplate';
-import { setAccountDetails, setViewStudies } from '../../../features/globalStateSlice';
+import { setAccountDetails, setStudyChatUsername, setViewStudies } from '../../../features/globalStateSlice';
 import { ListEntry } from '../../../types/ListEntry';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
 import { assignToPatient } from '../../../dataRequests/PatientData';
@@ -21,8 +21,6 @@ export function patientsTemplate(props: propsTemplate) {
         style={ViewStyles.item}
         onLongPress={() => {
             if (personalPatients) {
-                // const timeDiff = new Date().getTime() - new Date(currentItem.birthday).getTime()
-                // const age = Math.floor(Math.ceil(timeDiff / (1000 * 3600 * 24)) / 365);
                 props.dispatch(setAccountDetails({
                     fullName: currentItem.full_name,
                     username: currentItem.username,
@@ -44,6 +42,7 @@ export function patientsTemplate(props: propsTemplate) {
                     profile_pic: currentItem.profile_pic,
                     nrOfStudies: currentItem.nrOfStudies
                 }));
+                props.dispatch(setStudyChatUsername(currentItem.username));
                 props.dispatch(setViewStudies({
                     type: 'personal',
                     patientID: props.item.uid

@@ -29,7 +29,6 @@ export function ViewerImage(props: { onMount, series_data: imageListItem[] }) {
         Dimensions.get('window').height * 0.5, 
         Dimensions.get('window').width
     );
-    // const img_width = "100%";
     const imgData = props.series_data[img_nr];
     if (props.series_data.length !== 0) {
         return (

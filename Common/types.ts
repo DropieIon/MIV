@@ -21,12 +21,21 @@ type token_data = {
     username: string,
     role: string,
     canUpload: boolean,
-    unlimitedUp4h: boolean
+    unlimitedUp4h: boolean,
+    exp?: number,
+}
+
+type messageData = {
+    message: string,
+    read?: boolean,
+    timestamp: number,
+    senderUsername: string
 }
 
 export {
     handShake,
     splitFile,
     EOS,
-    token_data
+    token_data,
+    messageData
 }

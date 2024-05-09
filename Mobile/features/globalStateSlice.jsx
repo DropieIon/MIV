@@ -11,6 +11,10 @@ export const globalStateSlice = createSlice({
         },
         loadingProgress: [],
         currentAccountFullName: "",
+        // used for chat
+        currentAccountUsername: "",
+        studyChatUsername: "",
+
         accountDetails: {
             fullName: "",
             username: "",
@@ -48,6 +52,12 @@ export const globalStateSlice = createSlice({
         setCurrentAccountFullName: (state, action) => {
             state.currentAccountFullName = action.payload;
         },
+        setCurrentAccountUsername: (state, action) => {
+            state.currentAccountUsername = action.payload;
+        },
+        setStudyChatUsername: (state, action) => {
+            state.studyChatUsername = action.payload;
+        },
         setViewStudies: (state, action) => {
             state.viewStudies = action.payload;
         },
@@ -66,6 +76,8 @@ export const {
     setAccountDetails,
     setViewStudies,
     setCurrentAccountFullName,
+    setCurrentAccountUsername,
+    setStudyChatUsername,
     setReq_study_id,
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
@@ -77,5 +89,7 @@ export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
 export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
+export const selectCurrentAccountUsername = (state) => state.currentAccountUsername;
+export const selectStudyChatUsername = (state) => state.studyChatUsername;
 export const selectViewStudies = (state) => state.viewStudies;
 export const selectReq_study_id = (state) => state.req_study_id;
