@@ -40,14 +40,23 @@ CREATE TABLE patients_assigned (
     doctor_username         char(255) NOT NULL,
     patient_id              char(255) NOT NULL,
     patient_username        char(255) NOT NULL,
-    PRIMARY KEY(doctor_username, patient_username)
+    PRIMARY KEY(doctor_username, patient_username),
+    CONSTRAINT `fk_patsAssigned_pat_username`
+        FOREIGN KEY (patient_username) REFERENCES login (username)
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_patsAssigned_doc_username`
+        FOREIGN KEY (doctor_username) REFERENCES login (username)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE studies_assigned (
     study_id                char(255) NOT NULL,
     patient_username        char(255) NOT NULL,
     uploaded                timestamp,
-    PRIMARY KEY(study_id)
+    PRIMARY KEY(study_id),
+    CONSTRAINT `fk_studsAssigned_pat_username`
+        FOREIGN KEY (patient_username) REFERENCES login (username)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE requests (
@@ -55,18 +64,49 @@ CREATE TABLE requests (
     doctor_username         char(255) NOT NULL,
     accepted                char(1) NOT NULL default 'N',
     date                    timestamp,
-    PRIMARY KEY(patient_username, doctor_username)
+    PRIMARY KEY(patient_username, doctor_username),
+    CONSTRAINT `fk_requests_pat_username`
+        FOREIGN KEY (patient_username) REFERENCES login (username)
+        ON DELETE CASCADE,
+        CONSTRAINT `fk_requests_doc_username`
+        FOREIGN KEY (doctor_username) REFERENCES login (username)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE unlimitedUploads (
     patient_username        char(255) NOT NULL,
     stamp                   timestamp,
-    PRIMARY KEY(patient_username)
+    PRIMARY KEY(patient_username),
+    CONSTRAINT `fk_unlimUps_pat_username`
+        FOREIGN KEY (patient_username) REFERENCES login (username)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE bytesUploadedToday (
     patient_username        char(255) NOT NULL,
     bytes                   bigint,
     stamp                   timestamp,
-    PRIMARY KEY(patient_username)
+    PRIMARY KEY(patient_username),
+    CONSTRAINT `fk_bytesUploadedToday_pat_username`
+        FOREIGN KEY (patient_username) REFERENCES login (username)
+        ON DELETE CASCADE
 );
+
+CREATE TABLE messages (
+    username_sender         char(255) NOT NULL,
+    username_receiver       char(255) NOT NULL,
+    study_id                char(255) NOT NULL,
+    message                 text NOT NULL,
+    isRead                  boolean NOT NULL default 0,
+    stamp                   timestamp NOT NULL,
+    PRIMARY KEY(username_sender, username_receiver, study_id, stamp),
+    CONSTRAINT `fk_messages_username_sender`
+        FOREIGN KEY (username_sender) REFERENCES login (username),
+    CONSTRAINT `fk_messages_username_receiver`
+    FOREIGN KEY (username_receiver) REFERENCES login (username),
+    CONSTRAINT `fk_messages_study_id`
+        FOREIGN KEY (study_id) REFERENCES studies_assigned (study_id)
+        ON DELETE CASCADE
+);
+
+

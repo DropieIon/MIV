@@ -44,16 +44,16 @@ VALUES (
     DATE_SUB(NOW(), INTERVAL 3 HOUR)
 );
 
--- INSERT INTO studies_assigned(
---     patient_username,
---     study_id,
---     uploaded
---     )
--- VALUES (
---     'patient2',
---     'aa938400-09e9f0df-8ba95f68-e21f98dd-0c6e0cf0',
---     DATE_SUB(NOW(), INTERVAL 4 HOUR)
--- );
+INSERT INTO studies_assigned(
+    patient_username,
+    study_id,
+    uploaded
+    )
+VALUES (
+    '',
+    'aa938400-09e9f0df-8ba95f68-e21f98dd-0c6e0cf0',
+    DATE_SUB(NOW(), INTERVAL 4 HOUR)
+);
 
 INSERT INTO studies_assigned(
     patient_username,

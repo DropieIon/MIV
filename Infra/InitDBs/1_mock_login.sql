@@ -234,3 +234,26 @@ VALUES (
     'Y',
     'Y'
 );
+
+/* Only for studies_assigned fk constraint */
+
+INSERT INTO login(
+    username,
+    uuid,
+    passhash,
+    salt,
+    email,
+    role,
+    has_completed,
+    email_validation
+)
+VALUES (
+    '',
+    '5bdc989c-ac10-4ffd-aa06-74cd6972008998',
+    'e28be0d62a8386f1053cee00fda6d20121bfafdcb8ec62880b87f7d9c4c77acf',
+    '1234567890198765',
+    'chiar_nu_cont@i.com',
+    'pat',
+    'Y',
+    'Y'
+);
