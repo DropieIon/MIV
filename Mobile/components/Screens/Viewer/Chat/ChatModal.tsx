@@ -1,21 +1,43 @@
 import {
     Modal,
     View,
+    TouchableOpacity
 } from "react-native";
 import { ChatStyles } from "./ChatStyles";
 import { MessageBox } from "./MessageBox";
 import { Conversation } from "./Conversation/Conversation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { messageData } from "../../../../../Common/types";
 import { useSelector } from "react-redux";
-import { selectCurrentAccountUsername } from "../../../../features/globalStateSlice";
+import { selectChatData, selectCurrentAccountUsername, selectOpenViewer, selectToken } from "../../../../features/globalStateSlice";
+import { AntDesign } from '@expo/vector-icons';
+import { DetailsStyles } from "../../PatAndStudies/OpenDetails/DetailsStyles";
+import { Socket, io } from "socket.io-client";
+import { backend_url } from "../../../../configs/backend_url";
 
-export function ChatModal(props) {
+type propsTemplate = {
+    setShowChat,
+}
+
+export function ChatModal(props: propsTemplate) {
     const [messagesList, setMessagesList] = useState<messageData[]>(null);
+    const token = useSelector(selectToken);
     const currentUsername = useSelector(selectCurrentAccountUsername);
+    const openViewer = useSelector(selectOpenViewer);
+    const chatData = useSelector(selectChatData);
+    const study_id = openViewer.study_id;
+    const socket = useRef<Socket>(null);
+    
+    const closeSock = () => {
+        socket.current.disconnect();
+    }
     const appendMsg = (msg: string) => {
         if (msg !== "") {
-
+            socket.current.emit('msg-to-serv', {
+                recv: chatData.recvUser,
+                study_id,
+                message: msg
+            });
             setMessagesList(messagesList.concat({
                 message: msg,
                 timestamp: new Date().getTime(),
@@ -25,6 +47,25 @@ export function ChatModal(props) {
         }
     }
     useEffect(() => {
+        try {
+            socket.current = io(`${backend_url}`, {
+                reconnectionDelayMax: 10000,
+                extraHeaders: {
+                    Authorization: `Bearer ${token}`,
+                    ConnType: 'study-chat'
+                }
+            });
+            socket.current.on('err', (data: string) => {
+                console.error('Communication error: ', data);
+            });
+            socket.current.on('disconnect', (d) => {
+                console.log("Disconnected");
+
+            });
+        } catch (error) {
+            // props.setErrUpload("Could not create socket to server " + error);
+            return;
+        }
         // TODO: get this from server
         setMessagesList(
             [
@@ -57,6 +98,19 @@ export function ChatModal(props) {
             <View
                 style={ChatStyles.mainView}
             >
+                <TouchableOpacity
+                    style={DetailsStyles.headercloseButton}
+                    onPress={() => {
+                        closeSock();
+                        props.setShowChat(false);
+                    }}
+                >
+                    <AntDesign
+                        name="closecircle"
+                        size={24}
+                        color="white"
+                    />
+                </TouchableOpacity>
                 <Conversation
                     messagesList={messagesList}
                 />

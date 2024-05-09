@@ -12,8 +12,7 @@ export function errorHandler(err: Error, req: Request,
                 stack: err.stack,
               }, null, 2));
             }
-        
-            return res.status(statusCode).send({ errors });
+            return res.status(statusCode).send({ message: errors[0].message });
           }
         
           // Unhandled errors

@@ -114,9 +114,6 @@ function ViewPatients(props: propsTemplate) {
                     setFilter(text);
                 }}
             />
-            {/* {!listStudies && <FilterAge />}
-            {!listStudies && <FilterSex />}
-            {listStudies && <FilterDate/>} */}
         </View>
         <View
             style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}

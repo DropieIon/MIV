@@ -1,15 +1,16 @@
 import {
     SafeAreaView,
-    View,
     StyleSheet,
     Text,
     FlatList,
+    TouchableOpacity,
 } from "react-native";
 import { ViewerImage } from "./ViewerImage";
 import { useEffect, useRef, useState } from "react";
 import { imageListItem } from "../../../types/ListEntry";
 import { InstanceStatus } from "./InstanceStatus";
 import { ChatModal } from "./Chat/ChatModal";
+import { MaterialIcons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
     main_screen: {
@@ -44,6 +45,19 @@ const styles = StyleSheet.create({
         bottom: 0,
 
     },
+
+    chatButton: {
+        alignSelf: 'flex-end',
+        alignItems: 'center',
+        justifyContent: 'center',
+        top: "10%",
+        right: "3%",
+        height: 50,
+        width: 50,
+        position: 'absolute',
+        backgroundColor: 'green',
+        borderRadius: 30,
+    },
 })
 
 type propsTemplate = {
@@ -60,6 +74,7 @@ type propsTemplate = {
 export function MainImageView(props: propsTemplate) {
     const series_data = props.route.params.seriesData;
     let index = 0;
+    const [showChat, setShowChat] = useState(false);
     useEffect(() => {
         if(setImg_nr)
             setImg_nr(0);
@@ -74,11 +89,19 @@ export function MainImageView(props: propsTemplate) {
     let setImg_nr = null;
     let status_setImg_nr = null;
     let currentOffset = 0;
+
+    const opacityVal = 0.6;
     if (series_data) {
         return (
             <SafeAreaView
                 style={styles.main_screen}
             >
+                <TouchableOpacity
+                    style={[styles.chatButton, showChat ? {opacity: opacityVal} : {}]}
+                    onPress={() => setShowChat(true)}
+                >
+                    <MaterialIcons name="message" size={24} color="white" />
+                </TouchableOpacity>
                 <ViewerImage
                     series_data={series_data}
                     onMount={(childData) => {
@@ -93,7 +116,7 @@ export function MainImageView(props: propsTemplate) {
                     }}
                     showsVerticalScrollIndicator={false}
                     ref={nr_ref}
-                    style={styles.img_scroll}
+                    style={[styles.img_scroll, showChat ? {opacity: opacityVal} : {}]}
                     onScrollEndDrag={(e) => {
                         // scrollToIndex triggers the onScroll event and we don't want to update
                         // index based on that
@@ -133,7 +156,11 @@ export function MainImageView(props: propsTemplate) {
                     }}
                     series_length={props.route.params.length}
                 />
-                <ChatModal />
+                {showChat &&
+                    <ChatModal
+                        setShowChat={setShowChat}
+                    />
+                }
             </SafeAreaView>
         );
     }

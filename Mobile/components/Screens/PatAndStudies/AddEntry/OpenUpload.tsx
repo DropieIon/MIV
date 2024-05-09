@@ -50,7 +50,8 @@ export function OpenUpload(props: propsTemplate) {
             socket = io(`${backend_url}`, {
                 reconnectionDelayMax: 10000,
                 extraHeaders: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    ConnType: 'upload'
                 }
             });
             socket.on('disconnect', (d) => {

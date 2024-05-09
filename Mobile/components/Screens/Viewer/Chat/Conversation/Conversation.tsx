@@ -2,6 +2,7 @@ import { FlatList, View } from "react-native";
 import { messageData } from "../../../../../../Common/types";
 import { groupBy } from 'lodash';
 import { MessagesFromOneDay } from "./MessagesFromOneDay";
+import { useEffect } from "react";
 
 type propsTemplate = {
     messagesList: messageData[]
@@ -27,7 +28,7 @@ export function Conversation(props: propsTemplate) {
     return (
         <View
             style={{
-                backgroundColor: 'red',
+                // backgroundColor: 'red',
                 top: '1%',
                 height: '90%',
                 width: '95%',

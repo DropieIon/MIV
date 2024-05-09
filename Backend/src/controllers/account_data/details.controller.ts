@@ -4,7 +4,8 @@ import EmptyField from "../../errors/EmptyField.error";
 import { patientForm } from "../../types/auth/authentication.type";
 import { has_completed } from "../../services/db/auth/db-auth.service";
 import { parseJwt } from "../../utils/helper.util";
-import { patient_details } from "../../services/account_data/details.service";
+import { patient_details, svcGetPfp } from "../../services/account_data/details.service";
+import ControllerError from "../../errors/RegisterError.error";
 
 const get_username = (token: string): string => parseJwt(token)?.username;
 
@@ -54,6 +55,34 @@ export async function has_completedController(req: Request,
 
     next(new RegisterError({
         message: resp_completed,
+        code: 400
+    }))
+}
+
+export async function conGetPfp(req: Request<{}, {}, { username: string }>,
+    res: Response, next: NextFunction) {
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if(!token) {
+        next(new EmptyField({
+            message: "Token required",
+            code: 400
+        }));
+        return;
+    }
+    if(!req.body.username) {
+        next(new EmptyField({
+            message: "Username required",
+            code: 400
+        }));
+        return;
+    }
+    let respPFP = await svcGetPfp(req.body.username);
+    if (respPFP.ok) {
+        res.json(respPFP.data);
+        return;
+    }
+    next(new ControllerError({
+        message: respPFP.data,
         code: 400
     }))
 }

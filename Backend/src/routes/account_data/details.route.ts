@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { conDetailsController } from "../../controllers/account_data/details.controller";
+import { conDetailsController, conGetPfp } from "../../controllers/account_data/details.controller";
+
 const router = Router();
 
 router.put('/', conDetailsController);
+router.post('/pfp', conGetPfp);
 
 export default router;

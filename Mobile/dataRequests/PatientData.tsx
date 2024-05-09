@@ -62,6 +62,27 @@ async function promotePat(token: string, patUsername: string) {
   return resp.data;
 }
 
+async function getPfp(token: string, username: string) {
+  let resp;
+  try {
+    resp = await axios.post(`${backend_url}/acc_data/details/pfp`,
+      {
+        username
+      },
+      { headers: { 'Authorization': 'Bearer ' + token } },
+    )
+  }
+  catch (error) {
+    const errData: any = (error as AxiosError).response.data;
+    if(errData.message === "No pfp for user") {      
+      return "";
+    }
+    console.error("Could not get pfp for user " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 async function putPatientDetails(token: string, patDetails: patDetails) {
   let resp;
   try {
@@ -138,7 +159,8 @@ export {
   getPatients,
   getPatientStudies,
   putPatientDetails,
+  getPfp,
   allowUnlimUploads4h,
   assignToPatient,
-  promotePat
+  promotePat,
 };

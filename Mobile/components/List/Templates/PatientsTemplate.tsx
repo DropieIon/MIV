@@ -6,10 +6,11 @@ import {
 import { Image } from 'expo-image';
 import ViewStyles from '../../../components/ListStyles';
 import { propsTemplate } from './PropsTemplate';
-import { setAccountDetails, setStudyChatUsername, setViewStudies } from '../../../features/globalStateSlice';
+import { setAccountDetails, setChatData, setViewStudies } from '../../../features/globalStateSlice';
 import { ListEntry } from '../../../types/ListEntry';
 import { defaultPfp } from '../../../configs/defaultUser.b64';
-import { assignToPatient } from '../../../dataRequests/PatientData';
+import { assignToPatient, getPfp } from '../../../dataRequests/PatientData';
+import { parseJwt } from '../../../utils/helper';
 
 export function patientsTemplate(props: propsTemplate) {
     const currentItem: ListEntry = props.item;
@@ -42,7 +43,17 @@ export function patientsTemplate(props: propsTemplate) {
                     profile_pic: currentItem.profile_pic,
                     nrOfStudies: currentItem.nrOfStudies
                 }));
-                props.dispatch(setStudyChatUsername(currentItem.username));
+                getPfp(props.token, parseJwt(props.token)?.username)
+                .then((myPfp_be) => {
+                    getPfp(props.token, currentItem.username)
+                    .then((recvPfp_be) => {
+                        props.dispatch(setChatData({
+                            recvUser: currentItem.username,
+                            myPfp: myPfp_be === "" ? defaultPfp : myPfp_be,
+                            recieverPfp: recvPfp_be === "" ? defaultPfp : recvPfp_be
+                        }));
+                    })
+                })
                 props.dispatch(setViewStudies({
                     type: 'personal',
                     patientID: props.item.uid

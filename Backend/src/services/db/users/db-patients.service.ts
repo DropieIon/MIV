@@ -42,8 +42,6 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all', 
     group by l.username";
     const querry_params = admin ? [] :
         assigned ? [docUsername] : [docUsername, docUsername];
-    console.log(querry_sql);
-    
     let query_resp = await sq(querry_sql, querry_params);
     if (typeof query_resp !== "string" && !(query_resp instanceof mariadb.SqlError)) {
         let resp_list: patientApiResp[] = [];

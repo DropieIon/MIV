@@ -1,5 +1,6 @@
 import { resp_common_services } from "../../types/auth/authentication.type";
 import { patientForm } from "../../types/auth/authentication.type";
+import { dbGetPfp } from "../db/account_data/db-details.service";
 import { has_completed, insert_patient_details } from "../db/auth/db-auth.service";
 
 
@@ -11,4 +12,11 @@ export async function patient_details(username: string, details: patientForm): P
     if(resp_insert !== "")
         return {ok: false, data: resp_insert};
     return { ok: true, data: "Added patient data successfully" };
+}
+
+export async function svcGetPfp(username: string) {
+    const respDB = await dbGetPfp(username);
+    if(typeof respDB === "string")
+        return {ok: false, data: respDB};
+    return { ok: true, data: respDB.pfp };
 }
