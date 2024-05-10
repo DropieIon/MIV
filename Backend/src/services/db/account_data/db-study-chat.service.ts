@@ -25,8 +25,8 @@ export async function dbStoreMsg(sender: string, msgData: messageOverWS) {
 }
 
 export async function dbGetLastMessages(username: string, recv: string, study_id: string): Promise<string | messageData[]> {
-    const sql_resp = await sq
-        ('select message, read, stamp from profile_pictures \
+    let sql_resp = await sq
+        ('select message, isRead, stamp, username_sender from messages \
         where username_sender in (?, ?) \
         and username_receiver in (?, ?) \
         and study_id = ? \
@@ -41,10 +41,19 @@ export async function dbGetLastMessages(username: string, recv: string, study_id
             const current_resp = sql_resp[i];
             resp_list.push({
                 message: current_resp.message,
-                read: current_resp.read,
+                read: current_resp.isRead,
                 timestamp: current_resp.stamp,
+                senderUsername: current_resp.username_sender
             });
         }
+        sql_resp = await sq(
+            'update messages set isRead = 1, stamp = stamp where username_receiver = ? and username_sender = ?',
+            [username, recv]
+        );
+        if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
+            return resp_list;
+        }
+        return "Cannot set read messages";
     }
     return "Cannot get messages";
 }

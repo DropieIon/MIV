@@ -38,6 +38,8 @@ export function ChatModal(props: propsTemplate) {
                 study_id,
                 message: msg
             });
+            console.log(new Date().getTime());
+            
             setMessagesList(messagesList.concat({
                 message: msg,
                 timestamp: new Date().getTime(),
@@ -66,29 +68,12 @@ export function ChatModal(props: propsTemplate) {
             // props.setErrUpload("Could not create socket to server " + error);
             return;
         }
-        // TODO: get this from server
-        setMessagesList(
-            [
-                {
-                    message: "daaaaaa",
-                    read: false,
-                    timestamp: 1715240930206,
-                    senderUsername: 'doctor1'
-                },
-                {
-                    message: "nah fam",
-                    read: true,
-                    timestamp: 1715240930207,
-                    senderUsername: 'patient1'
-                },
-                {
-                    message: "nah famm",
-                    read: true,
-                    timestamp: 1715040930208,
-                    senderUsername: 'doctor1'
-                }
-            ]
-        );
+        socket.current.emit('get-messages', {
+            recvUser: chatData.recvUser,
+            study_id
+        }, (data: messageData[]) => {
+            setMessagesList(data);
+        });
     }, []);
     return (
         <Modal

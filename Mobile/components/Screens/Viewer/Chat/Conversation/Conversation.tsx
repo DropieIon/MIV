@@ -2,7 +2,6 @@ import { FlatList, View } from "react-native";
 import { messageData } from "../../../../../../Common/types";
 import { groupBy } from 'lodash';
 import { MessagesFromOneDay } from "./MessagesFromOneDay";
-import { useEffect } from "react";
 
 type propsTemplate = {
     messagesList: messageData[]
@@ -28,7 +27,6 @@ export function Conversation(props: propsTemplate) {
     return (
         <View
             style={{
-                // backgroundColor: 'red',
                 top: '1%',
                 height: '90%',
                 width: '95%',
@@ -40,7 +38,11 @@ export function Conversation(props: propsTemplate) {
                 renderItem={(item) => {
                     return <MessagesFromOneDay
                         date={item.item}
-                        messages={groupedList[item.item]}
+                        messages={groupedList[item.item].sort((a, b) => {
+                            if(a.timestamp > b.timestamp)
+                                return 1;
+                            return -1;
+                        })}
                     />;
                 }}
                 ref={ref => this.flatList = ref}

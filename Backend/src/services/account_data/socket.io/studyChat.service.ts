@@ -1,6 +1,6 @@
 import { messageData, messageOverWS } from "../../../../../Common/types";
 import { Socket } from "socket.io";
-import { dbGetLastMessages, dbStoreMsg } from "../../db/account_data/db-study-chat";
+import { dbGetLastMessages, dbStoreMsg } from "../../db/account_data/db-study-chat.service";
 import { parseJwt } from "../../../utils/helper.util";
 
 export function sockReceiveMsg(socket: Socket, data: messageOverWS) {
@@ -21,9 +21,11 @@ export function sockReceiveMsg(socket: Socket, data: messageOverWS) {
     }
 }
 
-export function sockGetMsgs(socket: Socket, recvUser: string, study_id: string) {
+export function sockGetMsgs(socket: Socket, recvUser: string, study_id: string, callback: any) {
     const token = socket.handshake.headers.authorization?.split('Bearer ')[1];
     if(token) {
+        console.log(parseJwt(token).username, recvUser);
+        
         dbGetLastMessages(parseJwt(token).username, recvUser, study_id)
         .then((dbResp: string | messageData[]) => {
             if(typeof dbResp === "string") {
@@ -32,7 +34,7 @@ export function sockGetMsgs(socket: Socket, recvUser: string, study_id: string) 
                 return;
             }
             else {
-                socket.emit('messages-requested', dbResp);
+                callback(dbResp);
             }
         });
     }

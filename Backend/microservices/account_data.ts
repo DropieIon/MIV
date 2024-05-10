@@ -38,12 +38,12 @@ io.on('connection', function (socket) {
       socket.on('msg-to-serv', (data: messageOverWS) => {
         sockReceiveMsg(socket, data);
       });
-      socket.on('get-messages', (data: getMessageListReq) => {
+      socket.on('get-messages', (data: getMessageListReq, callback) => {
         const {
           recvUser,
           study_id
         } = data;
-        sockGetMsgs(socket, recvUser, study_id);
+        sockGetMsgs(socket, recvUser, study_id, callback);
       });
       break;
     default:

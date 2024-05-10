@@ -6,8 +6,9 @@ import {
 import { Image } from 'expo-image';
 import ViewStyles from '../../../components/ListStyles';
 import { propsTemplate } from './PropsTemplate';
-import { setAccountDetails, setOpenViewer, setReq_study_id } from '../../../features/globalStateSlice';
+import { setAccountDetails, setChatData, setOpenViewer, setReq_study_id } from '../../../features/globalStateSlice';
 import { ListEntry } from '../../../types/ListEntry';
+import { parseJwt } from '../../../utils/helper';
 
 export const StudiesTemplate = (props: propsTemplate) => {
     const unassignedStudies = props.viewStudiesType === 'unassigned';
@@ -24,6 +25,11 @@ export const StudiesTemplate = (props: propsTemplate) => {
             props.setOpenDetails(true);
         }}
         onPress={() => {
+            if(parseJwt(props.token)?.role === 'pat') {
+                // props.dispatch(setChatData({
+                //     recvUser: 
+                // }))
+            }
             props.dispatch(props.setOpenViewer({
                 should_open: true,
                 study_id: props.item.study_id,

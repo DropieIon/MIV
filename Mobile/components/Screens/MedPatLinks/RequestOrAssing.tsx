@@ -61,7 +61,6 @@ export function RequestOrAssign(props: propsTemplate) {
             adminList = "med";
             break;
         default:
-            console.error("Wrong route name in admin");
             break;
     }
 
