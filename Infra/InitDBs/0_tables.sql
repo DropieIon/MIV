@@ -94,19 +94,12 @@ CREATE TABLE bytesUploadedToday (
 
 CREATE TABLE messages (
     username_sender         char(255) NOT NULL,
-    username_receiver       char(255) NOT NULL,
     study_id                char(255) NOT NULL,
     message                 text NOT NULL,
-    isRead                  boolean NOT NULL default 0,
     stamp                   timestamp NOT NULL,
-    PRIMARY KEY(username_sender, username_receiver, study_id, stamp),
+    PRIMARY KEY(username_sender, study_id, stamp),
     CONSTRAINT `fk_messages_username_sender`
-        FOREIGN KEY (username_sender) REFERENCES login (username),
-    CONSTRAINT `fk_messages_username_receiver`
-    FOREIGN KEY (username_receiver) REFERENCES login (username),
-    CONSTRAINT `fk_messages_study_id`
-        FOREIGN KEY (study_id) REFERENCES studies_assigned (study_id)
-        ON DELETE CASCADE
+        FOREIGN KEY (username_sender) REFERENCES login (username)
 );
 
 

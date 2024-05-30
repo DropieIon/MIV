@@ -87,7 +87,7 @@ INSERT INTO personal_data(
 )
 VALUES (
     'doctor1',
-    'juanito pecados',
+    'marius nasta',
     '1979-04-20',
     'M'
 );
@@ -100,8 +100,8 @@ INSERT INTO personal_data(
 )
 VALUES (
     'doctor2',
-    'margareta hamiltoana',
-    '1966-01-19',
+    'ann preston',
+    '1813-1-1',
     'F'
 );
 
@@ -113,7 +113,7 @@ INSERT INTO personal_data(
 )
 VALUES (
     'doctor3',
-    'marius nasta',
+    'carol davila',
     '1950-04-20',
     'M'
 );

@@ -1,6 +1,6 @@
 import { resp_common_services } from "../../types/auth/authentication.type";
 import { patientForm } from "../../types/auth/authentication.type";
-import { dbGetPfp } from "../db/account_data/db-details.service";
+import { dbGetPfp, dbGetPfpsStudy } from "../db/account_data/db-details.service";
 import { has_completed, insert_patient_details } from "../db/auth/db-auth.service";
 
 
@@ -19,4 +19,11 @@ export async function svcGetPfp(username: string) {
     if(typeof respDB === "string")
         return {ok: false, data: respDB};
     return { ok: true, data: respDB.pfp };
+}
+
+export async function svcGetPfpsStudy(studyId: string) {
+    const respDB = await dbGetPfpsStudy(studyId);
+    if(typeof respDB === "string")
+        return {ok: false, data: respDB};
+    return { ok: true, data: respDB };
 }

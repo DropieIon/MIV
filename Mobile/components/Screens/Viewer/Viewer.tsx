@@ -160,7 +160,8 @@ export function Viewer(props: { study_id: string}) {
                         component={MainImageView}
                         initialParams={{
                             length: series_lengths[0],
-                            seriesData: loading_data.current[0]
+                            seriesData: loading_data.current[0],
+                            study_id: props.study_id
                         }}
                         options={{
                             headerStyle: {backgroundColor: 'black'},

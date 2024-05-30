@@ -67,6 +67,8 @@ type propsTemplate = {
             seriesData: imageListItem[],
             uid: number,
             length: number,
+            // used by chatModal
+            study_id: string
         }
     }
 }
@@ -158,6 +160,7 @@ export function MainImageView(props: propsTemplate) {
                 />
                 {showChat &&
                     <ChatModal
+                        study_id={props.route.params.study_id}
                         setShowChat={setShowChat}
                     />
                 }

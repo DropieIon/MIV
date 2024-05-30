@@ -1,11 +1,11 @@
 import { Text, View, Dimensions, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useSelector } from "react-redux";
-import { selectChatData, selectCurrentAccountUsername } from "../../../../../features/globalStateSlice";
-import { messageData } from "../../../../../../Common/types";
+import { selectChatPfps, selectCurrentAccountUsername } from "../../../../../features/globalStateSlice";
+import { messageData, pfpsItem } from "../../../../../../Common/types";
 
 type propsTemplate = {
-    msgData: messageData
+    msgData: messageData,
 }
 
 const styles = StyleSheet.create({
@@ -30,6 +30,10 @@ const styles = StyleSheet.create({
         textAlignVertical: 'bottom',
         paddingLeft: "2%"
     },
+    usernameTxt: {
+        position: 'absolute',
+        top: 0,
+    },
     pfpImg: {
         height: 30,
         width: 30,
@@ -38,9 +42,17 @@ const styles = StyleSheet.create({
 })
 
 export function Message(props: propsTemplate) {
-    const chatData = useSelector(selectChatData);
     const currentUsername = useSelector(selectCurrentAccountUsername);
     const isCurrentAccount = currentUsername === props.msgData.senderUsername;
+    const chatPfps: pfpsItem[] = useSelector(selectChatPfps);
+    const getPfpForUser = (username: string) => {
+        // find not working properly, sometimes returning undefined
+        for (const e of chatPfps) {
+            if(e.username === username)
+                return e.pfp;
+        }
+    }
+    
     return (
         <View
             style={[styles.mainView, { justifyContent: isCurrentAccount ? 'flex-end' : 'flex-start' }]}
@@ -49,7 +61,7 @@ export function Message(props: propsTemplate) {
             <Image
                     style={styles.pfpImg}
                     source={{
-                        uri: `data:image/png;base64,${chatData.recieverPfp}`
+                        uri: `data:image/png;base64,${getPfpForUser(props.msgData.senderUsername)}`
                     }}
                 />}
             <View
@@ -59,6 +71,11 @@ export function Message(props: propsTemplate) {
                         left: !isCurrentAccount ? "2%" : "auto"
                     }]}
             >
+                <Text
+                    style={[styles.usernameTxt, { color: isCurrentAccount ? 'blue' : 'grey' }]}
+                >
+                    {props.msgData.senderUsername}
+                </Text>
                 <Text
                   style={{
                     fontSize: 20,
@@ -73,7 +90,7 @@ export function Message(props: propsTemplate) {
                 >
                     <Text
                         style={[styles.hourText,
-                            { color: (isCurrentAccount && props.msgData.read) ? 'blue' : 'grey' }
+                            { color: 'grey' }
                         ]}
                     >
                         {new Date(props.msgData.timestamp).toLocaleTimeString("en-US",
@@ -85,7 +102,7 @@ export function Message(props: propsTemplate) {
             <Image
                 style={[styles.pfpImg, { left: 3 }]}
                     source={{
-                        uri: `data:image/png;base64,${chatData.myPfp}`
+                        uri: `data:image/png;base64,${getPfpForUser(props.msgData.senderUsername)}`
                     }}
                 />}
         </View>

@@ -21,12 +21,10 @@ export function sockReceiveMsg(socket: Socket, data: messageOverWS) {
     }
 }
 
-export function sockGetMsgs(socket: Socket, recvUser: string, study_id: string, callback: any) {
+export function sockGetMsgs(socket: Socket, study_id: string, callback: any) {
     const token = socket.handshake.headers.authorization?.split('Bearer ')[1];
     if(token) {
-        console.log(parseJwt(token).username, recvUser);
-        
-        dbGetLastMessages(parseJwt(token).username, recvUser, study_id)
+        dbGetLastMessages(study_id)
         .then((dbResp: string | messageData[]) => {
             if(typeof dbResp === "string") {
                 socket.emit('err', "Couldn't get messages");

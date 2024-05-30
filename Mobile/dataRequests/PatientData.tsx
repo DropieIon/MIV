@@ -83,6 +83,24 @@ async function getPfp(token: string, username: string) {
   return resp.data;
 }
 
+async function getPfpsStudy(token: string, studyID: string) {
+  let resp;
+  try {
+    resp = await axios.post(`${backend_url}/acc_data/details/study_pfps`,
+      {
+        study_id: studyID
+      },
+      { headers: { 'Authorization': 'Bearer ' + token } },
+    )
+  }
+  catch (error) {
+    const errData: any = (error as AxiosError).response.data;
+    console.error("Could not get pfps for users " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
 async function putPatientDetails(token: string, patDetails: patDetails) {
   let resp;
   try {
@@ -160,6 +178,7 @@ export {
   getPatientStudies,
   putPatientDetails,
   getPfp,
+  getPfpsStudy,
   allowUnlimUploads4h,
   assignToPatient,
   promotePat,

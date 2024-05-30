@@ -7,24 +7,27 @@ import { ChatStyles } from "./ChatStyles";
 import { MessageBox } from "./MessageBox";
 import { Conversation } from "./Conversation/Conversation";
 import { useEffect, useRef, useState } from "react";
-import { messageData } from "../../../../../Common/types";
-import { useSelector } from "react-redux";
-import { selectChatData, selectCurrentAccountUsername, selectOpenViewer, selectToken } from "../../../../features/globalStateSlice";
+import { messageData, pfpsItem } from "../../../../../Common/types";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentAccountUsername, selectOpenViewer, selectToken, setChatNewMessage, setChatPfps } from "../../../../features/globalStateSlice";
 import { AntDesign } from '@expo/vector-icons';
 import { DetailsStyles } from "../../PatAndStudies/OpenDetails/DetailsStyles";
 import { Socket, io } from "socket.io-client";
 import { backend_url } from "../../../../configs/backend_url";
+import { getPfpsStudy } from "../../../../dataRequests/PatientData";
 
 type propsTemplate = {
     setShowChat,
+    study_id: string,
 }
 
 export function ChatModal(props: propsTemplate) {
     const [messagesList, setMessagesList] = useState<messageData[]>(null);
+    const dispatch = useDispatch();
+    // all the pfps for each account that has sent a message on the study
     const token = useSelector(selectToken);
     const currentUsername = useSelector(selectCurrentAccountUsername);
     const openViewer = useSelector(selectOpenViewer);
-    const chatData = useSelector(selectChatData);
     const study_id = openViewer.study_id;
     const socket = useRef<Socket>(null);
     
@@ -34,42 +37,43 @@ export function ChatModal(props: propsTemplate) {
     const appendMsg = (msg: string) => {
         if (msg !== "") {
             socket.current.emit('msg-to-serv', {
-                recv: chatData.recvUser,
                 study_id,
                 message: msg
             });
-            console.log(new Date().getTime());
-            
-            setMessagesList(messagesList.concat({
+            dispatch(setChatNewMessage({
                 message: msg,
                 timestamp: new Date().getTime(),
-                read: false,
                 senderUsername: currentUsername
             }));
+            
         }
     }
     useEffect(() => {
+        getPfpsStudy(token, study_id)
+        .then((data) => {
+            dispatch(setChatPfps(data));
+        });
         try {
-            socket.current = io(`${backend_url}`, {
-                reconnectionDelayMax: 10000,
-                extraHeaders: {
-                    Authorization: `Bearer ${token}`,
-                    ConnType: 'study-chat'
-                }
-            });
-            socket.current.on('err', (data: string) => {
-                console.error('Communication error: ', data);
-            });
-            socket.current.on('disconnect', (d) => {
-                console.log("Disconnected");
-
-            });
+            if(!socket.current) {
+                socket.current = io(`${backend_url}`, {
+                    reconnectionDelayMax: 10000,
+                    extraHeaders: {
+                        Authorization: `Bearer ${token}`,
+                        ConnType: 'study-chat'
+                    }
+                });
+                socket.current.on('err', (data: string) => {
+                    console.error('Communication error: ', data);
+                });
+                socket.current.on('disconnect', (d) => {
+                    console.log("Disconnected");
+    
+                });
+            }
         } catch (error) {
-            // props.setErrUpload("Could not create socket to server " + error);
             return;
         }
         socket.current.emit('get-messages', {
-            recvUser: chatData.recvUser,
             study_id
         }, (data: messageData[]) => {
             setMessagesList(data);
@@ -87,6 +91,7 @@ export function ChatModal(props: propsTemplate) {
                     style={DetailsStyles.headercloseButton}
                     onPress={() => {
                         closeSock();
+                        dispatch(setChatNewMessage(null));
                         props.setShowChat(false);
                     }}
                 >

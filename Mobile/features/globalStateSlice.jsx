@@ -13,12 +13,8 @@ export const globalStateSlice = createSlice({
         currentAccountFullName: "",
         // used for chat
         currentAccountUsername: "",
-        chatData: {
-            recvUser: "",
-            myPfp: "",
-            receiverPfp: "",
-        },
-
+        chatNewMessage: null,
+        chatPfps: [],
         accountDetails: {
             fullName: "",
             username: "",
@@ -56,6 +52,9 @@ export const globalStateSlice = createSlice({
         setCurrentAccountFullName: (state, action) => {
             state.currentAccountFullName = action.payload;
         },
+        setChatPfps: (state, action) => {
+            state.chatPfps = action.payload;
+        },
         setCurrentAccountUsername: (state, action) => {
             state.currentAccountUsername = action.payload;
         },
@@ -68,6 +67,9 @@ export const globalStateSlice = createSlice({
         setReq_study_id: (state, action) => {
             state.req_study_id = action.payload;
         },
+        setChatNewMessage: (state, action) => {
+            state.chatNewMessage = action.payload;
+        },
     }
 });
 
@@ -79,9 +81,10 @@ export const {
     setRefreshList,
     setAccountDetails,
     setViewStudies,
+    setChatPfps,
+    setChatNewMessage,
     setCurrentAccountFullName,
     setCurrentAccountUsername,
-    setChatData,
     setReq_study_id,
 } = globalStateSlice.actions;
 export default globalStateSlice.reducer;
@@ -92,8 +95,9 @@ export const selectOpenViewer = (state) => state.openViewer;
 export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
+export const selectChatPfps = (state) => state.chatPfps;
+export const selectChatNewMessage = (state) => state.chatNewMessage;
 export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
 export const selectCurrentAccountUsername = (state) => state.currentAccountUsername;
-export const selectChatData = (state) => state.chatData;
 export const selectViewStudies = (state) => state.viewStudies;
 export const selectReq_study_id = (state) => state.req_study_id;

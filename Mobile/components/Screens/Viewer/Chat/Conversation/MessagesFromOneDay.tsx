@@ -1,10 +1,13 @@
 import { View, FlatList, Text } from "react-native";
 import { Message } from "./Message";
 import { messageData } from "../../../../../../Common/types";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectChatNewMessage } from "../../../../../features/globalStateSlice";
 
 type propsTemplate = {
     date: string,
-    messages: messageData[]
+    messages: messageData[],
 }
 
 function dateToLongName(date: string): string {
@@ -20,6 +23,14 @@ function dateToLongName(date: string): string {
 }
 
 export function MessagesFromOneDay(props: propsTemplate) {
+    const [msgOneDay, setMsgOneDay] = useState(props.messages);
+    const newMessage = useSelector(selectChatNewMessage);
+    useEffect(() => {
+        if(newMessage) {
+            setMsgOneDay(msgOneDay.concat(newMessage));
+        }
+        
+    }, [newMessage]);
     return (
         <View
             style={{
@@ -42,10 +53,12 @@ export function MessagesFromOneDay(props: propsTemplate) {
                     flex: 1,
                     // backgroundColor: 'green'
                 }}
-                data={props.messages}
+                data={msgOneDay}
             ItemSeparatorComponent={() => <View style={{ paddingTop: "1.5%" }} />}
             renderItem={(item) => {
-                return <Message msgData={item.item} />
+                return <Message
+                    msgData={item.item}
+                    />
             }}
             keyExtractor={(item) => item.timestamp.toString()}
         >

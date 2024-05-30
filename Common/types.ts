@@ -27,7 +27,6 @@ type token_data = {
 
 type messageData = {
     message: string,
-    read?: boolean,
     timestamp: number,
     senderUsername?: string
 }
@@ -38,9 +37,13 @@ type getMessageListReq = {
 }
 
 type messageOverWS = {
-    recv: string,
     study_id: string,
     message: string,
+}
+
+type pfpsItem = {
+    username: string,
+    pfp: string
 }
 
 export {
@@ -50,5 +53,6 @@ export {
     token_data,
     messageData,
     messageOverWS,
+    pfpsItem,
     getMessageListReq
 }

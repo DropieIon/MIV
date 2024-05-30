@@ -1,10 +1,10 @@
 import { FlatList, View } from "react-native";
-import { messageData } from "../../../../../../Common/types";
+import { messageData, pfpsItem } from "../../../../../../Common/types";
 import { groupBy } from 'lodash';
 import { MessagesFromOneDay } from "./MessagesFromOneDay";
 
 type propsTemplate = {
-    messagesList: messageData[]
+    messagesList: messageData[],
 }
 
 function groupByFunc(msg: messageData) {
