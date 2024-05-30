@@ -39,17 +39,17 @@ token_tc = post(f'{base_url}/login', json={
 #                })
 
 # req_resp = get(f'{base_url}/all_studies', headers={'Authorization': f'Bearer {token_doctor3}'})
-# req_resp = get(f'{base_url}/users/all_doctors/', headers={'Authorization': f'Bearer {token_patient3}'})
+req_resp = get(f'{base_url}/users/all_patients/', headers={'Authorization': f'Bearer {token_doctor3}'})
 # req_resp = delete(f'{base_url}/acc_data/studies/', headers={'Authorization': f'Bearer {token_doctor1}'},
 #                   json={
 #                       "study_id": "14d74df9-be0fb9f4-a88c5382-55c94913-b46b297a",
 #                       "patient_username": "patient1"
 #                   })
 
-req_resp = post(f'{base_url}/acc_data/details/pfp', headers={'Authorization': f'Bearer {token_admin}'},
-               json={
-                   "username": "patient1"
-               })
+# req_resp = post(f'{base_url}/acc_data/details/pfp', headers={'Authorization': f'Bearer {token_admin}'},
+#                json={
+#                    "username": "patient1"
+#                })
 
 print(req_resp.status_code)
 print(req_resp.json())
