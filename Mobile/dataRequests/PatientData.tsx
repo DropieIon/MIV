@@ -43,7 +43,7 @@ type patDetails = {
 async function promotePat(token: string, patUsername: string) {
   let resp;
   try {
-    if(parseJwt(token)?.role !== 'admin') {
+    if (parseJwt(token)?.role !== 'admin') {
       throw new Error('Not the admin');
     }
     resp = await axios.put(`${backend_url}/acc_data/admin/promote`,
@@ -74,10 +74,25 @@ async function getPfp(token: string, username: string) {
   }
   catch (error) {
     const errData: any = (error as AxiosError).response.data;
-    if(errData.message === "No pfp for user") {      
+    if (errData.message === "No pfp for user") {
       return "";
     }
     console.error("Could not get pfp for user " + (error as AxiosError).message);
+    return null;
+  };
+  return resp.data;
+}
+
+async function getDetails(token: string) {
+  let resp;
+  try {
+    resp = await axios.get(`${backend_url}/acc_data/details/`,
+      { headers: { 'Authorization': 'Bearer ' + token } },
+    )
+  }
+  catch (error) {
+    const errData: any = (error as AxiosError).response.data;
+    console.error("Could not get details for user " + (error as AxiosError).message);
     return null;
   };
   return resp.data;
@@ -101,26 +116,42 @@ async function getPfpsStudy(token: string, studyID: string) {
   return resp.data;
 }
 
-async function putPatientDetails(token: string, patDetails: patDetails) {
+async function changePatientDetails(token: string, patDetails: patDetails, shouldPost: boolean) {
   let resp;
   try {
-    if(parseJwt(token)?.role === 'med') {
+    if (shouldPost && parseJwt(token)?.role === 'med') {
       throw new Error('Not a patient');
     }
-    resp = await axios.put(`${backend_url}/acc_data/details/`,
-      {
-        fullName: patDetails.fullName,
-        birthday: patDetails.birthday,
-        sex: patDetails.gender,
-        profile_picB64: patDetails.profile_picB64
-      },
-      {
-        headers: { 'Authorization': 'Bearer ' + token }
-      }
-    )
+    if (shouldPost) {
+      resp = await axios.post(`${backend_url}/acc_data/details/`,
+        {
+          fullName: patDetails.fullName,
+          birthday: patDetails.birthday,
+          sex: patDetails.gender,
+          profile_picB64: patDetails.profile_picB64
+        },
+        {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }
+      )
+    }
+    else {
+      resp = await axios.put(`${backend_url}/acc_data/details/`,
+        {
+          fullName: patDetails.fullName,
+          birthday: patDetails.birthday,
+          sex: patDetails.gender,
+          profile_picB64: patDetails.profile_picB64
+        },
+        {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }
+      )
+    }
+
   }
   catch (error) {
-    console.error("Could not put patient details " + (error as AxiosError).message);
+    console.error("Could not post patient details " + (error as AxiosError).message);
     return null;
   };
   return resp.data;
@@ -168,7 +199,7 @@ async function assignToPatient(token: string, studyID: string, patUsername: stri
     console.error("Could not assign study to patient " + (error as AxiosError).message);
     return null;
   };
-  return resp.data;  
+  return resp.data;
 }
 
 
@@ -176,8 +207,9 @@ async function assignToPatient(token: string, studyID: string, patUsername: stri
 export {
   getPatients,
   getPatientStudies,
-  putPatientDetails,
+  changePatientDetails,
   getPfp,
+  getDetails,
   getPfpsStudy,
   allowUnlimUploads4h,
   assignToPatient,

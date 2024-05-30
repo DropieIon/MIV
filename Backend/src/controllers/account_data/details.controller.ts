@@ -4,15 +4,37 @@ import EmptyField from "../../errors/EmptyField.error";
 import { patientForm } from "../../types/auth/authentication.type";
 import { has_completed } from "../../services/db/auth/db-auth.service";
 import { parseJwt } from "../../utils/helper.util";
-import { patient_details, svcGetPfp, svcGetPfpsStudy } from "../../services/account_data/details.service";
+import { svcPutPatient_details, svcGetDetails, svcGetPfp, svcGetPfpsStudy } from "../../services/account_data/details.service";
 import ControllerError from "../../errors/RegisterError.error";
 
 const get_username = (token: string): string => parseJwt(token)?.username;
 
-export async function conDetailsController(req: Request<{}, {}, patientForm>,
+export async function conGetDetailsController(req: Request<{}, {}, {}>,
     res: Response, next: NextFunction) {
-    if (!req.body.birthday || !req.body.sex.length || !req.body.fullName) {
-        next(new EmptyField({ message: "FullName, birthday and sex are required!", logging: true }))
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if(!token) {
+        next(new EmptyField({
+            message: "Token required",
+            code: 400
+        }));
+        return;
+    }
+    const resp_db = await svcGetDetails(get_username(token));
+    if (resp_db.ok) {
+        res.json(resp_db.data);
+        return;
+    }
+    console.error(resp_db.data);
+    next(new ControllerError({
+        message: (resp_db.data as string),
+        code: 400
+    }))
+}
+
+export async function conPostDetailsController(req: Request<{}, {}, patientForm>,
+    res: Response, next: NextFunction) {
+    if (!req.body.birthday || !req.body.sex.length || !req.body.fullName || !req.body.profile_picB64) {
+        next(new EmptyField({ message: "FullName, birthday, sex and pfp are required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];
@@ -24,7 +46,34 @@ export async function conDetailsController(req: Request<{}, {}, patientForm>,
         return;
     }
     
-    const resp_insert = await patient_details(get_username(token), req.body);
+    const resp_insert = await svcPutPatient_details(get_username(token), req.body, false);
+    if (resp_insert.ok) {
+        res.json({ message: resp_insert.data });
+        return;
+    }
+    console.error(resp_insert.data);
+    next(new RegisterError({
+        message: resp_insert.data,
+        code: 400
+    }))
+}
+
+export async function conUpdateDetailsController(req: Request<{}, {}, patientForm>,
+    res: Response, next: NextFunction) {
+    if (!req.body.birthday || !req.body.sex.length || !req.body.fullName || !req.body.profile_picB64) {
+        next(new EmptyField({ message: "FullName, birthday, sex and pfp are required!", logging: true }))
+        return;
+    }
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if(!token) {
+        next(new EmptyField({
+            message: "Token required",
+            code: 400
+        }));
+        return;
+    }
+    
+    const resp_insert = await svcPutPatient_details(get_username(token), req.body, true);
     if (resp_insert.ok) {
         res.json({ message: resp_insert.data });
         return;

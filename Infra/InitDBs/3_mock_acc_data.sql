@@ -101,7 +101,7 @@ INSERT INTO personal_data(
 VALUES (
     'doctor2',
     'ann preston',
-    '1813-1-1',
+    '1980-1-1',
     'F'
 );
 

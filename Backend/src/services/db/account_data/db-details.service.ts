@@ -1,6 +1,6 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
-import { pfpsItem } from '../../../../../Common/types';
+import { accountDetails, pfpsItem } from '../../../../../Common/types';
 
 
 export async function dbGetPfp(username: string): Promise<string | { pfp: string }> {
@@ -14,6 +14,29 @@ export async function dbGetPfp(username: string): Promise<string | { pfp: string
             return "No pfp for user";
     }
     return "Cannot get profile picture";
+}
+
+export async function dbGetDetails(username: string): Promise<accountDetails | string> {
+    const sql_resp = await sq
+        ('select pd.full_name as fullName, pd.birthday, pd.sex, pp.profile_pic as pfp \
+        from personal_data pd \
+        join profile_pictures pp on pd.username = pp.username \
+        where pd.username=?',
+        [username]);
+    if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
+        if (sql_resp.length > 0) {
+            const current_resp = sql_resp[0];
+            return {
+                pfp: current_resp.pfp,
+                sex: current_resp.sex,
+                birthday: new Date(current_resp.birthday).getTime(),
+                fullName: current_resp.fullName
+            }
+        }
+        else
+            return "No details for user";
+    }
+    return "Cannot get details";
 }
 
 export async function dbGetPfpsStudy(studyId: string): Promise<string | pfpsItem[]> {

@@ -1,17 +1,25 @@
-import { useState } from 'react';
-import { Button, Image, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, View, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { defaultPfp } from '../../../../configs/defaultUser.b64';
+import { defaultPfp } from '../../../configs/defaultUser.b64';
 
 type propsTemplate = {
     imageViewStyle,
     imageStyle,
-    setPfpData
+    setPfpData,
+    isSettingsScreen: boolean,
+    pfp?: string
 }
 
 export function PfpPicker(props: propsTemplate) {
-    const [image, setImage] = useState(`data:image/jpeg;base64,${defaultPfp}`);
-
+    const [image, setImage] = useState(`data:image/jpeg;base64,${props.isSettingsScreen ? props.pfp : defaultPfp}`);
+    
+    // const [image, setImage] = useState(`data:image/jpeg;base64,${props.pfp}`);
+    useEffect(() => {
+        // we need to force trigger a refresh here
+        if(props.isSettingsScreen)
+            setImage(`data:image/jpeg;base64,${props.pfp}`);
+    }, [props.pfp]);
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({

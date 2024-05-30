@@ -3,7 +3,7 @@ import { loginForm, registerForm, yayOrNay } from '../../../types/auth/authentic
 import { formatName, sha256 } from '../../../utils/helper.util';
 import { patientForm } from "../../../types/auth/authentication.type";
 import { sq } from '../db-functions';
-import { randomBytes } from 'crypto'
+import { randomBytes } from 'crypto';
 
 type checkLogin_resp = { role: string, email_validation: yayOrNay, fullName: string };
 
@@ -92,9 +92,16 @@ function parseDateToMariadb(date: string) {
     return `${splitDate[2]}-${splitDate[0]}-${splitDate[1]}`
 }
 
-export async function insert_patient_details(username: string, details: patientForm) {
-    let insert_resp = await sq('insert into personal_data (username, full_name, birthday, sex) values (?, ?, ?, ?)',
-        [username, details.fullName.toLowerCase(), parseDateToMariadb(details.birthday), details.sex]);
+export async function insert_patient_details(username: string, details: patientForm, update: boolean) {
+    const fullName = details.fullName.toLowerCase();
+    const birthday = parseDateToMariadb(details.birthday);
+    let insert_resp = await sq(
+        'insert into personal_data (username, full_name, birthday, sex) \
+        values (?, ?, ?, ?) \
+        on duplicate key update full_name = ?, birthday = ?, sex = ?',
+        [username, fullName, birthday, details.sex,
+            fullName, birthday, details.sex
+        ]);
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
@@ -103,8 +110,11 @@ export async function insert_patient_details(username: string, details: patientF
             return "Database insertion error";
         }
     }
-    insert_resp = await sq('insert into profile_pictures (username, profile_pic) values (?, ?)',
-        [username, details.profile_picB64]);
+    insert_resp = await sq(
+        'insert into profile_pictures (username, profile_pic) \
+        values (?, ?) \
+        on duplicate key update profile_pic = ?',
+        [username, details.profile_picB64, details.profile_picB64]);
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
@@ -113,13 +123,15 @@ export async function insert_patient_details(username: string, details: patientF
             return "Database insertion error";
         }
     }
-    insert_resp = await sq('update login set has_completed=\'Y\' where username=?', [username]);
-    if (insert_resp !== "") {
-        if (insert_resp instanceof mariadb.SqlError) {
-            if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
-                return "Patient already has the required data";
+    if(!update) {
+        insert_resp = await sq('update login set has_completed=\'Y\' where username=?', [username]);
+        if (insert_resp !== "") {
+            if (insert_resp instanceof mariadb.SqlError) {
+                if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                    return "Patient already has the required data";
+                }
+                return "Database insertion error";
             }
-            return "Database insertion error";
         }
     }
     return "";

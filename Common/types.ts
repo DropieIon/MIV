@@ -41,6 +41,13 @@ type messageOverWS = {
     message: string,
 }
 
+type accountDetails = {
+    fullName: string,
+    pfp: string,
+    birthday: number,
+    sex: 'M' | 'F',
+}
+
 type pfpsItem = {
     username: string,
     pfp: string
@@ -54,5 +61,6 @@ export {
     messageData,
     messageOverWS,
     pfpsItem,
+    accountDetails,
     getMessageListReq
 }

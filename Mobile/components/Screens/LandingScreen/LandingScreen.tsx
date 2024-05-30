@@ -12,7 +12,7 @@ import { RequestOrAssign } from "../MedPatLinks/RequestOrAssing";
 import { MedicRequests } from "../PersonalRequests/MedicRequests";
 import { CustomDrawer } from "../../CustomDrawer";
 import ViewStudies from "../PatAndStudies/ViewStudies";
-import { PersonalDataForm } from "../Authentification/PersonalData/PersonalDataForm";
+import { PersonalDataForm } from "../PersonalData/PersonalDataForm";
 
 const Drawer = createDrawerNavigator();
 
@@ -29,7 +29,7 @@ const drawerScreenOptions = {
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
     const fullName = useSelector(selectCurrentAccountFullName);
-    const hasCompleted = fullName !== null;
+    const hasCompleted = fullName !== "";
     const viewer: viewerState = useSelector(selectOpenViewer);
     let admin, medic, initialRouteName;
     if(token !== "") {
@@ -43,7 +43,9 @@ export function LandingScreen(props) {
             style={{ flex: 1 }}
         >
             {token !== "" && !hasCompleted &&
-                <PersonalDataForm/>
+                <PersonalDataForm
+                    type="acc_data"
+                />
             }
             {token !== "" && hasCompleted && viewer.should_open &&
                 <Viewer study_id={viewer.study_id} />
