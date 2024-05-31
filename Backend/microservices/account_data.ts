@@ -36,11 +36,11 @@ io.on('connection', function (socket) {
       break;
     case 'study-chat':
       console.log("Study chat connected");
+      socket.join(socket.handshake.headers.study_id as string);
       socket.on('msg-to-serv', (data: messageOverWS) => {
         const token = socket.handshake.headers.authorization?.split('Bearer ')[1];
         if(token) {
           const username = parseJwt(token).username;
-          socket.join(data.study_id);
           sockReceiveMsg(socket, username, data);
           const messageToChat: messageData = {
             message: data.message,

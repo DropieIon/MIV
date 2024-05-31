@@ -62,10 +62,13 @@ export function ChatModal(props: propsTemplate) {
                     reconnectionDelayMax: 10000,
                     extraHeaders: {
                         Authorization: `Bearer ${token}`,
-                        ConnType: 'study-chat'
+                        ConnType: 'study-chat',
+                        study_id: study_id
                     }
                 });
                 socket.current.on('msg-from-srv', (data: messageData) => {
+                    console.log("Merge");
+                    
                     dispatch(setChatNewMessage({
                         message: data.message,
                         timestamp: data.timestamp,
