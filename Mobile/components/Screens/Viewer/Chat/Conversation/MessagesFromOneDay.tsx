@@ -51,7 +51,6 @@ export function MessagesFromOneDay(props: propsTemplate) {
             <FlatList
                 style={{
                     flex: 1,
-                    // backgroundColor: 'green'
                 }}
                 data={msgOneDay}
             ItemSeparatorComponent={() => <View style={{ paddingTop: "1.5%" }} />}

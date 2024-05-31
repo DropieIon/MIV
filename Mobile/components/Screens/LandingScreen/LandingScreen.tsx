@@ -1,6 +1,6 @@
-import { SafeAreaView } from "react-native";
-import { selectToken, selectOpenViewer, selectCurrentAccountFullName } from "../../../features/globalStateSlice";
-import { useSelector } from "react-redux";
+import { SafeAreaView, TouchableOpacity } from "react-native";
+import { selectToken, selectOpenViewer, selectCurrentAccountFullName, setMyPfp } from "../../../features/globalStateSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Authentication from "../Authentification/Authentication";
 import SettingsScreen from "../Settings/SettingsScreen";
@@ -13,6 +13,9 @@ import { MedicRequests } from "../PersonalRequests/MedicRequests";
 import { CustomDrawer } from "../../CustomDrawer";
 import ViewStudies from "../PatAndStudies/ViewStudies";
 import { PersonalDataForm } from "../PersonalData/PersonalDataForm";
+import { AntDesign } from '@expo/vector-icons';
+import { useEffect } from "react";
+import { getPfp } from "../../../dataRequests/PatientData";
 
 const Drawer = createDrawerNavigator();
 
@@ -28,10 +31,19 @@ const drawerScreenOptions = {
 
 export function LandingScreen(props) {
     const token = useSelector(selectToken);
+    const dispatch = useDispatch();
     const fullName = useSelector(selectCurrentAccountFullName);
     const hasCompleted = fullName !== "";
     const viewer: viewerState = useSelector(selectOpenViewer);
     let admin, medic, initialRouteName;
+    useEffect(() => {
+        if(token !== "") {
+            getPfp(token, parseJwt(token)?.username)
+            .then((data) => {
+                dispatch(setMyPfp(data));
+            })
+        }
+    }, [token]);
     if(token !== "") {
         const jwtBody = parseJwt(token);
         admin = jwtBody?.role === "admin";

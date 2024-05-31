@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     selectCurrentAccountFullName,
+    selectMyPfp,
     selectToken,
     selectTokenRefreshRef,
     setToken,
@@ -11,6 +12,8 @@ import {
     setViewStudies
 } from '../features/globalStateSlice';
 import { parseJwt } from '../utils/helper';
+import { Image } from 'expo-image';
+import { defaultPfp } from '../configs/defaultUser.b64';
 
 const styles = StyleSheet.create({
     container: {
@@ -23,10 +26,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingStart: 20,
         paddingTop: '22%',
+        flexDirection: 'row',
+        alignItems: 'flex-end'
     },
     name: {
         fontSize: 24,
-        color: 'white'
+        left: "5%",
+        color: 'white',
+        position: 'absolute',
+        zIndex: 3
     },
     s: {
         flex: 1,
@@ -48,6 +56,7 @@ export function CustomDrawer(props) {
     const token = useSelector(selectToken);
     const tokenRefreshRef = useSelector(selectTokenRefreshRef);
     const fullName_split = useSelector(selectCurrentAccountFullName).split(' ');
+    const myPfp = useSelector(selectMyPfp);
     const dispatch = useDispatch();
 
     const jwtBody = parseJwt(token);
@@ -62,6 +71,12 @@ export function CustomDrawer(props) {
     return (
         <View style={styles.container}>
             <View style={styles.drawHead}>
+                <Image
+                    style={{ width: 180, height: 180 }}
+                    source={{ uri: `data:image/jpeg;base64,${myPfp}` }}
+                    contentFit='contain'
+                >
+                </Image>
                 <Text style={styles.name}>
                     {fname} {lname}
                 </Text>

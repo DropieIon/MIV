@@ -15,6 +15,7 @@ export const globalStateSlice = createSlice({
         currentAccountUsername: "",
         chatNewMessage: null,
         chatPfps: [],
+        myPfp: "",
         accountDetails: {
             fullName: "",
             username: "",
@@ -61,6 +62,9 @@ export const globalStateSlice = createSlice({
         setChatData: (state, action) => {
             state.chatData = action.payload;
         },
+        setMyPfp: (state, action) => {
+            state.myPfp = action.payload;
+        },
         setViewStudies: (state, action) => {
             state.viewStudies = action.payload;
         },
@@ -82,6 +86,7 @@ export const {
     setAccountDetails,
     setViewStudies,
     setChatPfps,
+    setMyPfp,
     setChatNewMessage,
     setCurrentAccountFullName,
     setCurrentAccountUsername,
@@ -96,6 +101,7 @@ export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;
 export const selectChatPfps = (state) => state.chatPfps;
+export const selectMyPfp = (state) => state.myPfp;
 export const selectChatNewMessage = (state) => state.chatNewMessage;
 export const selectCurrentAccountFullName = (state) => state.currentAccountFullName;
 export const selectCurrentAccountUsername = (state) => state.currentAccountUsername;

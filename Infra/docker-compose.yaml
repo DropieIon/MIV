@@ -39,12 +39,8 @@ services:
     volumes:
       - "index_account_data:/var/lib/mariadb:Z"
       - "./InitDBs:/docker-entrypoint-initdb.d"
-    environment:
-    # TODO: get these from env file
-      MARIADB_PASSWORD: secure_miv
-      MARIADB_USER: miv
-      MARIADB_DATABASE: miv
-      MARIADB_ROOT_PASSWORD: miv-root
+    env_file:
+      - ./orthProxy/.orth_proxy.env
 
   orth_proxy:
     container_name: orth_proxy
@@ -59,15 +55,13 @@ services:
           condition: service_healthy
     volumes:
       - ./orthProxy/python/:/etc/orthanc/python-scripts/
-    ports: 
-    # TODO: change this
-      - "8043:8042"
+    ports:
       - "4243:4242"
     networks:
       - orthanc-db
       - kong-net
     env_file:
-      - ./orthProxy/.orth_proxy.env
+      - ./db_auth.env
 
 
   orthanc:
@@ -82,9 +76,7 @@ services:
       db_auth:
           condition: service_healthy
     ports: 
-    # TODO: change this
       - "8042:8042"
-    # TODO: make this go over the gateway
       - "4242:4242"
     networks:
       - orthanc-db

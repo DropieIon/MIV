@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { getViewerImages } from '../../../dataRequests/DicomData';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToken, setLoadingProgress, setOpenViewer } from '../../../features/globalStateSlice';
@@ -26,6 +27,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         flex: 1,
         justifyContent: 'center'
+    },
+    close_button: {
+        position: 'absolute',
+        flex: 1,
+        right: "2%"
     },
     series_list: {
         position: 'absolute',
@@ -52,6 +58,21 @@ const styles = StyleSheet.create({
 const Drawer = createDrawerNavigator();
 
 export function Viewer(props: { study_id: string}) {
+    function HeaderWithCloseButton(props: {navigation, route, options }) {
+        return (
+            <View style={{
+                height: "20%",
+                width: "100%",
+                backgroundColor: 'red'
+            }}>
+                <Text
+                    style={{
+                        color: 'white'
+                    }}
+                > Test</Text>
+            </View>
+        )
+    }
     function SeriesView({ navigation }: DrawerContentComponentProps) {
         return (
             <View
@@ -153,7 +174,7 @@ export function Viewer(props: { study_id: string}) {
             react caches the drawer with empty data on creation */}
             {!loading.current && loading_data.current[0].length !== 0 &&
                 <Drawer.Navigator
-                drawerContent={(props) => <SeriesView {...props} />}
+                    drawerContent={(props) => <SeriesView {...props} />}
                 >
                     <Drawer.Screen
                         name='MainImage'
@@ -169,6 +190,16 @@ export function Viewer(props: { study_id: string}) {
                             headerTitleStyle: {
                                 display: 'none'
                             },
+                            headerRight: () => (
+                                <TouchableOpacity
+                                    style={styles.close_button}
+                                    onPress={() => {
+                                        handleBackButtonClick();
+                                    }}
+                                >
+                                    <AntDesign name="close" size={24} color="red" />
+                                </TouchableOpacity>
+                            ),
                             drawerStyle: {
                                 backgroundColor: 'black'
                             }

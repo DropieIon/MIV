@@ -26,7 +26,6 @@ export function LoadingSeriesBar(props: propsTemplate) {
     return (
         <View
             style={{
-                // backgroundColor: 'red',
                 width: 200,
                 height: 200,
                 position: 'absolute',

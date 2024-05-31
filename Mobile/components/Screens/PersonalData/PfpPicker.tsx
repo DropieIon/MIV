@@ -13,8 +13,6 @@ type propsTemplate = {
 
 export function PfpPicker(props: propsTemplate) {
     const [image, setImage] = useState(`data:image/jpeg;base64,${props.isSettingsScreen ? props.pfp : defaultPfp}`);
-    
-    // const [image, setImage] = useState(`data:image/jpeg;base64,${props.pfp}`);
     useEffect(() => {
         // we need to force trigger a refresh here
         if(props.isSettingsScreen)

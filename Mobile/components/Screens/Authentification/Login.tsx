@@ -172,7 +172,6 @@ function Login(props: { passSignUp: () => void }) {
                                             )
                                         )
                                     );
-                                    // dispatch(setAccountDetails({fullName: respData.fullName}));
                                     dispatch(setCurrentAccountFullName(respData.fullName));
                                     dispatch(setToken(token));
                                 })
