@@ -35,7 +35,7 @@
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
-        "foregroundImage": "./assets/images/miv.jpg"
+        "foregroundImage": "./assets/images/miv.png"
       },
       "package": "com.dropieion.MIV"
     },

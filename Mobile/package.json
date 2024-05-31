@@ -28,7 +28,7 @@
     "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-picker-select": "^9.0.0",
     "react-native-progress": "^5.0.1",
@@ -48,5 +48,10 @@
     "@types/lodash": "^4.17.1",
     "@types/react": "~18.2.14"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "expo-doctor": {
+      "@expo/config": "8.0.0"
+    }
+  }
 }

@@ -12,7 +12,8 @@ import fileUpload from 'express-fileupload';
 import { Server as ServerIO } from "socket.io";
 import { sfProtocol } from '../src/services/account_data/socket.io/sfProtocol.service';
 import { sockGetMsgs, sockReceiveMsg } from '../src/services/account_data/socket.io/studyChat.service';
-import { getMessageListReq, messageOverWS } from '../../Common/types';
+import { getMessageListReq, messageData, messageOverWS } from '../../Common/types';
+import { parseJwt } from '../src/utils/helper.util';
 
 const app = express();
 const port = 3000;
@@ -36,7 +37,22 @@ io.on('connection', function (socket) {
     case 'study-chat':
       console.log("Study chat connected");
       socket.on('msg-to-serv', (data: messageOverWS) => {
-        sockReceiveMsg(socket, data);
+        const token = socket.handshake.headers.authorization?.split('Bearer ')[1];
+        if(token) {
+          const username = parseJwt(token).username;
+          socket.join(data.study_id);
+          sockReceiveMsg(socket, username, data);
+          const messageToChat: messageData = {
+            message: data.message,
+            timestamp: new Date().getTime(),
+            senderUsername: username
+          };
+          io.to(data.study_id).emit('msg-from-srv', messageToChat);
+        }
+        else {
+          console.error('No token for message req');
+          socket.emit('err', 'No token');
+        }
       });
       socket.on('get-messages', (data: getMessageListReq, callback) => {
         const {

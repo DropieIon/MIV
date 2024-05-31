@@ -7,7 +7,7 @@ import { ChatStyles } from "./ChatStyles";
 import { MessageBox } from "./MessageBox";
 import { Conversation } from "./Conversation/Conversation";
 import { useEffect, useRef, useState } from "react";
-import { messageData, pfpsItem } from "../../../../../Common/types";
+import { messageData, messageOverWS } from "../../../../../Common/types";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentAccountUsername, selectOpenViewer, selectToken, setChatNewMessage, setChatPfps } from "../../../../features/globalStateSlice";
 import { AntDesign } from '@expo/vector-icons';
@@ -34,18 +34,21 @@ export function ChatModal(props: propsTemplate) {
     const closeSock = () => {
         socket.current.disconnect();
     }
+    const appendToList = (msg: messageData) => {
+        if(msg.message !== "") {
+            dispatch(setChatNewMessage({
+                message: msg,
+                timestamp: new Date().getTime(),
+                senderUsername: currentUsername
+            }));
+        }
+    };
     const appendMsg = (msg: string) => {
         if (msg !== "") {
             socket.current.emit('msg-to-serv', {
                 study_id,
                 message: msg
             });
-            dispatch(setChatNewMessage({
-                message: msg,
-                timestamp: new Date().getTime(),
-                senderUsername: currentUsername
-            }));
-            
         }
     }
     useEffect(() => {
@@ -61,6 +64,13 @@ export function ChatModal(props: propsTemplate) {
                         Authorization: `Bearer ${token}`,
                         ConnType: 'study-chat'
                     }
+                });
+                socket.current.on('msg-from-srv', (data: messageData) => {
+                    dispatch(setChatNewMessage({
+                        message: data.message,
+                        timestamp: data.timestamp,
+                        senderUsername: data.senderUsername
+                    }));
                 });
                 socket.current.on('err', (data: string) => {
                     console.error('Communication error: ', data);
