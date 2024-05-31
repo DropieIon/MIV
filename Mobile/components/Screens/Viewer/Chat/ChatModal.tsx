@@ -67,8 +67,6 @@ export function ChatModal(props: propsTemplate) {
                     }
                 });
                 socket.current.on('msg-from-srv', (data: messageData) => {
-                    console.log("Merge");
-                    
                     dispatch(setChatNewMessage({
                         message: data.message,
                         timestamp: data.timestamp,
