@@ -40,7 +40,7 @@ services:
       - "index_account_data:/var/lib/mariadb:Z"
       - "./InitDBs:/docker-entrypoint-initdb.d"
     env_file:
-      - ./orthProxy/.orth_proxy.env
+      - ./.db_auth.env
 
   orth_proxy:
     container_name: orth_proxy
@@ -61,7 +61,7 @@ services:
       - orthanc-db
       - kong-net
     env_file:
-      - ./db_auth.env
+      - ./orthProxy/.orth_proxy.env
 
 
   orthanc:
