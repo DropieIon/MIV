@@ -49,6 +49,7 @@ export function OpenUpload(props: propsTemplate) {
         try {
             socket = io(`${backend_url}`, {
                 reconnectionDelayMax: 10000,
+                transports: ["websocket"],
                 extraHeaders: {
                     Authorization: `Bearer ${token}`,
                     ConnType: 'upload'
@@ -56,7 +57,6 @@ export function OpenUpload(props: propsTemplate) {
             });
             socket.on('disconnect', (d) => {
                 console.log("Disconnected");
-
             });
         } catch (error) {
             props.setErrUpload("Could not create socket to server " + error);
