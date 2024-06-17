@@ -4,6 +4,7 @@ from classes.StudyAssigned import StudyAssigned
 from classes.Study import Study
 import orthanc, json
 from base64 import b64encode
+from logging import info
 
 def getPreviewForStudy(study_id: str) -> str:
     series_id = json.loads(orthanc.RestApiGet(f'/studies/{study_id}'))\

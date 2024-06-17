@@ -1,9 +1,9 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { backend_url, orthanc_url } from '../configs/backend_url';
 import { imageListItem } from '../types/ListEntry';
 import { viewerData } from '../types/ViewerData';
 import { AnyAction, Dispatch } from 'redux';
 import { parseJwt } from '../utils/helper';
+import { store } from '../store';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -49,12 +49,15 @@ type stateFunctions = {
     setProgress,
 }
 
+// const backend_url = store.getState().serverAddress;
+// const orthanc_url = store.getState().serverAddress;
+
 async function deleteStudy(token: string, studyID: string) {
     const jwtBody = parseJwt(token);
     let resp: AxiosResponse;
     if(jwtBody?.role === "med") {
         try {
-            resp = await axios.delete(`${backend_url}/acc_data/studies/`,
+            resp = await axios.delete(`${store.getState().serverAddress}/acc_data/studies/`,
                 {
                     headers: { 'Authorization': 'Bearer ' + token }, 
                     data: {
@@ -80,7 +83,7 @@ async function unassignStudy(token: string, studyID: string) {
     let resp: AxiosResponse;
     if(['med', 'pat'].includes(jwtBody?.role)) {
         try {
-            resp = await axios.put(`${backend_url}/acc_data/studies/unassign`,
+            resp = await axios.put(`${store.getState().serverAddress}/acc_data/studies/unassign`,
                 {
                     study_id: studyID
                 },
@@ -102,7 +105,7 @@ async function unassignStudy(token: string, studyID: string) {
 async function getStudies(token: string, type: "personal" | "unassigned"): Promise<Array<studiesListEntry>> {
     let resp: AxiosResponse<studiesListEntry[]>;
     try {
-        const url = `${orthanc_url}/${type === "personal" ? "studies" : "all_studies"}`
+        const url = `${store.getState().serverAddress}/${type === "personal" ? "studies" : "all_studies"}`
         resp = await axios.get(url,
             { headers: { 'Authorization': 'Bearer ' + token } }
         )
@@ -118,12 +121,12 @@ async function getSeries(study_id: string, token: string): Promise<Array<string>
     let resp: studies_resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${orthanc_url}/studies/${study_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/studies/${study_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
         else {            
-            resp = await axios.get(`${orthanc_url}/studies/${study_id}`,
+            resp = await axios.get(`${store.getState().serverAddress}/studies/${study_id}`,
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
@@ -139,12 +142,12 @@ async function getInstances(serie_id: string, token: string): Promise<Array<stri
     let resp: series_resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${orthanc_url}/series/${serie_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/series/${serie_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )    
         }
         else {
-            resp = await axios.get(`${orthanc_url}/series/${serie_id}`,
+            resp = await axios.get(`${store.getState().serverAddress}/series/${serie_id}`,
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
@@ -159,12 +162,12 @@ async function getJpeg(instance_id: string, token: string): Promise<string> {
     let resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${orthanc_url}/instances/${instance_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/instances/${instance_id}`, {},
                 { responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token } }
             )    
         }
         else {
-            resp = await axios.get(`${orthanc_url}/instances/${instance_id}`, {
+            resp = await axios.get(`${store.getState().serverAddress}/instances/${instance_id}`, {
                 responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token }
             })
         }

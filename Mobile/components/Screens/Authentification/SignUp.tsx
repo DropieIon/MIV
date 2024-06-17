@@ -7,11 +7,13 @@ import {
     TextInput
 } from 'react-native';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { backend_url } from '../../../configs/backend_url';
 import { auth_styles } from './auth_styles';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
+import { useSelector } from 'react-redux';
+import { selectServerAddress } from '../../../features/globalStateSlice';
 
-function SignUp(props) {
+function SignUp(props: {setDesiresSignUp}) {
+    const serverAddress = useSelector(selectServerAddress);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -142,7 +144,7 @@ function SignUp(props) {
                             && password !== "") {
                             // it's not empty
                             setErrEmpty(false);
-                            axios.post(`${backend_url}/register`, {
+                            axios.post(`${serverAddress}/register`, {
                                 username: username,
                                 email: email,
                                 password: password
@@ -151,11 +153,11 @@ function SignUp(props) {
                                 const msg = (resp as AxiosResponse<{ message: string }>).data.message;
                                 setResponseRecv({msg: msg, ok: true});
                                 setLoading(false);
-                                
+                                props.setDesiresSignUp(false);
                             })
                             .catch((errorResp) => {
                                 const errMsg = (errorResp as AxiosError<BackendError>).response.data
-                                    .errors[0].message;
+                                    .message;
                                 setLoading(false);
                                 setResponseRecv({msg: errMsg, ok: false});
 

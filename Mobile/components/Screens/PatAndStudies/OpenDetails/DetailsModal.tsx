@@ -27,7 +27,7 @@ export function DetailsModal(props: DetailsPropsTemplate) {
                     type={props.type}
                     setOpenDetails={props.setOpenDetails}
                 />
-                {props.type !== "Study" && <DetailsInfo />}
+                {!["Study", "UnassignedStudies"].includes(props.type) && <DetailsInfo />}
                 {props.type !== 'Requests' &&
                     <DetailsFooter
                         setRespUnlim4h={setRespUnlim4h}

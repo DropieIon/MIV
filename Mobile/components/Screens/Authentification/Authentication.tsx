@@ -20,7 +20,7 @@ export default function Authentication(props) {
         <SafeAreaView
             style={{ flex: 1 }}
         >
-            {desiresSignUp && <SignUp />}
+            {desiresSignUp && <SignUp setDesiresSignUp={setDesiresSignUp} />}
             {!desiresSignUp && <Login passSignUp={passSignUp} />}
         </SafeAreaView>
     )

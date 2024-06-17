@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { DetailsStyles } from "../DetailsStyles";
 import { assignPatient, cancelRequest, makeRequest, unassignPatient } from "../../../../../dataRequests/AssignRequestsData";
 import { useSelector } from "react-redux";
-import { selectAccountDetails, selectToken } from "../../../../../features/globalStateSlice";
+import { selectAccountDetails, selectToken, selectViewStudies } from "../../../../../features/globalStateSlice";
 import { DetailsPropsTemplate } from "../PropsTemplate";
 import { parseJwt } from "../../../../../utils/helper";
 import { allowUnlimUploads4h, promotePat } from "../../../../../dataRequests/PatientData";
@@ -27,6 +27,9 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
         case "Study":
             redButtonText = medic ? 'Delete' : 'Unassign';
             break;
+        case "UnassignedStudies":
+            redButtonText = 'Delete';
+            break;
         case "Requests":
             redButtonText = medic ? 'Assign' : 'Request';
             break;
@@ -41,7 +44,7 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
             style={
                 [DetailsStyles.footerMainViewNormal,
                 props.type === "PatsAssigned" ? DetailsStyles.footerMainViewPatsAssigned : {},
-                props.type === "Study" ? DetailsStyles.footerMainViewStudies : {}
+                ["Study", "UnassignedStudies"].includes(props.type) ? DetailsStyles.footerMainViewStudies : {}
                 ]}
         >
             {medic && twoButtons &&
@@ -80,7 +83,7 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
             <TouchableOpacity
                 style={[DetailsStyles.footerUnassignButtonNormal,
                 twoButtons ? DetailsStyles.footerUnassignButtonPatsAssigned : {},
-                (props.type === "Study" && !medic) ?
+                (props.type === "Study" && !medic) || props.type === "UnassignedStudies" ?
                         {
                             height: "50%",
                             top: "30%"
@@ -119,6 +122,16 @@ export function DetailsFooter(props: DetailsPropsTemplate) {
                                     props.setRefreshPatList(Math.random() * 420);
                                     props.setOpenDetails(false);
                                 });
+                            }
+                            break;
+                        case "UnassignedStudies":
+                            // username is also used for study_id
+                            if (medic) {
+                                deleteStudy(token, accountDetails.username)
+                                    .then(() => {
+                                        props.setRefreshPatList(Math.random() * 420);
+                                        props.setOpenDetails(false);
+                                    });
                             }
                             break;
                         case "Requests":

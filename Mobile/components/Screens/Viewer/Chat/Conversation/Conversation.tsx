@@ -13,7 +13,7 @@ function groupByFunc(msg: messageData) {
 
 export function Conversation(props: propsTemplate) {
     const groupedList = groupBy(props.messagesList, groupByFunc);
-    const msgDates = Object.keys(groupedList).sort(
+    let msgDates = Object.keys(groupedList).sort(
         (d1, d2) => {
             const getDateTime = (date: string): number => {
                 const date_split = date.split('/');
@@ -38,7 +38,7 @@ export function Conversation(props: propsTemplate) {
                 renderItem={(item) => {
                     return <MessagesFromOneDay
                         date={item.item}
-                        messages={groupedList[item.item].sort((a, b) => {
+                        messages={groupedList[item.item]?.sort((a, b) => {
                             if(a.timestamp > b.timestamp)
                                 return 1;
                             return -1;

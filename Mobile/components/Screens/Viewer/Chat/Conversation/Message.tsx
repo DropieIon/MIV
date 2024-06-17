@@ -79,7 +79,7 @@ export function Message(props: propsTemplate) {
                 <Text
                   style={{
                     fontSize: 20,
-                  }}  
+                  }}
                 >
                     {props.msgData.message}
                 </Text>

@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PfpPicker } from './PfpPicker';
 import { changePatientDetails, getDetails } from '../../../dataRequests/PatientData';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentAccountFullName, selectCurrentAccountUsername, selectToken, setCurrentAccountFullName } from '../../../features/globalStateSlice';
+import { selectCurrentAccountFullName, selectCurrentAccountUsername, selectToken, setCurrentAccountFullName, setMyPfp } from '../../../features/globalStateSlice';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
 import { AxiosError } from 'axios';
 import { PDStyles } from './PDStyles';
@@ -173,6 +173,7 @@ export function PersonalDataForm(props: propsTemplate) {
                                 }, !isSettingsScreen)
                                     .then(() => {
                                         dispatch(setCurrentAccountFullName(fullName));
+                                        dispatch(setMyPfp(profile_pic))
                                         setLoading(false);
                                     })
                                     .catch((errorResp) => {

@@ -27,9 +27,8 @@ export function MessagesFromOneDay(props: propsTemplate) {
     const newMessage = useSelector(selectChatNewMessage);
     useEffect(() => {
         if(newMessage) {
-            setMsgOneDay(msgOneDay.concat(newMessage));
+            setMsgOneDay(msgOneDay?.concat(newMessage));
         }
-        
     }, [newMessage]);
     return (
         <View

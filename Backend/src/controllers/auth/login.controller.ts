@@ -12,18 +12,17 @@ export async function loginController(req: Request<{}, {}, loginForm>,
     }
     try {
         const resp_login = await loginUser(req.body);
-        if(resp_login.ok)
-            {
-                res.json(resp_login.data);
-                return;
-            }
-            next(new ControllerError({
-                // Only enters here if ok is set to false
-                message: (resp_login as resp_common_services).data,
-                code: 400
-            }))
+        if (resp_login.ok) {
+            res.json(resp_login.data);
+            return;
+        }
+        next(new ControllerError({
+            // Only enters here if ok is set to false
+            message: (resp_login as resp_common_services).data,
+            code: 400
+        }))
     } catch (error) {
         console.error("Login error " + error);
-        
+
     }
 }

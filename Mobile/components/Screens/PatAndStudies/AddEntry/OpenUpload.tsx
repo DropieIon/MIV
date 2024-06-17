@@ -6,14 +6,13 @@ import {
  } from "react-native";
 import * as Progress from 'react-native-progress';
 import { uploadStyles } from "./UploadStyles";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as FileSystem from 'expo-file-system';
 import { io, Socket } from "socket.io-client";
 import { sendBytes, sendEOS } from '../../../../dataRequests/socket.io/uploadFileWs';
-import { backend_url } from '../../../../configs/backend_url';
 import { handShake } from '../../../../../Common/types'
 import { useSelector } from "react-redux";
-import { selectAccountDetails, selectToken } from "../../../../features/globalStateSlice";
+import { selectAccountDetails, selectServerAddress, selectToken } from "../../../../features/globalStateSlice";
 import { parseJwt } from "../../../../utils/helper";
 
 type propsTemplate = {
@@ -28,6 +27,7 @@ type callbackRet = {
 }
 
 export function OpenUpload(props: propsTemplate) {
+    const serverAddress = useSelector(selectServerAddress);
     const token = useSelector(selectToken);
     const medic = parseJwt(token)?.role === 'med';
     const accDetails = useSelector(selectAccountDetails);
@@ -47,7 +47,7 @@ export function OpenUpload(props: propsTemplate) {
         // begin transmission of file
         let socket: Socket;
         try {
-            socket = io(`${backend_url}`, {
+            socket = io(`${serverAddress}`, {
                 reconnectionDelayMax: 10000,
                 transports: ["websocket"],
                 extraHeaders: {

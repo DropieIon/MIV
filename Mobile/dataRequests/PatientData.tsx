@@ -1,14 +1,17 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { backend_url, orthanc_url } from '../configs/backend_url';
 import { accountDataListEntry } from '../types/ListEntry';
 import { parseJwt } from '../utils/helper';
+import { store } from '../store';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
+
+// const backend_url = store.getState().serverAddress;
+// const orthanc_url = backend_url;
 
 async function getPatients(token: string): Promise<Array<accountDataListEntry>> {
   let resp;
   try {
-    resp = await axios.get(`${backend_url}/users/patients/`,
+    resp = await axios.get(`${store.getState().serverAddress}/users/patients/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -22,7 +25,7 @@ async function getPatients(token: string): Promise<Array<accountDataListEntry>> 
 async function getPatientStudies(patient_uid: string, token: string) {
   let resp;
   try {
-    resp = await axios.get(`${orthanc_url}/patients/${patient_uid}`,
+    resp = await axios.get(`${store.getState().serverAddress}/patients/${patient_uid}`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -46,7 +49,7 @@ async function promotePat(token: string, patUsername: string) {
     if (parseJwt(token)?.role !== 'admin') {
       throw new Error('Not the admin');
     }
-    resp = await axios.put(`${backend_url}/acc_data/admin/promote`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/admin/promote`,
       {
         patient_username: patUsername
       },
@@ -65,7 +68,7 @@ async function promotePat(token: string, patUsername: string) {
 async function getPfp(token: string, username: string) {
   let resp;
   try {
-    resp = await axios.post(`${backend_url}/acc_data/details/pfp`,
+    resp = await axios.post(`${store.getState().serverAddress}/acc_data/details/pfp`,
       {
         username
       },
@@ -86,7 +89,7 @@ async function getPfp(token: string, username: string) {
 async function getDetails(token: string) {
   let resp;
   try {
-    resp = await axios.get(`${backend_url}/acc_data/details/`,
+    resp = await axios.get(`${store.getState().serverAddress}/acc_data/details/`,
       { headers: { 'Authorization': 'Bearer ' + token } },
     )
   }
@@ -101,7 +104,7 @@ async function getDetails(token: string) {
 async function getPfpsStudy(token: string, studyID: string) {
   let resp;
   try {
-    resp = await axios.post(`${backend_url}/acc_data/details/study_pfps`,
+    resp = await axios.post(`${store.getState().serverAddress}/acc_data/details/study_pfps`,
       {
         study_id: studyID
       },
@@ -123,7 +126,7 @@ async function changePatientDetails(token: string, patDetails: patDetails, shoul
       throw new Error('Not a patient');
     }
     if (shouldPost) {
-      resp = await axios.post(`${backend_url}/acc_data/details/`,
+      resp = await axios.post(`${store.getState().serverAddress}/acc_data/details/`,
         {
           fullName: patDetails.fullName,
           birthday: patDetails.birthday,
@@ -136,7 +139,7 @@ async function changePatientDetails(token: string, patDetails: patDetails, shoul
       )
     }
     else {
-      resp = await axios.put(`${backend_url}/acc_data/details/`,
+      resp = await axios.put(`${store.getState().serverAddress}/acc_data/details/`,
         {
           fullName: patDetails.fullName,
           birthday: patDetails.birthday,
@@ -163,7 +166,7 @@ async function allowUnlimUploads4h(token: string, patUsername: string) {
     if (parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
-    resp = await axios.put(`${backend_url}/acc_data/upload/allowUnlim/`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/upload/allowUnlim/`,
       {
         patient_username: patUsername
       },
@@ -185,7 +188,7 @@ async function assignToPatient(token: string, studyID: string, patUsername: stri
     if (parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
-    resp = await axios.put(`${backend_url}/acc_data/studies/assign`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/studies/assign`,
       {
         patient_username: patUsername,
         study_id: studyID

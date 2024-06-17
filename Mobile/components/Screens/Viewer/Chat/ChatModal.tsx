@@ -7,13 +7,12 @@ import { ChatStyles } from "./ChatStyles";
 import { MessageBox } from "./MessageBox";
 import { Conversation } from "./Conversation/Conversation";
 import { useEffect, useRef, useState } from "react";
-import { messageData, messageOverWS } from "../../../../../Common/types";
+import { messageData } from "../../../../../Common/types";
 import { useDispatch, useSelector } from "react-redux";
-import { selectCurrentAccountUsername, selectOpenViewer, selectToken, setChatNewMessage, setChatPfps } from "../../../../features/globalStateSlice";
+import { selectOpenViewer, selectServerAddress, selectToken, setChatNewMessage, setChatPfps } from "../../../../features/globalStateSlice";
 import { AntDesign } from '@expo/vector-icons';
 import { DetailsStyles } from "../../PatAndStudies/OpenDetails/DetailsStyles";
 import { Socket, io } from "socket.io-client";
-import { backend_url } from "../../../../configs/backend_url";
 import { getPfpsStudy } from "../../../../dataRequests/PatientData";
 
 type propsTemplate = {
@@ -22,11 +21,11 @@ type propsTemplate = {
 }
 
 export function ChatModal(props: propsTemplate) {
-    const [messagesList, setMessagesList] = useState<messageData[]>(null);
+    const [messagesList, setMessagesList] = useState<messageData[]>([]);
     const dispatch = useDispatch();
+    const serverAddress = useSelector(selectServerAddress);
     // all the pfps for each account that has sent a message on the study
     const token = useSelector(selectToken);
-    const currentUsername = useSelector(selectCurrentAccountUsername);
     const openViewer = useSelector(selectOpenViewer);
     const study_id = openViewer.study_id;
     const socket = useRef<Socket>(null);
@@ -34,15 +33,6 @@ export function ChatModal(props: propsTemplate) {
     const closeSock = () => {
         socket.current.disconnect();
     }
-    const appendToList = (msg: messageData) => {
-        if(msg.message !== "") {
-            dispatch(setChatNewMessage({
-                message: msg,
-                timestamp: new Date().getTime(),
-                senderUsername: currentUsername
-            }));
-        }
-    };
     const appendMsg = (msg: string) => {
         if (msg !== "") {
             socket.current.emit('msg-to-serv', {
@@ -58,7 +48,7 @@ export function ChatModal(props: propsTemplate) {
         });
         try {
             if(!socket.current) {
-                socket.current = io(`${backend_url}`, {
+                socket.current = io(`${serverAddress}`, {
                     reconnectionDelayMax: 10000,
                     extraHeaders: {
                         Authorization: `Bearer ${token}`,

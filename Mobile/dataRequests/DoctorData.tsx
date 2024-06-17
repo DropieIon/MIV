@@ -1,14 +1,17 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { backend_url, orthanc_url } from '../configs/backend_url';
 import { accountDataListEntry } from '../types/ListEntry';
 import { parseJwt } from '../utils/helper';
+import { store } from '../store';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
+
+// const backend_url = store.getState().serverAddress;
+// const orthanc_url = backend_url;
 
 async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
   let resp;
   try {
-    resp = await axios.get(`${orthanc_url}/users/all_doctors/`,
+    resp = await axios.get(`${store.getState().serverAddress}/users/all_doctors/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -25,7 +28,7 @@ async function demoteDoc(token: string, docUsername: string) {
     if(parseJwt(token)?.role !== 'admin') {
       throw new Error('Not the admin');
     }
-    resp = await axios.put(`${backend_url}/acc_data/admin/demote`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/admin/demote`,
       {
         doc_username: docUsername
       },

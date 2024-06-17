@@ -58,21 +58,6 @@ const styles = StyleSheet.create({
 const Drawer = createDrawerNavigator();
 
 export function Viewer(props: { study_id: string}) {
-    function HeaderWithCloseButton(props: {navigation, route, options }) {
-        return (
-            <View style={{
-                height: "20%",
-                width: "100%",
-                backgroundColor: 'red'
-            }}>
-                <Text
-                    style={{
-                        color: 'white'
-                    }}
-                > Test</Text>
-            </View>
-        )
-    }
     function SeriesView({ navigation }: DrawerContentComponentProps) {
         return (
             <View
@@ -121,7 +106,6 @@ export function Viewer(props: { study_id: string}) {
     const loading_data = useRef<imageListItem[][]>([]);
     const [series_lengths, setSeries_lengths] = useState<number[]>([]);
     const token = useSelector(selectToken);
-    let startTime = useRef(null);
     useEffect(() => {
         const functions = {
             dispatch: dispatch, 
@@ -140,7 +124,6 @@ export function Viewer(props: { study_id: string}) {
         });
         
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
-        startTime.current = (new Date()).getTime();
     }, []);
     
     if(loading.current && series_lengths.length !== 0)
@@ -166,8 +149,7 @@ export function Viewer(props: { study_id: string}) {
                     style={styles.loading_text_view}
                 >
                     <ActivityIndicator size="large" color="000000"></ActivityIndicator>
-                    {/* TODO: change this */}
-                    <Text style={styles.loading_text}>Rabdarea e o virtutae...</Text>
+                    <Text style={styles.loading_text}>Rabdarea e o virtute...</Text>
                 </View>
             }
             {/* This "length != 0" is a little hack because 

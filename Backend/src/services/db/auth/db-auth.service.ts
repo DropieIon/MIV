@@ -75,8 +75,9 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
         [username, sha256(salt + password)]);
     if (typeof sqlResp !== "string" && !(sqlResp instanceof mariadb.SqlError)) {
         // is the resp list
-        if (sqlResp.length == 0)
+        if (sqlResp.length === 0) {
             return "Invalid credentials";
+        }
         return { 
             role: sqlResp[0].role,
             email_validation: sqlResp[0].email_validation,

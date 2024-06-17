@@ -7,6 +7,7 @@ import {
     selectMyPfp,
     selectToken,
     selectTokenRefreshRef,
+    setMyPfp,
     setToken,
     setTokenRefreshRef,
     setViewStudies
@@ -141,6 +142,11 @@ export function CustomDrawer(props) {
                         dispatch(setToken(''));
                         clearTimeout(tokenRefreshRef);
                         dispatch(setTokenRefreshRef(null));
+                        dispatch(setMyPfp(""));
+                        dispatch(setViewStudies({
+                            type: 'personal',
+                            patientID: ""
+                        }));
                     }} />
             </DrawerContentScrollView>
         </View>

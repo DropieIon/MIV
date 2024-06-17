@@ -7,7 +7,7 @@ INSERT INTO personal_data(
 )
 VALUES (
     'patient1',
-    'james blond',
+    'linus torvalds',
     '1999-04-20',
     'M'
 );
@@ -33,7 +33,7 @@ INSERT INTO personal_data(
 )
 VALUES (
     'patient3',
-    'testulescu',
+    'Richard Stallman',
     '1982-04-21',
     'M'
 );

@@ -209,7 +209,7 @@ function ViewStudies(props: propsTemplate) {
             <DetailsModal
                 setOpenDetails={setOpenDetails}
                 setRefreshPatList={setRefreshStudList}
-                type='Study'
+                type={unassignedStudies ? 'UnassignedStudies' : 'Study'}
             />
         }
         {!loading && !openDetails && !openAssignment && openUpload &&

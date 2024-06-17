@@ -9,11 +9,12 @@ import {
 
 import { textSize, marginBottom, auth_styles } from './auth_styles';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setCurrentAccountFullName, setCurrentAccountUsername, setToken, setTokenRefreshRef } from '../../../features/globalStateSlice';
-import { useDispatch } from 'react-redux';
-import { backend_url } from '../../../configs/backend_url';
+import { selectServerAddress, setCurrentAccountFullName, setCurrentAccountUsername, setServerAddress, setToken, setTokenRefreshRef } from '../../../features/globalStateSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { BackendError } from '../../../../Backend/src/errors/BackendError.error';
 import { parseJwt } from '../../../utils/helper';
+import DialogInput from 'react-native-dialog-input';
+
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 const styles = StyleSheet.create({
@@ -27,10 +28,22 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: marginBottom
     },
+
+    serverButton: {
+        position: 'absolute',
+        right: "5%",
+        bottom: "3%",
+        elevation: 5,
+        backgroundColor: 'lightblue',
+        padding: 5,
+        borderRadius: 10
+    }
 })
 
 function Login(props: { passSignUp: () => void }) {
     const dispatch = useDispatch();
+    const serverAddress = useSelector(selectServerAddress);
+    const [isDialogVisible, setIsDialogVisible] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errUsername, setErrUsername] = useState("");
@@ -39,13 +52,15 @@ function Login(props: { passSignUp: () => void }) {
     const [responseRecv, setResponseRecv] = useState("");
     let focusPass = useRef(null);
     const refreshToken = (username: string, password: string) => {
-        axios.post(`${backend_url}/login`, {
+        axios.post(`${serverAddress}/login`, {
             username: username,
             password: password
         })
             .then((resp) => {
                 const respData = (resp as AxiosResponse<{ token: string, fullName: string }>).data;
                 const token = respData.token;
+                if(parseJwt(token)?.role === "proxy")
+                    return;
                 const fullName = respData.fullName;
                 const current_time = Math.floor(new Date().getTime() / 1000);
                 dispatch(setCurrentAccountFullName(fullName));
@@ -60,11 +75,11 @@ function Login(props: { passSignUp: () => void }) {
                 );
                 dispatch(setToken(token));
             })
-            .catch((errorResp) => {
-                const errMsg = (errorResp as AxiosError<BackendError>).response.data
-                    .errors[0].message;
+            .catch((errorResp) => {                
+                const errMsg = (errorResp as AxiosError<BackendError>).response?.data
+                    .message;
                 setLoading(false);
-                setResponseRecv(errMsg);
+                setResponseRecv(errMsg || "Problem connecting to server.");
             })
     }
     return (
@@ -153,13 +168,15 @@ function Login(props: { passSignUp: () => void }) {
                             setResponseRecv("");
                             setLoading(true);
                             setErrEmpty(false);
-                            axios.post(`${backend_url}/login`, {
+                            axios.post(`${serverAddress}/login`, {
                                 username: username,
                                 password: password
                             })
                                 .then((resp) => {
                                     const respData = (resp as AxiosResponse<{ token: string, fullName: string }>).data;
                                     const token = respData.token;
+                                    if(parseJwt(token)?.role === "proxy")
+                                        return;
                                     setLoading(false);
                                     const current_time = Math.floor(new Date().getTime() / 1000);
                                     // refresh token when it expires
@@ -176,10 +193,10 @@ function Login(props: { passSignUp: () => void }) {
                                     dispatch(setToken(token));
                                 })
                                 .catch((errorResp) => {
-                                    const errMsg = (errorResp as AxiosError<BackendError>).response.data
-                                        .errors[0].message;
+                                    const errMsg = (errorResp as AxiosError<BackendError>).response?.data
+                                        .message;
                                     setLoading(false);
-                                    setResponseRecv(errMsg);
+                                    setResponseRecv(errMsg || "Problem connecting to server.");
 
                                 })
                         }
@@ -194,6 +211,22 @@ function Login(props: { passSignUp: () => void }) {
                     Log in
                 </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.serverButton}
+                onPress={() => setIsDialogVisible(true)}
+            >
+                <Text>
+                    Server
+                </Text>
+            </TouchableOpacity>
+            <DialogInput isDialogVisible={isDialogVisible}
+                title={"Server IP"}
+                submitInput={(inputText) => {
+                    dispatch(setServerAddress(`http://${inputText}:8000`));
+                    setIsDialogVisible(false);
+                }}
+                closeDialog={() => { setIsDialogVisible(false) }}>
+            </DialogInput>
         </View>
     )
 

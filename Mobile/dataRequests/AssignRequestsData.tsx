@@ -1,15 +1,16 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { backend_url, orthanc_url } from '../configs/backend_url';
 import { requestsListEntry } from '../types/ListEntry';
 import { parseJwt } from '../utils/helper';
 import { accountDataListEntry } from '../types/ListEntry'
+import { store } from '../store';
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
+// const backend_url = store.getState().serverAddress;
 
 async function getRequests(token: string): Promise<Array<requestsListEntry>> {
   let resp;
   try {
-    resp = await axios.get(`${backend_url}/acc_data/personal_requests/`,
+    resp = await axios.get(`${store.getState().serverAddress}/acc_data/personal_requests/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -28,7 +29,7 @@ async function getAllPatients(token: string): Promise<accountDataListEntry[]> {
     if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
-    resp = await axios.get(`${backend_url}/users/all_patients/`,
+    resp = await axios.get(`${store.getState().serverAddress}/users/all_patients/`,
       { headers: { 'Authorization': 'Bearer ' + token } }
     )
   }
@@ -46,7 +47,7 @@ async function makeRequest(token: string, medic_username: string) {
     if(parseJwt(token)?.role === 'med') {
       throw new Error('Not a patient');
     }
-    resp = await axios.put(`${backend_url}/acc_data/request/`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/request/`,
       {
         to: medic_username
       },
@@ -69,7 +70,7 @@ async function answerReq(token: string, patient_username: string, isAccepted: bo
     if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a medic');
     }
-    resp = await axios.put(`${backend_url}/acc_data/request/${isAccepted ? 'accept' : 'decline'}`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/request/${isAccepted ? 'accept' : 'decline'}`,
     {
       patient_username: patient_username
     },
@@ -92,7 +93,7 @@ async function assignPatient(token: string, patient_username: string) {
     if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a doctor');
     }
-    resp = await axios.put(`${backend_url}/acc_data/request/assign`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/request/assign`,
       {
         patient_username: patient_username
       },
@@ -116,7 +117,7 @@ async function unassignPatient(token: string, patient_username: string) {
     if(parseJwt(token)?.role === 'pat') {
       throw new Error('Not a doctor');
     }
-    resp = await axios.put(`${backend_url}/acc_data/request/unassign`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/request/unassign`,
       {
         patient_username: patient_username
       },
@@ -138,7 +139,7 @@ async function cancelRequest(token: string, doctorUsername: string) {
     if(parseJwt(token)?.role === 'med') {
       throw new Error('Only a patient can cancel a request');
     }
-    resp = await axios.put(`${backend_url}/acc_data/request/cancel`,
+    resp = await axios.put(`${store.getState().serverAddress}/acc_data/request/cancel`,
       {
         doctor_username: doctorUsername
       },

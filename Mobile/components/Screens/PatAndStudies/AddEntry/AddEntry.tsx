@@ -68,7 +68,8 @@ export function AddEntry(props: propsTemplate) {
                         }
                         DocumentPicker.getDocumentAsync({
                             copyToCacheDirectory: true,
-                            multiple: false
+                            multiple: false,
+                            type: 'application/zip'
                         })
                         .then((data) => {
                             const { uri, size } = data.assets[0];

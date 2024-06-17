@@ -5,6 +5,7 @@ export const globalStateSlice = createSlice({
     initialState: {
         token: "",
         tokenRefreshRef: null,
+        serverAddress: "http://192.168.1.201:8000",
         openViewer: {
             should_open: false,
             study_id: ""
@@ -28,7 +29,7 @@ export const globalStateSlice = createSlice({
         // and knowing which patient was
         // last clicked
         viewStudies: {
-            type: "",
+            type: "personal",
             patientID: "",
         },
         // used for unassigned studies
@@ -40,6 +41,9 @@ export const globalStateSlice = createSlice({
         },
         setTokenRefreshRef: (state, action) => {
             state.tokenRefreshRef = action.payload;
+        },
+        setServerAddress: (state, action) => {
+            state.serverAddress = action.payload;
         },
         setOpenViewer: (state, action) => {
             state.openViewer = action.payload;
@@ -80,6 +84,7 @@ export const globalStateSlice = createSlice({
 export const {
     setToken,
     setTokenRefreshRef,
+    setServerAddress,
     setOpenViewer,
     setLoadingProgress,
     setRefreshList,
@@ -97,6 +102,7 @@ export default globalStateSlice.reducer;
 export const selectToken = (state) => state.token;
 export const selectTokenRefreshRef = (state) => state.tokenRefreshRef;
 export const selectOpenViewer = (state) => state.openViewer;
+export const selectServerAddress = (state) => state.serverAddress;
 export const selectLoadingProgress = (state) => state.loadingProgress;
 export const selectFullName = (state) => state.accountDetails.fullName;
 export const selectAccountDetails = (state) => state.accountDetails;

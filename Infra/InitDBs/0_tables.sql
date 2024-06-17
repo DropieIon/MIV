@@ -2,7 +2,7 @@ CREATE TABLE login(
     username            char(255) NOT NULL,
     uuid                char(255) not null,
     passhash            char(255) NOT NULL,
-    salt                char(16) NOT NULL,
+    salt                char(100) NOT NULL,
     email               char(255) NOT NULL,
     role                char(5) not null, /* pat, med, admin, or proxy */
     has_completed       char(1) not null default 'N', /* Y or N */

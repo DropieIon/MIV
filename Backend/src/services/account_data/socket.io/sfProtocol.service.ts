@@ -71,20 +71,20 @@ export class sfProtocol {
                                         }
                                     }
                                     this.nrOfPackets = data.nrOfPackets;
-                                        this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
-                                        this.folderName = `${this.user}_${uuidv4()}`;
-                                        this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
-                                        console.log("Handshake successfull");
-                                        callback({
-                                            success: true
-                                        });
+                                    this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
+                                    this.folderName = `${this.user}_${uuidv4()}`;
+                                    this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
+                                    console.log("Handshake successfull");
+                                    callback({
+                                        success: true
+                                    });
                                 });
                             });
                         break;
                     case 'splitFile':
                         // initial checks
                         if (!this.checkHandshake()) {
-                            this.sock.disconnect();
+                            this.sock.disconnect(true);
                             return;
                         }
                         const pkg = Buffer.from(data.data, 'base64');

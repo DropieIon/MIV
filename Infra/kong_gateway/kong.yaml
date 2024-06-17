@@ -4,7 +4,7 @@ _transform: true
 services:
   - name: account_data
     url: http://account_data:3000/
-  - name: jwt
+  - name: auth
     url: http://auth:3000/
   - name: users
     url: http://users:3000/
@@ -35,13 +35,8 @@ routes:
       - /series
       - /instances
       - /patients
-  - name: peer-route
-    service: orthanc
-    strip_path: true
-    paths:
-      - /peer
   - name: jwt-route
-    service: jwt
+    service: auth
     paths:
       - /
 plugins:
@@ -68,13 +63,6 @@ plugins:
         - exp
   - name: jwt
     route: orthanc-route
-    enabled: true
-    config:
-      key_claim_name: kid
-      claims_to_verify:
-        - exp
-  - name: jwt
-    route: peer-route
     enabled: true
     config:
       key_claim_name: kid
