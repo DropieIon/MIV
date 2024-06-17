@@ -20,4 +20,4 @@ upload-studies:
 	storescu -aec ORTHANC --propose-jpeg8 localhost $(PORT_PROXY) ../Dicoms/rubo.dcm
 
 test-proxy:
-	storescu -aec ORTHANC --propose-lossless localhost $(PORT_PROXY) ../Margaret\ Hamilton/*/*
+	storescu -aec ORTHANC --propose-lossless localhost $(PORT_PROXY) ../Dicoms/unassigned_skull.DCM
