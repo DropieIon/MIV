@@ -128,6 +128,21 @@ export function CustomDrawer(props) {
                     :
                     <></>
                 }
+                {(!admin && !medic) ?
+                    <DrawerItem label={"My Doctors"}
+                        onPress={() => {
+                            dispatch(setViewStudies({
+                                type: 'unassigned',
+                                patientID: ""
+                            }));
+                            props.navigation.navigate("Studies", {
+                                type: 'unassigned'
+                            })
+                        }}
+                    />
+                    :
+                    <></>
+                }
                 {admin ?
                     <></>
                     :

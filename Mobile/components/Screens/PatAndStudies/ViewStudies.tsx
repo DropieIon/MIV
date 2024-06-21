@@ -68,7 +68,7 @@ function ViewStudies(props: propsTemplate) {
     const [refreshStudList, setRefreshStudList] = useState(0);
     const medic = parseJwt(token)?.role === 'med';
     const unassignedStudies = viewStudies.type === "unassigned";
-    const [err, setErr] = useState('');
+    const [toastMsg, setToastMsg] = useState('');
     const [zipData, setZipData] = useState({
         uri: '',
         size: 0
@@ -136,7 +136,7 @@ function ViewStudies(props: propsTemplate) {
                 }
             }
             else {
-                setErr("No token");
+                setToastMsg("No token");
             }
             const handleBackButtonClick = () => {
                 BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
@@ -214,8 +214,9 @@ function ViewStudies(props: propsTemplate) {
         }
         {!loading && !openDetails && !openAssignment && openUpload &&
             <OpenUpload
-                setErrUpload={setErr}
+                setToastMsg={setToastMsg}
                 setOpenUpload={setOpenUpload}
+                setRefreshList={setRefreshStudList}
                 zipUri={zipData.uri}
                 zipSize={zipData.size}
             />}
@@ -223,21 +224,21 @@ function ViewStudies(props: propsTemplate) {
             <AddEntry
                 type='Study'
                 setZipData={setZipData}
-                setErrUpload={setErr}
+                setToastMsg={setToastMsg}
                 navigation={props.navigation}
             />
             :
             <></>
         }
         <Toast
-            visible={err !== ''}
+            visible={toastMsg !== ''}
             onShow={() => {
                 setTimeout(() => {
-                    setErr('');
+                    setToastMsg('');
                 }, 2000);
             }}
         >
-            {err}
+            {toastMsg}
         </Toast>
         {!loading && !openDetails && !openUpload && openAssignment &&
             <AssignModal

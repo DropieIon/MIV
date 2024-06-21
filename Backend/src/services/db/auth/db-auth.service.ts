@@ -90,7 +90,10 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
 function parseDateToMariadb(date: string) {
     const splitDate = date.split('/')
     // Mariadb format: yyyy-mm-dd
-    return `${splitDate[2]}-${splitDate[0]}-${splitDate[1]}`
+    const year = splitDate[2];
+    const month = splitDate[1];
+    const day = splitDate[0];
+    return `${year}-${month}-${day}`
 }
 
 export async function insert_patient_details(username: string, details: patientForm, update: boolean) {

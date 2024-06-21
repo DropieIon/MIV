@@ -8,7 +8,8 @@ import * as Progress from 'react-native-progress';
 import { uploadStyles } from "./UploadStyles";
 import { useEffect, useRef, useState } from "react";
 import * as FileSystem from 'expo-file-system';
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { sendBytes, sendEOS } from '../../../../dataRequests/socket.io/uploadFileWs';
 import { handShake } from '../../../../../Common/types'
 import { useSelector } from "react-redux";
@@ -17,7 +18,8 @@ import { parseJwt } from "../../../../utils/helper";
 
 type propsTemplate = {
     setOpenUpload,
-    setErrUpload,
+    setToastMsg,
+    setRefreshList,
     zipUri: string,
     zipSize: number,
 }
@@ -39,8 +41,8 @@ export function OpenUpload(props: propsTemplate) {
         const fInfo = await FileSystem.getInfoAsync(zipUri, { md5: true });
         const md5 = fInfo.exists ? fInfo.md5 : '';
         let bytes: string;
-        // 10 MB
-        const nrOfBytes = 10485760;
+        // 1 MB
+        const nrOfBytes = 1048576;
         const nrPack = Math.ceil(zipSize / nrOfBytes);
         let pos = 0;
 
@@ -55,15 +57,11 @@ export function OpenUpload(props: propsTemplate) {
                     ConnType: 'upload'
                 }
             });
-            socket.on('disconnect', (d) => {
-                console.log("Disconnected");
-            });
         } catch (error) {
-            props.setErrUpload("Could not create socket to server " + error);
+            props.setToastMsg("Could not create socket to server " + error);
             return;
         }
         setSock(socket);
-        let rez;
         const mainEv = 'split-file';
         const toSend: handShake = {
             type: 'handshake',
@@ -74,31 +72,46 @@ export function OpenUpload(props: propsTemplate) {
             // that the study belongs to
             user: medic ? accDetails.username : ''
         };
+        socket.on('disconnect',  () => {
+            console.log("disconnected");
+            
+        })
         socket.on('err', (err) => {
-            props.setErrUpload("HandShake error " + err.message);
+            props.setToastMsg(err.message);
         });
-        socket.on('progress', (p: string) => {
+        socket.on('on-stable', () => {
+            props.setToastMsg("Study Uploaded");
+            props.setRefreshList(Math.random());
+        });
+        socket.on('progress', async (p: string) => {
             const progress = parseFloat(p);
-            if (uploadProgress < progress)
-                setUploadProgress(progress);
+            setUploadProgress(progress);
+            bytes = await FileSystem.readAsStringAsync(zipUri, {
+                encoding: 'base64',
+                length: nrOfBytes,
+                position: pos
+            });
+            if(bytes.length !== 0)
+                sendBytes(socket, bytes);
+            pos += nrOfBytes;
+            if(pos >= zipSize)
+                sendEOS(socket, md5, false);
+
         })
         socket.emit(mainEv, toSend, async (d: callbackRet) => {
             // only after it was acknowledged
             if (d.success) {
-                for (let ind = 0; ind < nrPack; ind++) {
-                    bytes = await FileSystem.readAsStringAsync(zipUri, {
-                        encoding: 'base64',
-                        length: nrOfBytes,
-                        position: pos
-                    });
-                    rez = await sendBytes(socket, bytes);
-                    pos += nrOfBytes;
-                }
-                rez = await sendEOS(socket, md5, false);
+                bytes = await FileSystem.readAsStringAsync(zipUri, {
+                    encoding: 'base64',
+                    length: nrOfBytes,
+                    position: pos
+                });
+                sendBytes(socket, bytes);
+                pos += nrOfBytes;
             }
             else {
                 props.setOpenUpload(false);
-                props.setErrUpload("Upload limit reached");
+                props.setToastMsg("Upload limit reached");
             }
         });
     }
@@ -108,6 +121,7 @@ export function OpenUpload(props: propsTemplate) {
     if (uploadProgress === 1) {
         cancelEnabled = false;
         setTimeout(() => {
+            props.setToastMsg("Parsing...");
             props.setOpenUpload(false);
         }, 500);
     }

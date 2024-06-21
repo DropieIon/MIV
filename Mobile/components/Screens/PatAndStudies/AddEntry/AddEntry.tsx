@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 type propsTemplate = {
     type: 'Patient' | 'Study',
     setZipData?,
-    setErrUpload?,
+    setToastMsg?,
     navigation
 }
 
@@ -63,7 +63,7 @@ export function AddEntry(props: propsTemplate) {
                     }
                     if(props.type === 'Study') {
                         if(!parseJwt(token)?.canUpload) {
-                            props.setErrUpload("Cannot upload study");
+                            props.setToastMsg("Cannot upload study");
                             return;
                         }
                         DocumentPicker.getDocumentAsync({

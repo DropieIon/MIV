@@ -23,9 +23,12 @@ def getUsername(request):
     return json.loads(base64.b64decode(encoded_payload))["username"]
 
 def getRole(request):
-    encoded_payload = request['headers']['authorization']\
+    try:
+        encoded_payload = request['headers']['authorization']\
                                         .split(" ")[1].split(".")[1] + '=='
-    return json.loads(base64.b64decode(encoded_payload))["role"]
+        return json.loads(base64.b64decode(encoded_payload))["role"]
+    except:
+        return ""
 
 
 def convertDate(date: str):

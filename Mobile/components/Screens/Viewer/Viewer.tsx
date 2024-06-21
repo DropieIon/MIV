@@ -149,7 +149,7 @@ export function Viewer(props: { study_id: string}) {
                     style={styles.loading_text_view}
                 >
                     <ActivityIndicator size="large" color="000000"></ActivityIndicator>
-                    <Text style={styles.loading_text}>Rabdarea e o virtute...</Text>
+                    <Text style={styles.loading_text}>Patience is a virtue...</Text>
                 </View>
             }
             {/* This "length != 0" is a little hack because 

@@ -1,4 +1,4 @@
-import { appendFileSync, rmSync, unlink } from "fs";
+import { appendFileSync, readFileSync, rmSync, unlink } from "fs";
 import { Socket } from "socket.io";
 import jwt from 'jsonwebtoken';
 import { createMD5, get_GW_Data, parseJwt } from "../../../utils/helper.util";
@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { extractZip } from "./sZip.service";
 import { parseDICOMFolder } from "./parseUpload.service";
 import { dbCheckUnlimUploads4h, dbCheckUpload } from "../../db/account_data/db-upload.service";
+import { Express } from "express";
+import { parseDicom } from "dicom-parser";
 
 export class sfProtocol {
     private size: number = 0;
@@ -15,6 +17,7 @@ export class sfProtocol {
     private pkgNr: number = 0;
     private sock: Socket;
     private user: string = '';
+    private StudyInstanceUID: string | undefined = '';
     private pathToTemp = '/app/tmp';
     private zipName: string = '';
     private folderName: string = '';
@@ -25,7 +28,27 @@ export class sfProtocol {
         }
         return true;
     }
-    constructor(socket: Socket) {
+    constructor(socket: Socket, app: Express) {
+        // register the on-stable event
+        app.get('/on-stable/:studyInstanceUID', (req, res) => {
+            console.log("on-stable", req.params.studyInstanceUID, this.StudyInstanceUID);
+            // avoid false positives
+            if (req.params.studyInstanceUID === this.StudyInstanceUID) {
+                console.log("A intrat");
+                
+                const pathFolder = `${this.pathToTemp}/${this.folderName}`;
+                rmSync(pathFolder, {
+                    recursive: true,
+
+                    force: true
+                })
+                socket.emit('on-stable', {});
+                setTimeout(() => {
+                    socket.disconnect(true);  
+                }, 1000);
+            }
+            res.send('ok');
+        });
         this.sock = socket;
         this.sock.on('split-file', (data: handShake | splitFile | EOS, callback) => {
             try {
@@ -37,7 +60,7 @@ export class sfProtocol {
                                 jwt.verify(data.token, secret, async (err: any) => {
                                     if (err !== null) {
                                         this.sock.emit('err', { message: 'Invalid token' });
-                                        this.sock.disconnect();
+                                        this.sock.disconnect(true);
                                         return;
                                     }
                                     const tknBody = parseJwt(data.token);
@@ -49,7 +72,7 @@ export class sfProtocol {
                                         callback({
                                             success: false
                                         });
-                                        this.sock.disconnect();
+                                        this.sock.disconnect(true);
                                         return;
                                     }
                                     this.size = data.size;
@@ -58,14 +81,14 @@ export class sfProtocol {
                                             const canUpload = await dbCheckUpload(this.user, this.size)
                                             if (typeof canUpload === 'string') {
                                                 this.sock.emit('err', canUpload);
-                                                this.sock.disconnect();
+                                                this.sock.disconnect(true);
                                                 return;
                                             }
                                             if (!canUpload) {
                                                 callback({
                                                     success: false
                                                 });
-                                                this.sock.disconnect();
+                                                this.sock.disconnect(true);
                                                 return;
                                             }
                                         }
@@ -91,13 +114,13 @@ export class sfProtocol {
                         const pkgSize = pkg.byteLength;
                         if (pkgSize > this.sizeOfPkg) {
                             this.sock.emit('err', { message: 'Packet is bigger than expected' });
-                            this.sock.disconnect();
+                            this.sock.disconnect(true);
                             return;
                         }
                         this.pkgNr++;
                         if (this.pkgNr > this.nrOfPackets) {
                             this.sock.emit('err', { message: 'Way too many packets' });
-                            this.sock.disconnect();
+                            this.sock.disconnect(true);
                             return;
                         }
                         appendFileSync(this.zipName, pkg);
@@ -105,16 +128,17 @@ export class sfProtocol {
                         break;
                     case 'EOS':
                         if (!this.checkHandshake()) {
-                            this.sock.disconnect();
+                            this.sock.disconnect(true);
                             return;
                         }
                         if(data.canceled) {
+                            this.sock.emit('err', { message: 'Upload canceled' });
+                            this.sock.disconnect(true);
                             unlink(this.zipName, (err) => {
                                 if (err)
                                     console.error("Err deleting file" + err);
                                 else
                                     console.log("File deleted.");
-                                this.sock.disconnect();
                             });
                         }
                         else {
@@ -122,7 +146,8 @@ export class sfProtocol {
                                 .then((md5) => {
                                     if (md5 !== data.md5) {
                                         this.sock.emit('err', { message: 'Corrupted file received' });
-                                        this.sock.disconnect();
+                                        console.log("Corrupted zip received");
+                                        this.sock.disconnect(true);
                                         unlink(this.zipName, (err) => {
                                             if (err)
                                                 console.error("Err deleting file" + err);
@@ -139,22 +164,14 @@ export class sfProtocol {
                                                     else
                                                         console.log("File deleted.");
                                                 });
-                                                console.log("Zip extracted.");
                                                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
-                                                parseDICOMFolder(pathFolder, this.user)
-                                                .then(() => {
-                                                    // delete folder after 5 mins
-                                                    setTimeout(() => {
-                                                        rmSync(pathFolder, {
-                                                            recursive: true,
-        
-                                                            force: true
-                                                        })
-                                                    }, 300000);
+                                                parseDICOMFolder(pathFolder, this.user, true)
+                                                .then((studyUID) => {
+                                                    this.StudyInstanceUID = studyUID;
                                                 });
+                                                parseDICOMFolder(pathFolder, this.user, false);
                                             });
                                     }
-                                    this.sock.disconnect();
                                 });
                         }
                         break;

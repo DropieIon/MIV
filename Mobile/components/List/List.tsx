@@ -14,6 +14,7 @@ import { assignListTemplate } from './Templates/AssignListTemplate';
 import { StudiesTemplate } from './Templates/StudiesTemplate';
 import { patientReqTemplate } from './Templates/PatientReqTemplate';
 import { useAssets } from 'expo-asset';
+import { MyDocsTemplate } from './Templates/MyDocsTemplate';
 
 type propsTemplate = {
     items: ListEntry[],
@@ -50,6 +51,11 @@ function List(props: propsTemplate) {
             templateToUse = patientsTemplate;
             mainViewListStyle = [ViewStyles.list, 
                 props.template === "medic" ? personalPatients ? {} : { top: "0%" } : {}]
+            break;
+        case 'mydocs':
+            emptyString = 'doctors';
+            templateToUse = MyDocsTemplate;
+            mainViewListStyle = [ViewStyles.list]
             break;
         case 'patient':
             emptyString = 'studies';

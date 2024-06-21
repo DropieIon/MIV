@@ -25,14 +25,14 @@ const io = new ServerIO(server, {
   maxHttpBufferSize: 1e8,
 });
 
-io.on('connection', function (socket) {  
+io.on('connection', function (socket) {
   switch(socket.handshake.headers.conntype) {
     case 'upload':
       // protocol: sends size and nr of packets first
       // then sends the n nr of packets
       // then an EOS (end of stream) and a checksum
       console.log("Upload client connected");
-      const sf = new sfProtocol(socket);
+      const sf = new sfProtocol(socket, app);
       break;
     case 'study-chat':
       console.log("Study chat connected");

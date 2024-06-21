@@ -31,8 +31,14 @@ function assignStudyID(dicomPath: string, prevSUID: string, patUsername: string)
                 then(async (data) => {
                     const resp: any = await data.json();
                     const studyID = resp[0].ID;
-                    if(await dbCheckStudyID(patUsername, studyID))
+                    const respDbCheck = await dbCheckStudyID(patUsername, studyID);
+                    if(typeof respDbCheck === "string"){
+                        throw new Error(respDbCheck);
+                    }
+                    else if(respDbCheck)
                         dbNewStudy(patUsername, studyID);
+                    else
+                        throw new Error("StudyID already assigned");
                 })
                 .catch((err) => {
                     console.log(err);
@@ -65,7 +71,7 @@ function sendToOrthanc(filePath: string) {
     }
 }
 
-export async function parseDICOMFolder(path: string, patUsername: string) {
+export async function parseDICOMFolder(path: string, patUsername: string, wantsSUID: boolean) {
     try {
         let dirList: string[] = [path];
         let prevSUID = '';
@@ -84,6 +90,10 @@ export async function parseDICOMFolder(path: string, patUsername: string) {
                     // it's a file
                     if (getExtension(currentPath) === 'dcm') {
                         // it's a dicom file
+                        if(wantsSUID){
+                            const dmcData = readFileSync(currentPath);
+                            return parseDicom(dmcData).string('x0020000d');
+                        }
                         sendToOrthanc(currentPath);
                         prevSUID = assignStudyID(currentPath, prevSUID, patUsername);
                     }

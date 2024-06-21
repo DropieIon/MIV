@@ -5,6 +5,7 @@ from routes.studies import getStudiesForUser, getAllStudies, getStudyData
 from routes.series import getSeries, getSeriesData
 from routes.instances import getInstaces, postInstances
 from routes.patients import getStudiesForPatient
+from services.StableStudy import SendOnStableEvent
 
 # logger options
 root = logging.getLogger()
@@ -28,3 +29,6 @@ orthanc.RegisterRestCallback('/series', getSeries)
 orthanc.RegisterRestCallback('/series/(.*)', getSeriesData)
 
 orthanc.RegisterRestCallback('/patients/(.*)', getStudiesForPatient)
+
+# on stable event
+orthanc.RegisterOnChangeCallback(SendOnStableEvent)
