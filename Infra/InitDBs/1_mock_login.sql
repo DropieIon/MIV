@@ -202,7 +202,7 @@ INSERT INTO login(
     email_validation
 )
 VALUES (
-    'talent',
+    'mrAdmin',
     '5bdc989c-ac10-4ffd-aa06-74cd69720011111100001',
     'e28be0d62a8386f1053cee00fda6d20121bfafdcb8ec62880b87f7d9c4c77acf',
     '1234567890198765',

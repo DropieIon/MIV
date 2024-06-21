@@ -127,8 +127,8 @@ INSERT INTO personal_data(
     sex
 )
 VALUES (
-    'talent',
-    'sir talentus',
+    'mrAdmin',
+    'sir admin',
     '0000-04-20',
     'M'
 );
