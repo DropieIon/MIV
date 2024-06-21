@@ -8,7 +8,6 @@ import { extractZip } from "./sZip.service";
 import { parseDICOMFolder } from "./parseUpload.service";
 import { dbCheckUnlimUploads4h, dbCheckUpload } from "../../db/account_data/db-upload.service";
 import { Express } from "express";
-import { parseDicom } from "dicom-parser";
 
 export class sfProtocol {
     private size: number = 0;
@@ -34,8 +33,6 @@ export class sfProtocol {
             console.log("on-stable", req.params.studyInstanceUID, this.StudyInstanceUID);
             // avoid false positives
             if (req.params.studyInstanceUID === this.StudyInstanceUID) {
-                console.log("A intrat");
-                
                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
                 rmSync(pathFolder, {
                     recursive: true,
@@ -166,7 +163,7 @@ export class sfProtocol {
                                                 });
                                                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
                                                 parseDICOMFolder(pathFolder, this.user, true)
-                                                .then((studyUID) => {
+                                                .then((studyUID) => {                                                    
                                                     this.StudyInstanceUID = studyUID;
                                                 });
                                                 parseDICOMFolder(pathFolder, this.user, false);
