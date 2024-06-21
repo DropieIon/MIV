@@ -12,7 +12,7 @@ import { selectAccountDetails } from '../../../../../features/globalStateSlice';
 import { defaultPfp } from '../../../../../configs/defaultUser.b64';
 type propsTemplate = {
     setOpenDetails,
-    type: 'PatsAssigned' | 'AllPats' | 'Study' | 'UnassignedStudies' | 'Requests' | 'My Requests'
+    type: 'PatsAssigned' | 'AllPats' | 'Study' | 'UnassignedStudies' | 'Requests' | 'My Requests' | 'MyDocs'
 }
 
 export function DetailsHeader(props: propsTemplate) {

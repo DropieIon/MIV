@@ -5,7 +5,7 @@ export const globalStateSlice = createSlice({
     initialState: {
         token: "",
         tokenRefreshRef: null,
-        serverAddress: "http://192.168.1.201:8000",
+        serverAddress: "http://192.168.1.205:8000",
         openViewer: {
             should_open: false,
             study_id: ""

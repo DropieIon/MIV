@@ -2,6 +2,7 @@ import { doctorApiResp } from "../../../types/users/doctors.type";
 import { sq } from "../db-functions";
 import mariadb from 'mariadb';
 import { formatName } from '../../../utils/helper.util';
+import { MyDocsListEntry } from "../../../../../Common/types";
 
 export async function dbAllDocs(patUsername: string) 
     : Promise<string | doctorApiResp[]> {
@@ -32,4 +33,34 @@ export async function dbAllDocs(patUsername: string)
     if(queryResp instanceof mariadb.SqlError)
         return "Pat assigned error: " + queryResp.sqlMessage;
     return "Cannot get assigned patients list " + queryResp;
+}
+
+
+export async function dbGetMyDocs(patUsername: string)
+: Promise<string | MyDocsListEntry[]> {
+    const queryResp = await sq("select pd.full_name, pd.sex, pic.profile_pic, pd.birthday, l.uuid \
+        from login l \
+        join personal_data pd on l.username = pd.username \
+        join profile_pictures pic on pic.username = l.username \
+        where l.username in (select doctor_username from patients_assigned where patient_username = ?) \
+        ",
+        [patUsername]);
+        if (typeof queryResp !== "string" && !(queryResp instanceof mariadb.SqlError)) {
+            let respList: MyDocsListEntry[] = [];
+            for (let i = 0; i < queryResp.length; i++)
+            {
+                const current_resp = queryResp[i];
+                respList.push({
+                    fullName: formatName(current_resp.full_name),
+                    birthday: current_resp.birthday,
+                    sex: current_resp.sex,
+                    pfp: current_resp.profile_pic,
+                    uuid: current_resp.uuid
+                });
+            }
+            return respList;
+        }
+        if(queryResp instanceof mariadb.SqlError)
+            return "Pat assigned error: " + queryResp.sqlMessage;
+        return "Cannot get assigned patients list " + queryResp;
 }

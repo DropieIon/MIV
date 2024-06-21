@@ -15,9 +15,10 @@ import { StudiesTemplate } from './Templates/StudiesTemplate';
 import { patientReqTemplate } from './Templates/PatientReqTemplate';
 import { useAssets } from 'expo-asset';
 import { MyDocsTemplate } from './Templates/MyDocsTemplate';
+import { MyDocsListEntry } from '../../../Common/types';
 
 type propsTemplate = {
-    items: ListEntry[],
+    items: ListEntry[] | MyDocsListEntry[],
     listStudies: boolean,
     template: string,
     adminList?: 'pat' | 'med',
@@ -93,9 +94,14 @@ function List(props: propsTemplate) {
             {!no_items &&
                 <FlatList
                     ItemSeparatorComponent={() => <View style={{ paddingTop: "3%" }} />}
-                    keyExtractor={(item) => props.listStudies ? item.uploaded : item.uid}
+                    keyExtractor={(item) => {
+                        if(props.template === "mydocs") {
+                            return (item as MyDocsListEntry).uuid;
+                        }
+                        return props.listStudies ? (item as ListEntry).uploaded : (item as ListEntry).uid;
+                    }}
                     style={props.items.length == 0 ? { display: 'none' } : {}}
-                    data={props.items}
+                    data={(props.items as ListEntry[])}
                     renderItem={(item) => templateToUse({
                         token: token,
                         item: item.item,

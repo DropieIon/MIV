@@ -6,14 +6,12 @@ import {
 } from 'react-native';
 import SearchBar from '../../Search/SearchBar';
 import List from '../../List/List';
-import { ListEntry } from '../../../types/ListEntry';
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { selectToken } from '../../../features/globalStateSlice';
-import { parseJwt } from '../../../utils/helper';
-import { getStudies } from '../../../dataRequests/DicomData';
-import { getPatients } from '../../../dataRequests/PatientData';
 import { DetailsModal } from '../PatAndStudies/OpenDetails/DetailsModal';
+import { getMyDocs } from '../../../dataRequests/DoctorData';
+import { MyDocsListEntry } from '../../../../Common/types';
 
 const styles = StyleSheet.create({
     view: {
@@ -40,10 +38,7 @@ const styles = StyleSheet.create({
 type propsTemplate = {
     navigation,
     route: {
-        params: {
-            listStudies: boolean,
-            viewPatientsType: "personal" | 'assign_study',
-        }
+        params
     }
 }
 
@@ -53,28 +48,17 @@ function ViewMyDoctors(props: propsTemplate) {
     const [openDetails, setOpenDetails] = useState(false);
     const [refreshDoc, setRefreshDocList] = useState(0);
     const [loading, setLoading] = useState(true);
-    const items_list = useRef<ListEntry[]>([]);
+    const items_list = useRef<MyDocsListEntry[]>([]);
     useEffect(() => {
         // don't trigger unnecessary refreshes
         if (isVisible) {
             setLoading(true);
             if (token !== "") {
-                // if (parseJwt(token).role === 'pat') {
-                //     getStudies(token, 'personal')
-                //         .then((data) => {
-                //             items_list.current = data;
-                //             setLoading(false);
-                //             console.log("loaded at:", (new Date()).toLocaleTimeString());
-
-                //         });
-                // } else {
-                //     // it's a doctor that views his patients
-                //     getPatients(token)
-                //         .then((patients) => {
-                //             items_list.current = patients;
-                //             setLoading(false);
-                //         });
-                // }
+                getMyDocs(token)
+                .then((data) => {
+                    items_list.current = data;
+                    setLoading(false);
+                })
             }
             else {
                 console.error("No token");
@@ -85,12 +69,7 @@ function ViewMyDoctors(props: propsTemplate) {
     const [filter, setFilter] = useState("");
     if(filter !== "") {
         filteredList = items_list.current.filter((item) => {
-            let toFilter;
-            // if(listStudies)
-            //     toFilter = item.modality;
-            // else
-            //     toFilter = item.full_name;
-            // return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(toFilter.toLowerCase());
+            return (new RegExp(`^${filter.toLowerCase().replace('\\', '')}`)).test(item.fullName.toLowerCase());
         })
     }
     else {
@@ -113,7 +92,7 @@ function ViewMyDoctors(props: propsTemplate) {
         <View
             style={[styles.view_list, openDetails ? {opacity: opacityVal} : {}]}
         >
-            {/*/ Patients / Studies list */}
+            {/*/ MyDocs list */}
             {loading &&
                 <View
                     style={{
@@ -137,7 +116,7 @@ function ViewMyDoctors(props: propsTemplate) {
                     navigation={props.navigation}
                     items={filteredList}
                     setOpenDetails={setOpenDetails}
-                    viewPatientsType={props.route.params.viewPatientsType}
+                    viewPatientsType={'personal'}
                     listStudies={false}
                 ></List>
             }
@@ -146,7 +125,7 @@ function ViewMyDoctors(props: propsTemplate) {
             <DetailsModal
                 setOpenDetails={setOpenDetails}
                 setRefreshPatList={setRefreshDocList}
-                type='PatsAssigned'
+                type='MyDocs'
             />
         }
     </View>

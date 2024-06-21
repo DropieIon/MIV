@@ -2,11 +2,9 @@ import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { accountDataListEntry } from '../types/ListEntry';
 import { parseJwt } from '../utils/helper';
 import { store } from '../store';
+import { MyDocsListEntry } from '../../Common/types';
 
 global.Buffer = global.Buffer || require('buffer').Buffer
-
-// const backend_url = store.getState().serverAddress;
-// const orthanc_url = backend_url;
 
 async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
   let resp;
@@ -16,7 +14,21 @@ async function getDoctors(token: string): Promise<Array<accountDataListEntry>> {
     )
   }
   catch (error) {
-    console.error("Could not get patients");
+    console.error("Could not get doctors");
+    return null;
+  };
+  return resp.data;
+}
+
+async function getMyDocs(token: string): Promise<Array<MyDocsListEntry>> {
+  let resp;
+  try {
+    resp = await axios.get(`${store.getState().serverAddress}/users/my_doctors/`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    )
+  }
+  catch (error) {
+    console.error("Could not get doctors");
     return null;
   };
   return resp.data;
@@ -46,5 +58,6 @@ async function demoteDoc(token: string, docUsername: string) {
 
 export {
     getDoctors,
+    getMyDocs,
     demoteDoc
 };

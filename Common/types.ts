@@ -53,6 +53,14 @@ type pfpsItem = {
     pfp: string
 }
 
+type MyDocsListEntry = {
+    uuid: string,
+    pfp: string,
+    sex: 'M' | 'F',
+    fullName: string,
+    birthday: string,
+}
+
 export {
     handShake,
     splitFile,
@@ -62,5 +70,6 @@ export {
     messageOverWS,
     pfpsItem,
     accountDetails,
-    getMessageListReq
+    getMessageListReq,
+    MyDocsListEntry
 }

@@ -16,6 +16,7 @@ import { PersonalDataForm } from "../PersonalData/PersonalDataForm";
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect } from "react";
 import { getPfp } from "../../../dataRequests/PatientData";
+import ViewMyDoctors from "../MyDoctors/ViewMyDoctors";
 
 const Drawer = createDrawerNavigator();
 
@@ -104,6 +105,14 @@ export function LandingScreen(props) {
                         :
                         <></>
                     }
+                    {(admin || medic) ?
+                    <></>
+                    :
+                    <Drawer.Screen
+                        name={'My Doctors'}
+                        options={drawerScreenOptions}
+                        component={ViewMyDoctors}
+                    />}
                     {admin ?
                     <></>
                     :
