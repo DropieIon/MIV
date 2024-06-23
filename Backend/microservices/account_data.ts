@@ -32,7 +32,10 @@ io.on('connection', function (socket) {
       // then sends the n nr of packets
       // then an EOS (end of stream) and a checksum
       console.log("Upload client connected");
-      const sf = new sfProtocol(socket, app);
+      let sf: sfProtocol | null = new sfProtocol(socket, app);
+      socket.on('disconnect', () => {
+        sf = null;
+      });
       break;
     case 'study-chat':
       console.log("Study chat connected");

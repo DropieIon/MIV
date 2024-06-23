@@ -83,6 +83,7 @@ export function OpenUpload(props: propsTemplate) {
             props.setToastMsg("Study Uploaded");
             props.setRefreshList(Math.random());
         });
+        let sent_eos: boolean = false;
         socket.on('progress', async (p: string) => {
             const progress = parseFloat(p);
             setUploadProgress(progress);
@@ -94,8 +95,11 @@ export function OpenUpload(props: propsTemplate) {
             if(bytes.length !== 0)
                 sendBytes(socket, bytes);
             pos += nrOfBytes;
-            if(pos >= zipSize)
-                sendEOS(socket, md5, false);
+            if(!sent_eos && pos >= zipSize)
+                {
+                    sent_eos = true;
+                    sendEOS(socket, md5, false);
+                }
 
         })
         socket.emit(mainEv, toSend, async (d: callbackRet) => {

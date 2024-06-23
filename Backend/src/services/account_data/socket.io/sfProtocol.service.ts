@@ -16,7 +16,6 @@ export class sfProtocol {
     private pkgNr: number = 0;
     private sock: Socket;
     private user: string = '';
-    private StudyInstanceUID: string | undefined = '';
     private pathToTemp = '/app/tmp';
     private zipName: string = '';
     private folderName: string = '';
@@ -30,20 +29,22 @@ export class sfProtocol {
     constructor(socket: Socket, app: Express) {
         // register the on-stable event
         app.get('/on-stable/:studyInstanceUID', (req, res) => {
-            console.log("on-stable", req.params.studyInstanceUID, this.StudyInstanceUID);
             // avoid false positives
-            if (req.params.studyInstanceUID === this.StudyInstanceUID) {
-                const pathFolder = `${this.pathToTemp}/${this.folderName}`;
-                rmSync(pathFolder, {
-                    recursive: true,
-
-                    force: true
-                })
-                socket.emit('on-stable', {});
-                setTimeout(() => {
-                    socket.disconnect(true);  
-                }, 1000);
-            }
+            const pathFolder = `${this.pathToTemp}/${this.folderName}`;
+            parseDICOMFolder(pathFolder, this.user, true)
+            .then((studyUID) => {
+                    console.log("on-stable", req.params.studyInstanceUID, studyUID);
+                    if (req.params.studyInstanceUID === studyUID) {
+                        socket.emit('on-stable', {});
+                        rmSync(pathFolder, {
+                            recursive: true,
+                            force: true
+                        })
+                        setTimeout(() => {
+                            socket.disconnect(true);  
+                        }, 1000);
+                    }
+                });
             res.send('ok');
         });
         this.sock = socket;
@@ -162,10 +163,6 @@ export class sfProtocol {
                                                         console.log("File deleted.");
                                                 });
                                                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
-                                                parseDICOMFolder(pathFolder, this.user, true)
-                                                .then((studyUID) => {                                                    
-                                                    this.StudyInstanceUID = studyUID;
-                                                });
                                                 parseDICOMFolder(pathFolder, this.user, false);
                                             });
                                     }
@@ -178,6 +175,7 @@ export class sfProtocol {
                 }
             } catch (error) {
                 console.log("Error ws: " + error);
+                this.sock.disconnect(true);
 
             }
         });
