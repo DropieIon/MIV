@@ -43,7 +43,7 @@ export async function dbGetMyDocs(patUsername: string)
         join personal_data pd on l.username = pd.username \
         join profile_pictures pic on pic.username = l.username \
         where l.username in (select doctor_username from patients_assigned where patient_username = ?) \
-        ",
+        and l.role = 'med' ",
         [patUsername]);
         if (typeof queryResp !== "string" && !(queryResp instanceof mariadb.SqlError)) {
             let respList: MyDocsListEntry[] = [];

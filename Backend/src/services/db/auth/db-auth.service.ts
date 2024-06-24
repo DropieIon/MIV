@@ -9,8 +9,11 @@ type checkLogin_resp = { role: string, email_validation: yayOrNay, fullName: str
 
 export async function dbCanUpload(username: string)
     : Promise<string | boolean> {
+    // this check is just in case a doctor account was demoted recently
     const queryResp = await sq(
-        'select COUNT(*) c from patients_assigned where patient_username = ?',
+        'select COUNT(*) c from patients_assigned \
+        where patient_username = ? \
+        and doctor_username in (select username from login where role = "med")',
         [username]
     );
     if (queryResp !== "") {

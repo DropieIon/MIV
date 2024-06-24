@@ -20,5 +20,5 @@ export async function svcDemotePat(docUsername: string): Promise<resp_common_ser
     const respUpdate = await dbDemotePat(docUsername);
     if(respUpdate !== "")
         return {ok: false, data: respUpdate};
-    return { ok: true, data: "Promoted patient successfully" };
+    return { ok: true, data: "Demoted patient successfully" };
 }
