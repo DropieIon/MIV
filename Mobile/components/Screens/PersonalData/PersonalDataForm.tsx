@@ -113,7 +113,7 @@ export function PersonalDataForm(props: propsTemplate) {
                             <Text
                                 style={PDStyles.BirthdayText}
                             >
-                                {!birthday ? "Birthday" : birthday.toDateString()}
+                                {!birthday ? "Birthday" : birthday.toLocaleDateString('en-US')}
                             </Text>
                         </TouchableOpacity>
                         {showDatePicker &&
@@ -167,7 +167,7 @@ export function PersonalDataForm(props: propsTemplate) {
                                 setErrEmpty("");
                                 changePatientDetails(token, {
                                     fullName: fullName,
-                                    birthday: birthday.toLocaleDateString(),
+                                    birthday: birthday.toLocaleDateString('en-US'),
                                     gender: savedGender,
                                     profile_picB64: profile_pic
                                 }, !isSettingsScreen)

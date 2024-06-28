@@ -69,7 +69,6 @@ function ViewPatients(props: propsTemplate) {
                         .then((data) => {
                             items_list.current = data;
                             setLoading(false);
-                            console.log("loaded at:", (new Date()).toLocaleTimeString());
 
                         });
                 } else {

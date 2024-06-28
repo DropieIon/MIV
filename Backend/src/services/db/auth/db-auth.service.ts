@@ -93,9 +93,10 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
 function parseDateToMariadb(date: string) {
     const splitDate = date.split('/')
     // Mariadb format: yyyy-mm-dd
+    // recv format: mm-dd-yyyy
     const year = splitDate[2];
-    const month = splitDate[1];
-    const day = splitDate[0];
+    const month = splitDate[0];
+    const day = splitDate[1];
     return `${year}-${month}-${day}`
 }
 
