@@ -3,7 +3,7 @@ import { HTML_TEMPLATE } from '../../../templates/registerEmail.template'
 
 export async function sendRegisterEmail(receiver: string, uuid: string): Promise<string> {
     const mailDetails = {
-        from: "officialmiv@outlook.com",
+        from: process.env.email_user,
         to: receiver,
         subject: "Register email",
         text: "",

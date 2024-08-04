@@ -5,7 +5,7 @@ export const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-      user: "officialmiv@outlook.com",
+      user: process.env.email_user,
       pass: process.env.email_pass,
     },
   });
