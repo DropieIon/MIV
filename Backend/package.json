@@ -3,6 +3,7 @@
     "start": "nodemon backend.ts"
   },
   "dependencies": {
+    "body-parser": "^1.20.3",
     "crypto": "^1.0.1",
     "dcmjs-dimse": "^0.1.27",
     "dicom-parser": "^1.8.21",
