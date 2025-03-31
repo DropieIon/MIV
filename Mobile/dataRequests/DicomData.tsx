@@ -121,12 +121,12 @@ async function getSeries(study_id: string, token: string): Promise<Array<string>
     let resp: studies_resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${store.getState().serverAddress}/studies/${study_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/orthanc/studies/${study_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
         else {            
-            resp = await axios.get(`${store.getState().serverAddress}/studies/${study_id}`,
+            resp = await axios.get(`${store.getState().serverAddress}/orthanc/studies/${study_id}`,
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
@@ -142,12 +142,12 @@ async function getInstances(serie_id: string, token: string): Promise<Array<stri
     let resp: series_resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${store.getState().serverAddress}/series/${serie_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/orthanc/series/${serie_id}`, {},
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )    
         }
         else {
-            resp = await axios.get(`${store.getState().serverAddress}/series/${serie_id}`,
+            resp = await axios.get(`${store.getState().serverAddress}/orthanc/series/${serie_id}`,
                 { headers: { 'Authorization': 'Bearer ' + token } }
             )
         }
@@ -162,12 +162,12 @@ async function getJpeg(instance_id: string, token: string): Promise<string> {
     let resp;
     try {
         if(parseJwt(token).role === 'med') {
-            resp = await axios.post(`${store.getState().serverAddress}/instances/${instance_id}`, {},
+            resp = await axios.post(`${store.getState().serverAddress}/orthanc/instances/${instance_id}`, {},
                 { responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token } }
             )    
         }
         else {
-            resp = await axios.get(`${store.getState().serverAddress}/instances/${instance_id}`, {
+            resp = await axios.get(`${store.getState().serverAddress}/orthanc/instances/${instance_id}`, {
                 responseType: 'arraybuffer', headers: { 'Authorization': 'Bearer ' + token }
             })
         }

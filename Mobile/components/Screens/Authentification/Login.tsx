@@ -52,7 +52,7 @@ function Login(props: { passSignUp: () => void }) {
     const [responseRecv, setResponseRecv] = useState("");
     let focusPass = useRef(null);
     const refreshToken = (username: string, password: string) => {
-        axios.post(`${serverAddress}/login`, {
+        axios.post(`${serverAddress}/auth/login`, {
             username: username,
             password: password
         })
@@ -168,7 +168,7 @@ function Login(props: { passSignUp: () => void }) {
                             setResponseRecv("");
                             setLoading(true);
                             setErrEmpty(false);
-                            axios.post(`${serverAddress}/login`, {
+                            axios.post(`${serverAddress}/auth/login`, {
                                 username: username,
                                 password: password
                             })

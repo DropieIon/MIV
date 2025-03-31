@@ -144,7 +144,7 @@ function SignUp(props: {setDesiresSignUp}) {
                             && password !== "") {
                             // it's not empty
                             setErrEmpty(false);
-                            axios.post(`${serverAddress}/register`, {
+                            axios.post(`${serverAddress}/auth/register`, {
                                 username: username,
                                 email: email,
                                 password: password

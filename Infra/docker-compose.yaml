@@ -102,7 +102,7 @@ services:
     volumes:
       - ../Backend:/app
       - ../Common:/Common
-    command: nodemon /app/microservices/auth.ts
+    command: microservices/auth.ts
     depends_on:
       db_auth:
         condition: service_healthy
@@ -121,7 +121,7 @@ services:
     volumes:
       - ../Backend:/app
       - ../Common:/Common
-    command: nodemon /app/microservices/account_data.ts
+    command: microservices/account_data.ts
     depends_on:
       db_auth:
         condition: service_healthy
@@ -140,7 +140,7 @@ services:
     volumes:
       - ../Backend:/app
       - ../Common:/Common
-    command: nodemon /app/microservices/users.ts
+    command: microservices/users.ts
     depends_on:
       db_auth:
         condition: service_healthy

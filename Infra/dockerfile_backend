@@ -4,6 +4,7 @@ RUN npm i -g tsx
 
 WORKDIR /app
 COPY "Backend" "/app"
+COPY "Common" "/"
 
 RUN rm -rf node_modules
 RUN npm i
