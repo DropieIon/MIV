@@ -22,9 +22,8 @@ const port = 3000;
 const server = app.listen(port, () => {
   logger.info({
     message: `App listening on port ${port}`,
-
     labels: {
-      "origin": "api"
+      "origin": "system"
     }
   })
 });

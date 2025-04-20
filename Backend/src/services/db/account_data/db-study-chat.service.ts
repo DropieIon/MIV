@@ -1,6 +1,7 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
 import { messageData, messageOverWS } from '../../../../../Common/types';
+import { logger } from '../../../utils/logger';
 
 export async function dbStoreMsg(sender: string, msgData: messageOverWS) {
     const {
@@ -15,11 +16,29 @@ export async function dbStoreMsg(sender: string, msgData: messageOverWS) {
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
             if (query_resp.code === "ER_DUP_ENTRY") {
+                logger.error({
+                    message: "There was an error sending the message",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "There was an error sending the message";
             }
-            return "Database insertion error " + query_resp.sqlMessage;
+            logger.error({
+                message: `Database insertion error ${query_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Database insertion error ${query_resp.sqlMessage}`;
         }
     }
+    logger.info({
+        message: "Message inserted",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -31,8 +50,15 @@ export async function dbGetLastMessages(study_id: string): Promise<string | mess
         LIMIT 20',
         [study_id]);
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
-        if(sql_resp.length === 0)
+        if(sql_resp.length === 0) {
+            logger.info({
+                message: "Got no messages",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return [];
+        }
         let resp_list: messageData[] = [];
         for (let i = 0; i < sql_resp.length; i++) {
             const current_resp = sql_resp[i];
@@ -42,7 +68,19 @@ export async function dbGetLastMessages(study_id: string): Promise<string | mess
                 senderUsername: current_resp.username_sender
             });
         }
+        logger.info({
+            message: "Got messages",
+            labels: {
+                "origin": "db"
+            }
+        });
         return resp_list;
     }
+    logger.error({
+        message: "Cannot get messages",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "Cannot get messages";
 }

@@ -1,7 +1,8 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
 import { requestsApiResp } from '../../../types/account_data/requests.type';
-import { formatName } from '../../../utils/helper.util'
+import { formatName } from '../../../utils/helper.util';
+import { logger } from '../../../utils/logger';
 
 export async function db_get_requests(username: string, role: string): Promise<string | requestsApiResp[]> {
     const medic = role === 'med';
@@ -18,8 +19,15 @@ export async function db_get_requests(username: string, role: string): Promise<s
         , [username]);
     
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
-        if(sql_resp.length === 0)
+        if(sql_resp.length === 0) {
+            logger.info({
+                message: "No requests for user",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return [];
+        }
         let resp_list: requestsApiResp[] = [];
         for (let i = 0; i < sql_resp.length; i++)
         {
@@ -49,8 +57,20 @@ export async function db_get_requests(username: string, role: string): Promise<s
                     }
         );
         }
+        logger.info({
+            message: "Got requests",
+            labels: {
+                "origin": "db"
+            }
+        });
         return resp_list;
     }
+    logger.error({
+        message: "Cannot get requests",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -60,11 +80,29 @@ export async function db_insert_patient_requests(username: string, to: string): 
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
             if (query_resp.code === "ER_DUP_ENTRY") {
+                logger.error({
+                    message: "Request already requested",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Request already requested";
             }
-            return "Database insertion error " + query_resp.sqlMessage;
+            logger.error({
+                message: `Database insertion error ${query_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Database insertion error ${query_resp.sqlMessage}`;
         }
     }
+    logger.info({
+        message: "Request inserted",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -81,8 +119,20 @@ export async function db_ans_request(acc: boolean, doc_username: string, pat_use
         if (query_resp !== "") {
             if (query_resp instanceof mariadb.SqlError) {
                 if (query_resp.code === "ER_DUP_ENTRY") {
+                    logger.error({
+                        message: "Request already answered",
+                        labels: {
+                            "origin": "db"
+                        }
+                    });
                     return "Request already answered";
                 }
+                logger.error({
+                    message: `Database insertion error ${query_resp.sqlMessage}`,
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Database insertion error " + query_resp.sqlMessage;
             }
         }
@@ -94,9 +144,21 @@ export async function db_ans_request(acc: boolean, doc_username: string, pat_use
     [doc_username, pat_username]);
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
+            logger.error({
+                message: `Database deletion error ${query_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database deletion error " + query_resp.sqlMessage;
         }
     }
+    logger.info({
+        message: "Request answered",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 
 }
@@ -108,8 +170,20 @@ export async function dbUnassignPat(patUsername: string)
         [patUsername]);
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
-            return "Database deletion error " + queryResp.sqlMessage;
+            logger.error({
+                message: `Database deletion error ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Database deletion error ${queryResp.sqlMessage}`;
         }
     }
+    logger.info({
+        message: "Patient unassigned",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }

@@ -1,6 +1,7 @@
 import mariadb from 'mariadb';
 import { sq } from '../db-functions';
 import { accountDetails, pfpsItem } from '../../../../../Common/types';
+import { logger } from '../../../utils/logger';
 
 
 export async function dbGetPfp(username: string): Promise<string | { pfp: string }> {
@@ -8,11 +9,30 @@ export async function dbGetPfp(username: string): Promise<string | { pfp: string
         ('select profile_pic from profile_pictures where username=?',
         [username]);
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
-        if(sql_resp.length > 0)
+        if(sql_resp.length > 0) {
+            logger.info({
+                message: "Got pfp",
+                labels: {
+                    "origin": "db"
+                }});
             return { pfp: sql_resp[0].profile_pic };
-        else
+        }
+        else {
+            logger.error({
+                message: "No pfp for user",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "No pfp for user";
+        }
     }
+    logger.error({
+        message: "Cannot get profile picture",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "Cannot get profile picture";
 }
 
@@ -26,6 +46,12 @@ export async function dbGetDetails(username: string): Promise<accountDetails | s
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
         if (sql_resp.length > 0) {
             const current_resp = sql_resp[0];
+            logger.info({
+                message: "Got details",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return {
                 pfp: current_resp.pfp,
                 sex: current_resp.sex,
@@ -33,9 +59,22 @@ export async function dbGetDetails(username: string): Promise<accountDetails | s
                 fullName: current_resp.fullName
             }
         }
-        else
+        else {
+            logger.error({
+                message: "No details for user",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "No details for user";
+        }
     }
+    logger.error({
+        message: "Cannot get details",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "Cannot get details";
 }
 
@@ -65,10 +104,29 @@ export async function dbGetPfpsStudy(studyId: string): Promise<string | pfpsItem
                     pfp: current_resp.profile_pic
                 });
             }
+            logger.info({
+                message: "Got study pfps",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return resp_list;
         }
-        else
+        else {
+            logger.warn({
+                message: "No study pfps",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return [];
+        }
     }
+    logger.error({
+        message: "Cannot get profile pictures",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "Cannot get profile pictures";
 }

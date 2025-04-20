@@ -3,11 +3,18 @@ import EmptyField from "../../errors/EmptyField.error";
 import { get_username, parseJwt } from "../../utils/helper.util";
 import { insert_personal_requests, svcUnassignPat, svc_ans_req } from "../../services/account_data/request.service";
 import ControllerError from "../../errors/RegisterError.error";
+import { logger } from "../../utils/logger";
 
 export async function pat_make_request(req: Request<{}, {}, {to: string}>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -15,6 +22,12 @@ export async function pat_make_request(req: Request<{}, {}, {to: string}>,
         return;
     }
     if(parseJwt(token)?.role === 'med'){
+        logger.warn({
+            message: "Only a patient can request a medic.",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a patient can request a medic.",
             code: 400
@@ -23,6 +36,12 @@ export async function pat_make_request(req: Request<{}, {}, {to: string}>,
     }
     if(!req.body.to)
     {
+        logger.error({
+            message: "Doctor username is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({message: "Doctor username is required!", logging: true}))
         return;
     }
@@ -32,6 +51,12 @@ export async function pat_make_request(req: Request<{}, {}, {to: string}>,
         res.json(resp_db.data);
         return;
     }
+    logger.error({
+        message: resp_db.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new ControllerError({
         message: resp_db.data as string,
         code: 400
@@ -44,6 +69,12 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
     const split_path = req.originalUrl.split("/")[2];
     const accepted = split_path === 'accept' || split_path === 'assign';
     if(!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -51,6 +82,12 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
         return;
     }
     if(parseJwt(token)?.role !== 'med'){
+        logger.error({
+            message: "Only a doctor can answer a request.",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a doctor can answer a request.",
             code: 400
@@ -59,6 +96,12 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
     }
     if(!req.body.patient_username)
     {
+        logger.error({
+            message: "Patient username is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({message: "Patient username is required!", logging: true}))
         return;
     }
@@ -68,6 +111,12 @@ export async function ans_request(req: Request<{}, {}, { patient_username: strin
         res.json(resp_db.data);
         return;
     }
+    logger.error({
+        message: resp_db.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new ControllerError({
         message: resp_db.data as string,
         code: 400
@@ -78,6 +127,12 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -85,6 +140,12 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
         return;
     }
     if(parseJwt(token)?.role === 'pat'){
+        logger.error({
+            message: "Only a doctor can unassign a patient.",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a doctor can unassign a patient.",
             code: 400
@@ -93,6 +154,12 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
     }
     if(!req.body.patient_username)
     {
+        logger.error({
+            message: "Patient username is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({message: "Patient username is required!", logging: true}))
         return;
     }
@@ -102,6 +169,12 @@ export async function conUnassignPat(req: Request<{}, {}, { patient_username: st
         res.json(resp_db.data);
         return;
     }
+    logger.error({
+        message: resp_db.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new ControllerError({
         message: resp_db.data as string,
         code: 400
@@ -112,6 +185,12 @@ export async function conCancelRequest(req: Request<{}, {}, { doctor_username: s
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -119,6 +198,12 @@ export async function conCancelRequest(req: Request<{}, {}, { doctor_username: s
         return;
     }
     if(parseJwt(token)?.role === 'med'){
+        logger.error({
+            message: "Only a patient can cancel a request.",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a patient can cancel a request.",
             code: 400
@@ -127,6 +212,12 @@ export async function conCancelRequest(req: Request<{}, {}, { doctor_username: s
     }
     if(!req.body.doctor_username)
     {
+        logger.error({
+            message: "Doctor username is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({message: "Doctor username is required!", logging: true}))
         return;
     }
@@ -136,6 +227,12 @@ export async function conCancelRequest(req: Request<{}, {}, { doctor_username: s
         res.json(resp_db.data);
         return;
     }
+    logger.error({
+        message: resp_db.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new ControllerError({
         message: resp_db.data as string,
         code: 400

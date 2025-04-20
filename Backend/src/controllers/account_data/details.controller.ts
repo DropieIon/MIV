@@ -14,6 +14,12 @@ export async function conGetDetailsController(req: Request<{}, {}, {}>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        })
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -40,11 +46,22 @@ export async function conGetDetailsController(req: Request<{}, {}, {}>,
 export async function conPostDetailsController(req: Request<{}, {}, patientForm>,
     res: Response, next: NextFunction) {
     if (!req.body.birthday || !req.body.sex.length || !req.body.fullName || !req.body.profile_picB64) {
+        logger.error({ 
+            message: "FullName, birthday, sex and pfp are required!",
+            labels: {
+                "origin": "controller"
+            }});
         next(new EmptyField({ message: "FullName, birthday, sex and pfp are required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -72,11 +89,23 @@ export async function conPostDetailsController(req: Request<{}, {}, patientForm>
 export async function conUpdateDetailsController(req: Request<{}, {}, patientForm>,
     res: Response, next: NextFunction) {
     if (!req.body.birthday || !req.body.sex.length || !req.body.fullName || !req.body.profile_picB64) {
+        logger.error({
+            message: "FullName, birthday, sex and pfp are required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({ message: "FullName, birthday, sex and pfp are required!", logging: true }))
         return;
     }
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -105,6 +134,12 @@ export async function has_completedController(req: Request,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -117,7 +152,12 @@ export async function has_completedController(req: Request,
         res.json({message: resp_completed})
         return;
     }
-
+    logger.error({
+        message: resp_completed,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new RegisterError({
         message: resp_completed,
         code: 400
@@ -128,6 +168,12 @@ export async function conGetPfp(req: Request<{}, {}, { username: string }>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -135,6 +181,12 @@ export async function conGetPfp(req: Request<{}, {}, { username: string }>,
         return;
     }
     if(!req.body.username) {
+        logger.warn({
+            message: "Username required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Username required",
             code: 400
@@ -146,6 +198,12 @@ export async function conGetPfp(req: Request<{}, {}, { username: string }>,
         res.json(respPFP.data);
         return;
     }
+    logger.error({
+        message: respPFP.data,
+        labels: {
+            "origin": "controller"
+        }
+    });
     next(new ControllerError({
         message: respPFP.data,
         code: 400
@@ -156,6 +214,12 @@ export async function conGetPfpsStudy(req: Request<{}, {}, { study_id: string }>
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.warn({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -163,6 +227,12 @@ export async function conGetPfpsStudy(req: Request<{}, {}, { study_id: string }>
         return;
     }
     if(!req.body.study_id) {
+        logger.warn({
+            message: "Study_id is required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Study_id is required",
             code: 400
@@ -175,13 +245,12 @@ export async function conGetPfpsStudy(req: Request<{}, {}, { study_id: string }>
         return;
     }
     // it will always be a string when respPFP.ok is false
-    logger.info({
+    logger.error({
         message: respPFP.data,
         labels: {
             "origin": "db"
         }
     });
-    
     next(new ControllerError({
         message: (respPFP.data as string),
         code: 400

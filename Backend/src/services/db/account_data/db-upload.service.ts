@@ -22,15 +22,34 @@ export async function dbCheckUpload(patUsername: string, size: number): Promise<
                         [patUsername, size]
                     );
                     if (typeof queryResp === "string" || (queryResp instanceof mariadb.SqlError)) {
+                        logger.error({
+                            message: "Cannot insert bytes uploaded.",
+                            labels: {
+                                "origin": "db"
+                            }
+                        });
                         return "Cannot insert bytes uploaded.";
                     }
+                    logger.info({
+                        message: "Bytes inserted",
+                        labels: {
+                            "origin": "db"
+                        }
+                    });
                     return true;
                 }
                 // if it's today
                 if ((Math.abs(new Date().getTime() - new Date(queryResp[0].stamp).getTime()) / 36e5) < 24) {
                     // if it would upload more than 3Gb
-                    if(BigInt(maxSize) - queryResp[0].bytes < BigInt(size))
+                    if(BigInt(maxSize) - queryResp[0].bytes < BigInt(size)) {
+                        logger.error({
+                            message: "Cannot update bytes uploaded.",
+                            labels: {
+                                "origin": "db"
+                            }
+                        });
                         return false;
+                    }
                     // this may look weird at first
                     // but stamp = stamp is used
                     // to specifically maintain the stamp
@@ -43,8 +62,20 @@ export async function dbCheckUpload(patUsername: string, size: number): Promise<
                         [size, patUsername]
                     );
                     if (typeof queryResp === "string" || (queryResp instanceof mariadb.SqlError)) {
+                        logger.error({
+                            message: "Cannot update bytes uploaded.",
+                            labels: {
+                                "origin": "db"
+                            }
+                        });
                         return "Cannot update bytes uploaded.";
                     }
+                    logger.info({
+                        message: "Bytes updated",
+                        labels: {
+                            "origin": "db"
+                        }
+                    });
                     return true;
                 }
                 else {
@@ -58,15 +89,33 @@ export async function dbCheckUpload(patUsername: string, size: number): Promise<
                         [size, patUsername]
                     );
                     if (typeof queryResp === "string" || (queryResp instanceof mariadb.SqlError)) {
+                        logger.error({
+                            message: "Cannot update bytes uploaded.",
+                            labels: {
+                                "origin": "db"
+                            }
+                        });
                         return "Cannot update bytes uploaded.";
                     }
+                    logger.info({
+                        message: "Bytes updated",
+                        labels: {
+                            "origin": "db"
+                        }
+                    });
                     return true;
                 }
             }
+            logger.error({
+                message: "Cannot check upload permission.",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Cannot check upload permission.";   
     } catch (error) {
         logger.error({
-            message: 'Db err ' + error,
+            message: `Db err ${error}`,
             labels: {
                 "origin": "db"
             }
@@ -87,13 +136,39 @@ export async function dbCheckUnlimUploads4h(username: string)
         }
         if (typeof queryResp !== "string") {
             // is the resp list
-            if (queryResp.length === 0)
+            if (queryResp.length === 0) {
+                logger.info({
+                    message: "No unlimitedUploads",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return false;
-            if ((Math.abs(new Date().getTime() - new Date(queryResp[0].stamp).getTime()) / 36e5) > 4)
+            }
+            if ((Math.abs(new Date().getTime() - new Date(queryResp[0].stamp).getTime()) / 36e5) > 4) {
+                logger.info({
+                    message: "UnlimitedUploads expired",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return false;
+            }
+            logger.info({
+                message: "UnlimitedUploads still valid",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return true;
         }
     }
+    logger.error({
+        message: "Cannot check unlimitedUploads",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -107,12 +182,18 @@ export async function dbAllowUnlim4h(patUsername: string): Promise<string> {
     );
     if (typeof queryResp === "string" || (queryResp instanceof mariadb.SqlError)) {
         logger.error({
-            message: queryResp,
+            message: `Cannot allow unlimmitedUploads: ${queryResp}`,
             labels: {
                 "origin": "db"
             }
         });
         return "Cannot allow patient.";
     }
+    logger.info({
+        message: "UnlimitedUploads allowed",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }

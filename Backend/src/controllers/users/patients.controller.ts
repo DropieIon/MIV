@@ -3,11 +3,18 @@ import EmptyField from "../../errors/EmptyField.error";
 import { get_username, parseJwt } from "../../utils/helper.util";
 import ControllerError from "../../errors/RegisterError.error";
 import { svcGetAllPatients, svcGetAssignedPatients } from "../../services/users/patients.service";
+import { logger } from "../../utils/logger";
 
 export async function conPatAssigned(req: Request<{}, {}, {}>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -15,6 +22,12 @@ export async function conPatAssigned(req: Request<{}, {}, {}>,
         return;
     }
     if(parseJwt(token)?.role === 'pat'){
+        logger.error({
+            message: "Only a doctor can view his assigned patients.",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a doctor can view his assigned patients.",
             code: 400
@@ -27,6 +40,12 @@ export async function conPatAssigned(req: Request<{}, {}, {}>,
         res.json(respSvc.data);
         return;
     }
+    logger.error({
+        message: respSvc.data as string,
+        labels: {
+            "origin": "controller"
+        }
+    });
     next(new ControllerError({
         message: respSvc.data as string,
         code: 400
@@ -37,6 +56,12 @@ export async function conPatAll(req: Request<{}, {}, {}>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if(!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -49,6 +74,12 @@ export async function conPatAll(req: Request<{}, {}, {}>,
         res.json(respSvc.data);
         return;
     }
+    logger.error({
+        message: respSvc.data as string,
+        labels: {
+            "origin": "controller"
+        }
+    });
     next(new ControllerError({
         message: respSvc.data as string,
         code: 400

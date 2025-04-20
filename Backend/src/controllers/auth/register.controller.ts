@@ -10,6 +10,12 @@ export async function registerController(req: Request<{}, {}, registerForm>,
     res: Response, next: NextFunction) {
     if(!req.body.username || !req.body.password || !req.body.email)
     {
+        logger.error({
+            message: "Username, password and email are required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({message: "Username, password and email are required!", logging: true}))
         return;
     }
@@ -17,10 +23,13 @@ export async function registerController(req: Request<{}, {}, registerForm>,
     if(resp_create.ok)
         res.status(201).json({ message: resp_create.data });
     else {
-        const error: RegisterError = new RegisterError({
-            message: resp_create.data
+        logger.error({
+            message: resp_create.data,
+            labels: {
+                "origin": "controller"
+            }
         });
-        next(error);
+        next(new RegisterError({ message: resp_create.data }));
     }
 }
 

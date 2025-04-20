@@ -22,6 +22,12 @@ export class sfProtocol {
     private folderName: string = '';
     checkHandshake = (): boolean => {
         if (this.size === 0 || this.nrOfPackets === 0) {
+            logger.error({
+                message: "Bad handshake",
+                labels: {
+                    "origin": "svc"
+                }
+            });
             this.sock.emit('err', { message: 'Bad handshake' });
             return false;
         }
@@ -41,6 +47,12 @@ export class sfProtocol {
                         }
                     });
                     if (req.params.studyInstanceUID === studyUID) {
+                        logger.info({
+                            message: "Sent on-stable",
+                            labels: {
+                                "origin": "svc"
+                            }
+                        });
                         socket.emit('on-stable', {});
                         rmSync(pathFolder, {
                             recursive: true,
@@ -58,11 +70,23 @@ export class sfProtocol {
             try {
                 switch (data.type) {
                     case 'handshake':
+                        logger.info({
+                            message: "Received split-file handshake",
+                            labels: {
+                                "origin": "svc"
+                            }
+                        });
                         get_GW_Data()
                             .then((resp_gateway) => {
                                 const secret: string = resp_gateway[0]["secret"];
                                 jwt.verify(data.token, secret, async (err: any) => {
                                     if (err !== null) {
+                                        logger.error({
+                                            message: "Invalid token",
+                                            labels: {
+                                                "origin": "svc"
+                                            }
+                                        });
                                         this.sock.emit('err', { message: 'Invalid token' });
                                         this.sock.disconnect(true);
                                         return;
@@ -73,6 +97,12 @@ export class sfProtocol {
                                     const allowedUnlim4h = medic ? true : await dbCheckUnlimUploads4h(this.user);
                                     if(typeof allowedUnlim4h === 'string')
                                     {
+                                        logger.error({
+                                            message: `Limit error: ${allowedUnlim4h}`,
+                                            labels: {
+                                                "origin": "svc"
+                                            }
+                                        });
                                         callback({
                                             success: false
                                         });
@@ -84,11 +114,23 @@ export class sfProtocol {
                                         if (!allowedUnlim4h) {
                                             const canUpload = await dbCheckUpload(this.user, this.size)
                                             if (typeof canUpload === 'string') {
+                                                logger.error({
+                                                    message: `canUpload error: ${canUpload}`,
+                                                    labels: {
+                                                        "origin": "svc"
+                                                    }
+                                                });
                                                 this.sock.emit('err', canUpload);
                                                 this.sock.disconnect(true);
                                                 return;
                                             }
                                             if (!canUpload) {
+                                                logger.error({
+                                                    message: 'Cannot upload',
+                                                    labels: {
+                                                        "origin": "svc"
+                                                    }
+                                                });
                                                 callback({
                                                     success: false
                                                 });
@@ -116,18 +158,36 @@ export class sfProtocol {
                     case 'splitFile':
                         // initial checks
                         if (!this.checkHandshake()) {
+                            logger.error({
+                                message: "Handshake error",
+                                labels: {
+                                    "origin": "svc"
+                                }
+                            });
                             this.sock.disconnect(true);
                             return;
                         }
                         const pkg = Buffer.from(data.data, 'base64');
                         const pkgSize = pkg.byteLength;
                         if (pkgSize > this.sizeOfPkg) {
+                            logger.error({
+                                message: `Packet is bigger than expected ${pkgSize}`,
+                                labels: {
+                                    "origin": "svc"
+                                }
+                            });
                             this.sock.emit('err', { message: 'Packet is bigger than expected' });
                             this.sock.disconnect(true);
                             return;
                         }
                         this.pkgNr++;
                         if (this.pkgNr > this.nrOfPackets) {
+                            logger.error({
+                                message: `Way too many packets ${this.pkgNr}`,
+                                labels: {
+                                    "origin": "svc"
+                                }
+                            });
                             this.sock.emit('err', { message: 'Way too many packets' });
                             this.sock.disconnect(true);
                             return;
@@ -137,10 +197,22 @@ export class sfProtocol {
                         break;
                     case 'EOS':
                         if (!this.checkHandshake()) {
+                            logger.error({
+                                message: "EOS Handshake error",
+                                labels: {
+                                    "origin": "svc"
+                                }
+                            });
                             this.sock.disconnect(true);
                             return;
                         }
                         if(data.canceled) {
+                            logger.warn({
+                                message: "Upload canceled",
+                                labels: {
+                                    "origin": "svc"
+                                }
+                            });
                             this.sock.emit('err', { message: 'Upload canceled' });
                             this.sock.disconnect(true);
                             unlink(this.zipName, (err) => {
@@ -209,6 +281,12 @@ export class sfProtocol {
                                                         });
                                                 });
                                                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
+                                                logger.info({
+                                                    message: `Started parsing folder for user: ${this.user}`,
+                                                    labels: {
+                                                        "origin": "svc"
+                                                    }
+                                                });
                                                 parseDICOMFolder(pathFolder, this.user, false);
                                             });
                                     }
@@ -232,7 +310,6 @@ export class sfProtocol {
                     }
                 });
                 this.sock.disconnect(true);
-
             }
         });
     }

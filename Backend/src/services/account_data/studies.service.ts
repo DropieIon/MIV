@@ -17,6 +17,12 @@ export async function svcAssignStudy(studyID: string, patUsername: string)
             data: respDB
         };
     }
+    logger.info({
+        message: "Study assigned.",
+        labels: {
+            "origin": "svc"
+        }
+    });
     return {
         ok: true,
         data: "Study assigned."
@@ -27,11 +33,23 @@ export async function svcUnassignStudy(studyID: string, patUsername: string | nu
     : Promise<resp_common_services> {
     const respDB = await dbUnssignStudy(studyID, patUsername);
     if(respDB !== "") {
+        logger.error({
+            message: respDB,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {
             ok: false,
             data: respDB
         };
     }
+    logger.info({
+        message: "Study unassigned.",
+        labels: {
+            "origin": "svc"
+        }
+    });
     return {
         ok: true,
         data: "Study unassigned."
@@ -42,11 +60,23 @@ export async function svcDeleteStudy(token: string, studyID: string)
     : Promise<resp_common_services> {
     const respDB = await dbDeleteStudy(token, studyID);
     if(respDB !== "") {
+        logger.error({
+            message: respDB,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {
             ok: false,
             data: respDB
         };
     }
+    logger.info({
+        message: "Study deleted.",
+        labels: {
+            "origin": "svc"
+        }
+    });
     return {
         ok: true,
         data: "Study deleted."

@@ -7,14 +7,13 @@ export function sockReceiveMsg(socket: Socket, username: string, data: messageOv
     dbStoreMsg(username, data)
         .then((dbResp: string) => {
             if (dbResp !== "") {
-                socket.emit('err', "Couldn't store message");
                 logger.error({
-                    message: "Error storing message: " + dbResp,
-
+                    message: `Error storing message: "${dbResp}"`,
                     labels: {
-                        "origin": "api"
+                        "origin": "svc"
                     }
-                });
+                })
+                socket.emit('err', "Couldn't store message");
             }
         });
     socket.emit('msg-to-client', data.message);
@@ -26,13 +25,13 @@ export function sockGetMsgs(socket: Socket, study_id: string, callback: any) {
         dbGetLastMessages(study_id)
             .then((dbResp: string | messageData[]) => {
                 if (typeof dbResp === "string") {
-                    socket.emit('err', "Couldn't get messages");
                     logger.error({
-                        message: "Error getting messages: " + dbResp,
+                        message: `Error getting messages: "${dbResp}"`,
                         labels: {
                             "origin": "svc"
                         }
                     });
+                    socket.emit('err', "Couldn't get messages");
                     return;
                 }
                 else {

@@ -11,6 +11,12 @@ export async function conAssignStudy(req: Request<{}, {}, assignStudyForm>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -18,10 +24,22 @@ export async function conAssignStudy(req: Request<{}, {}, assignStudyForm>,
         return;
     }
     if (!req.body.study_id || !req.body.patient_username) {
+        logger.error({
+            message: "Study_id and patient_username are required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({ message: "Study_id and patient_username are required!", logging: true }))
         return;
     }
     if (parseJwt(token)?.role === "pat") {
+        logger.error({
+            message: "Only a medic can assign a study!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a medic can assign a study!",
             code: 400
@@ -52,6 +70,12 @@ export async function conUnassignStudy(req: Request<{}, {}, { study_id: string }
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -61,11 +85,23 @@ export async function conUnassignStudy(req: Request<{}, {}, { study_id: string }
     const jwtBody = parseJwt(token);
     const role = jwtBody?.role;
     if (!req.body.study_id) {
+        logger.error({
+            message: "Study_id is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({ message: "Study_id is required!", logging: true }))
         return;
     }
     
     if (!["pat", "med"].includes(parseJwt(token)?.role)) {
+        logger.error({
+            message: "Only a medic or a patient can unassign a study!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a medic or a patient can unassign a study!",
             code: 400
@@ -89,6 +125,12 @@ export async function conDeleteStudy(req: Request<{}, {}, assignStudyForm>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -96,6 +138,12 @@ export async function conDeleteStudy(req: Request<{}, {}, assignStudyForm>,
         return;
     }
     if (parseJwt(token)?.role !== "med") {
+        logger.error({
+            message: "Only a medic can delete a study!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Only a medic can delete a study!",
             code: 400
@@ -103,6 +151,12 @@ export async function conDeleteStudy(req: Request<{}, {}, assignStudyForm>,
         return;
     }
     if (!req.body.study_id) {
+        logger.error({
+            message: "Study_id is required!",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({ message: "Study_id is required!", logging: true }))
         return;
     }
@@ -114,6 +168,12 @@ export async function conDeleteStudy(req: Request<{}, {}, assignStudyForm>,
         res.json({ message: resp_insert.data });
         return;
     }
+    logger.error({
+        message: resp_insert.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new RegisterError({
         message: resp_insert.data,
         code: 400

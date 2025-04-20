@@ -34,11 +34,23 @@ function assignStudyID(dicomPath: string, prevSUID: string, patUsername: string)
                     const studyID = resp[0].ID;
                     const respDbCheck = await dbCheckStudyID(patUsername, studyID);
                     if(typeof respDbCheck === "string"){
+                        logger.error({
+                            message: respDbCheck,
+                            labels: {
+                                "origin": "svc"
+                            }
+                        });
                         throw new Error(respDbCheck);
                     }
                     else if(respDbCheck)
                         dbNewStudy(patUsername, studyID);
                     else
+                        logger.error({
+                            message: "StudyID already assigned",
+                            labels: {
+                                "origin": "svc"
+                            }
+                        });
                         throw new Error("StudyID already assigned");
                 })
                 .catch((err) => {
@@ -53,13 +65,12 @@ function assignStudyID(dicomPath: string, prevSUID: string, patUsername: string)
 
         })
         .catch((err) => {
-            logger.info({
+            logger.error({
                 message: err,
                 labels: {
                     "origin": "svc"
                 }
             });
-
         });
     if(StudyInstanceUID)
         return StudyInstanceUID;
@@ -71,12 +82,18 @@ function sendToOrthanc(filePath: string) {
         const client = new Client();
         const request = new CStoreRequest(filePath);
         client.addRequest(request);
+        logger.info({
+            message: "Sent to orthanc",
+            labels: {
+                "origin": "svc"
+            }
+        });
         client.send('orthanc', 4242, 'SCU', 'ANY-SCP', {
             logCommandDatasets: false,
             logDatasets: false
         });
         logger.info({
-            message: "Ended",
+            message: "Ended stream to orthanc",
             labels: {
                 "origin": "svc"
             }
@@ -89,6 +106,7 @@ function sendToOrthanc(filePath: string) {
                 "origin": "svc"
             }
         });
+        return;
     }
 }
 
@@ -137,7 +155,6 @@ export async function parseDICOMFolder(path: string, patUsername: string, wantsS
                 "origin": "svc"
             }
         });
-        
-    }
-    
+        return;
+    }   
 }

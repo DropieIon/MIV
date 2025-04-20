@@ -3,6 +3,7 @@ import { sq } from "../db-functions";
 import mariadb from 'mariadb';
 import { formatName } from '../../../utils/helper.util';
 import { MyDocsListEntry } from "../../../../../Common/types";
+import { logger } from '../../../utils/logger';
 
 export async function dbAllDocs(patUsername: string) 
     : Promise<string | doctorApiResp[]> {
@@ -28,11 +29,30 @@ export async function dbAllDocs(patUsername: string)
                 profile_pic: current_resp.profile_pic
             });
         }
+        logger.info({
+            message: "Got all docs",
+            labels: {
+                "origin": "db"
+            }
+        });
         return respList;
     }
-    if(queryResp instanceof mariadb.SqlError)
-        return "Pat assigned error: " + queryResp.sqlMessage;
-    return "Cannot get assigned patients list " + queryResp;
+    if(queryResp instanceof mariadb.SqlError) {
+        logger.error({
+            message: `Pat assigned error: ${queryResp.sqlMessage}`,
+            labels: {
+                "origin": "db"
+            }
+        });
+        return `Pat assigned error: ${queryResp.sqlMessage}`;
+    }
+    logger.error({
+        message: `Cannot get assigned patients list ${queryResp}`,
+        labels: {
+            "origin": "db"
+        }
+    });
+    return `Cannot get assigned patients list ${queryResp}`;
 }
 
 
@@ -58,9 +78,28 @@ export async function dbGetMyDocs(patUsername: string)
                     uuid: current_resp.uuid
                 });
             }
+            logger.info({
+                message: "Got patinet's docs",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return respList;
         }
-        if(queryResp instanceof mariadb.SqlError)
-            return "Pat assigned error: " + queryResp.sqlMessage;
-        return "Cannot get assigned patients list " + queryResp;
+        if(queryResp instanceof mariadb.SqlError) {
+            logger.error({
+                message: `Pat assigned error: ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Pat assigned error: ${queryResp.sqlMessage}`;
+        }
+        logger.error({
+            message: `Cannot get assigned patients list ${queryResp}`,
+            labels: {
+                "origin": "db"
+            }
+        });
+        return `Cannot get assigned patients list ${queryResp}`;
 }

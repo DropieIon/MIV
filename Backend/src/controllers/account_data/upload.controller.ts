@@ -4,6 +4,7 @@ import EmptyField from "../../errors/EmptyField.error";
 import { parseJwt } from "../../utils/helper.util";
 import ControllerError from "../../errors/RegisterError.error";
 import { svcAllowUnlim4h } from "../../services/account_data/upload.service";
+import { logger } from "../../utils/logger";
 
 type allowUnlim4hForm = {
     patient_username: string
@@ -13,6 +14,12 @@ export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
     res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Token required",
             code: 400
@@ -20,6 +27,12 @@ export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
         return;
     }
     if (parseJwt(token)?.role === 'pat') {
+        logger.error({
+            message: "Not a medic",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new ControllerError({
             message: "Not a medic",
             code: 400
@@ -27,6 +40,12 @@ export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
         return;
     }
     if (!req.body.patient_username) {
+        logger.error({
+            message: "Patient username required",
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new EmptyField({
             message: "Patient username required",
             code: 400
@@ -38,6 +57,12 @@ export async function conAllowUnlim4h(req: Request<{}, {}, allowUnlim4hForm>,
         res.json({ message: resp_insert.data });
         return;
     }
+    logger.error({
+        message: resp_insert.data,
+        labels: {
+            "origin": "controller"
+        }
+    });
     next(new RegisterError({
         message: resp_insert.data,
         code: 400

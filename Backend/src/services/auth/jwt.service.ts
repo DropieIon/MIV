@@ -15,8 +15,20 @@ export async function generateAccessToken(username: string, role: string, canUpl
             canUpload,
             unlimitedUp4h
         }
+        logger.info({
+            message: "Generated token",
+            labels: {
+                "origin": "svc"
+            }
+        });
         return jwt.sign(payload, secret, { expiresIn: '15m', keyid: key });
     }
+    logger.error({
+        message: "Cannot generate token",
+        labels: {
+            "origin": "svc"
+        }
+    });
     return null;
 }
 
@@ -24,7 +36,15 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]
 
-    if (token === null || token === undefined) return res.sendStatus(401)
+    if (token === null || token === undefined) {
+        logger.error({
+            message: "Token required",
+            labels: {
+                "origin": "svc"
+            }
+        });
+        return res.sendStatus(401);
+    }   
 
     jwt.verify(token, process.env.TOKEN_SECRET as string, (err: any, user: any) => {
         logger.error({

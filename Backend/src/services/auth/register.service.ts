@@ -2,6 +2,7 @@ import { insert_user } from '../db/auth/db-auth.service';
 import { sendRegisterEmail } from './email.service';
 import { v4 as uuidv4 } from 'uuid';
 import { registerForm, resp_common_services } from '../../types/auth/authentication.type';
+import { logger } from '../../utils/logger';
 
 
 export async function create_user(registerData: registerForm): Promise<resp_common_services> {
@@ -13,11 +14,30 @@ export async function create_user(registerData: registerForm): Promise<resp_comm
         rez = await sendRegisterEmail(email, uuid);
         if(rez === "")
         {
+            logger.info({
+                message: "Successfully registered",
+                labels: {
+                    "origin": "svc"
+                }
+            });
             return { ok: true, data: "Successfully registered" };
         }
-        else
+        else {
+            logger.error({
+                message: rez,
+                labels: {
+                    "origin": "svc"
+                }
+            });
             return {ok: false, data: rez};
+        }
     }
+    logger.error({
+        message: rez,
+        labels: {
+            "origin": "svc"
+        }
+    });
     return { ok: false, data: rez };
 
 }

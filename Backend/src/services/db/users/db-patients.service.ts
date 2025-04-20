@@ -2,6 +2,7 @@ import mariadb from 'mariadb';
 import { sq } from "../db-functions";
 import { patientApiResp } from '../../../types/users/patients.type'
 import { formatName } from '../../../utils/helper.util';
+import { logger } from '../../../utils/logger';
 
 export async function dbPatients(docUsername: string, type: 'assigned' | 'all', admin: boolean)
     : Promise<string | patientApiResp[]> {
@@ -62,9 +63,28 @@ export async function dbPatients(docUsername: string, type: 'assigned' | 'all', 
                 nrOfStudies: parseInt(current_resp.studs)
             });
         }
+        logger.info({
+            message: "Got patients list",
+            labels: {
+                "origin": "db"
+            }
+        });
         return resp_list;
     }
-    if(query_resp instanceof mariadb.SqlError)
-        return "Pat assigned error: " + query_resp.sqlMessage;
-    return "Cannot get assigned patients list " + query_resp;
+    if(query_resp instanceof mariadb.SqlError) {
+        logger.error({
+            message: `Pat assigned error: ${query_resp.sqlMessage}`,
+            labels: {
+                "origin": "db"
+            }
+        })
+        return `Pat assigned error: ${query_resp.sqlMessage}`;
+    }
+    logger.error({
+        message: `Cannot get assigned patients list ${query_resp}`,
+        labels: {
+            "origin": "db"
+        }
+    });
+    return `Cannot get assigned patients list ${query_resp}`;
 }

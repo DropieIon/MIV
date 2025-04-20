@@ -3,8 +3,8 @@ import { logger } from '../../../utils/logger';
 
 export async function extractZip(path: string, userWUID: string) {
     const zip = new sZip.async({
-        file: path
-        , storeEntries: true
+        file: path, 
+        storeEntries: true
     });
     try {
         const count = await zip.extract(null, `./tmp/${userWUID}`);

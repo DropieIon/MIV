@@ -1,5 +1,6 @@
 import { sq } from "../db-functions";
 import mariadb from 'mariadb';
+import { logger } from "../../../utils/logger";
 
 export async function dbNewStudy(patUsername: string, studyId: string): Promise<string> {
     const query_resp = await sq(
@@ -8,11 +9,29 @@ export async function dbNewStudy(patUsername: string, studyId: string): Promise<
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
             if (query_resp.code === "ER_DUP_ENTRY") {
+                logger.error({
+                    message: "Study id already assigned",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Study id already assigned";
             }
+            logger.error({
+                message: `Database insertion error ${query_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database insertion error " + query_resp.sqlMessage;
         }
     }
+    logger.info({
+        message: "Study inserted",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -24,10 +43,29 @@ export async function dbCheckStudyID(patUsername: string, studyId: string): Prom
         [patUsername, studyId]);
         if (typeof queryResp !== "string" && !(queryResp instanceof mariadb.SqlError)) {
             // it's the resp list
-            if(queryResp.length === 0)
+            if(queryResp.length === 0) {
+                logger.info({
+                    message: "Study not assigned. Can continue",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return true;
+            }
+            logger.error({
+                message: "Study already assigned",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return false;
         }
+        logger.error({
+            message: "Cannot get studies list",
+            labels: {
+                "origin": "db"
+            }
+        });
         return "Cannot get studies list";
 }
 
@@ -37,9 +75,21 @@ export async function dbAssignStudy(studyID: string, patUsername: string): Promi
         [patUsername, studyID]);
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
+            logger.error({
+                message: `Database update error ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database update error " + queryResp.sqlMessage;
         }
     }
+    logger.info({
+        message: "Study assigned",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -55,9 +105,21 @@ export async function dbUnssignStudy(studyID: string, patUsername: string | null
     );
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
-            return "Database update error " + queryResp.sqlMessage;
+            logger.error({
+                message: `Database update error ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Database update error ${queryResp.sqlMessage}`;
         }
     }
+    logger.info({
+        message: "Study unassigned",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -67,7 +129,13 @@ export async function dbDeleteStudy(token: string, studyID: string): Promise<str
         [studyID]);
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
-            return "Database deletion error " + queryResp.sqlMessage;
+            logger.error({
+                message: `Database deletion error ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Database deletion error ${queryResp.sqlMessage}`;
         }
     }
     try {
@@ -75,8 +143,29 @@ export async function dbDeleteStudy(token: string, studyID: string): Promise<str
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }, 
         });
+        if (!orthResp.ok) {
+            logger.error({
+                message: `Orthanc deletion error ${orthResp.statusText}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
+            return `Orthanc deletion error ${orthResp.statusText}`;
+        }
+        logger.info({
+            message: "Study deleted",
+            labels: {
+                "origin": "db"
+            }
+        });
         return "";
     } catch (err) {
-        return "Cannot delete study: " + err;
+        logger.error({
+            message: `Cannot delete study: ${err}`,
+            labels: {
+                "origin": "db"
+            }
+        });
+        return `Cannot delete study: ${err}`;
     }
 }

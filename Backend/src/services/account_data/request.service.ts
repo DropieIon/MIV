@@ -1,12 +1,26 @@
 import { resp_common_services } from "../../types/auth/authentication.type";
 import { dbUnassignPat, db_ans_request, db_insert_patient_requests } from '../db/account_data/db-requests.service';
+import { logger } from "../../utils/logger";
 
 export async function insert_personal_requests(username: string, to: string): 
     Promise<resp_common_services>
 {
     const resp_db = await db_insert_patient_requests(username, to);
-    if(typeof resp_db === "string" && resp_db !== "")
+    if(typeof resp_db === "string" && resp_db !== "") {
+        logger.error({
+            message: resp_db,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {ok: false, data: resp_db};
+    }
+    logger.info({
+        message: "Request requested",
+        labels: {
+            "origin": "svc"
+        }
+    });
     return { ok: true, data: "Request requested"};
 }
 
@@ -14,15 +28,41 @@ export async function svc_ans_req(acc: boolean, doc_username: string, pat_userna
     Promise<resp_common_services> 
 {
     const resp_db = await db_ans_request(acc, doc_username, pat_username);
-    if(typeof resp_db === "string" && resp_db !== "")
+    if(typeof resp_db === "string" && resp_db !== "") {
+        logger.error({
+            message: resp_db,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {ok: false, data: resp_db};
+    }
+    logger.info({
+        message: `Request ${acc ? 'accepted' : 'declined'}`,
+        labels: {
+            "origin": "svc"
+        }
+    });
     return { ok: true, data: `Request ${acc ? 'accepted' : 'declined'}`};
 }
 
 export async function svcUnassignPat(patUsername: string)
     : Promise<resp_common_services> {
     const respDb = await dbUnassignPat(patUsername);
-    if(typeof respDb === "string" && respDb !== "")
+    if(typeof respDb === "string" && respDb !== "") {
+        logger.error({
+            message: respDb,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {ok: false, data: respDb};
+    }
+    logger.info({
+        message: 'Patient unassigned',
+        labels: {
+            "origin": "svc"
+        }
+    });
     return { ok: true, data: 'Patient unassigned'};
 }

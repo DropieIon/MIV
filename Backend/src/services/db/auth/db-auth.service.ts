@@ -4,6 +4,7 @@ import { formatName, sha256 } from '../../../utils/helper.util';
 import { patientForm } from "../../../types/auth/authentication.type";
 import { sq } from '../db-functions';
 import { randomBytes } from 'crypto';
+import { logger } from '../../../utils/logger';
 
 type checkLogin_resp = { role: string, email_validation: yayOrNay, fullName: string };
 
@@ -18,15 +19,40 @@ export async function dbCanUpload(username: string)
     );
     if (queryResp !== "") {
         if (queryResp instanceof mariadb.SqlError) {
+            logger.error({
+                message: `Database upload check error ${queryResp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database upload check error";
         }
         if (typeof queryResp !== "string") {
             // is the resp list
-            if(parseInt(queryResp[0].c) === 0)
+            if(parseInt(queryResp[0].c) === 0) {
+                logger.info({
+                    message: "Can't upload",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return false;
+            }
+            logger.info({
+                message: "Can upload",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return true;
         }
     }
+    logger.error({
+        message: "Cannot get patients list",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -40,11 +66,29 @@ export async function insert_user(registerData: registerForm, uuid: string): Pro
     if (query_resp !== "") {
         if (query_resp instanceof mariadb.SqlError) {
             if (query_resp.code === "ER_DUP_ENTRY") {
+                logger.error({
+                    message: "Email or username already in use",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Email or username already in use";
             }
+            logger.error({
+                message: `Database insertion error ${query_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database insertion error";
         }
     }
+    logger.info({
+        message: "User inserted",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -52,10 +96,29 @@ export async function validateUUID(uuid: string) {
     const sql_resp = await sq('update login set email_validation="Y" where uuid=?',
         [uuid]);
     if (sql_resp instanceof mariadb.SqlError) {
+        logger.error({
+            message: `Database update error ${sql_resp.sqlMessage}`,
+            labels: {
+                "origin": "db"
+            }
+        });
         return "Database update error";
     }
-    if ((sql_resp as { affectedRows: number }).affectedRows !== 1)
+    if ((sql_resp as { affectedRows: number }).affectedRows !== 1) {
+        logger.error({
+            message: "Cannot validate uuid",
+            labels: {
+                "origin": "db"
+            }
+        });
         return "Cannot validate uuid";
+    }
+    logger.info({
+        message: "UUID validated",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -67,8 +130,15 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
         where l.username=?',
         [username]
     );
-    if(typeof sqlResp === "string" || sqlResp instanceof mariadb.SqlError || sqlResp.length === 0)
+    if(typeof sqlResp === "string" || sqlResp instanceof mariadb.SqlError || sqlResp.length === 0){
+        logger.error({
+            message: `Error getting salt ${sqlResp}`,
+            labels: {
+                "origin": "db"
+            }
+        });
         return "Error getting salt";
+    }
     const salt = sqlResp[0].salt;
     sqlResp = await sq<checkLogin_resp>(
         'select l.role, l.email_validation, pd.full_name \
@@ -79,14 +149,32 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
     if (typeof sqlResp !== "string" && !(sqlResp instanceof mariadb.SqlError)) {
         // is the resp list
         if (sqlResp.length === 0) {
+            logger.error({
+                message: "Invalid credentials",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Invalid credentials";
         }
+        logger.info({
+            message: "Login successful",
+            labels: {
+                "origin": "db"
+            }
+        });
         return { 
             role: sqlResp[0].role,
             email_validation: sqlResp[0].email_validation,
             fullName: formatName(sqlResp[0].full_name)
         };
     }
+    logger.error({
+        message: "Cannot login",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "Cannot login";
 }
 
@@ -113,8 +201,20 @@ export async function insert_patient_details(username: string, details: patientF
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                logger.error({
+                    message: "Patient already has the required data",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Patient already has the required data";
             }
+            logger.error({
+                message: `Database insertion error ${insert_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database insertion error";
         }
     }
@@ -126,8 +226,20 @@ export async function insert_patient_details(username: string, details: patientF
     if (insert_resp !== "") {
         if (insert_resp instanceof mariadb.SqlError) {
             if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                logger.error({
+                    message: "Patient already has the required data",
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Patient already has the required data";
             }
+            logger.error({
+                message: `Database insertion error ${insert_resp.sqlMessage}`,
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "Database insertion error";
         }
     }
@@ -136,12 +248,30 @@ export async function insert_patient_details(username: string, details: patientF
         if (insert_resp !== "") {
             if (insert_resp instanceof mariadb.SqlError) {
                 if (insert_resp.code === "ER_NO_REFERENCED_ROW") {
+                    logger.error({
+                        message: "Patient already has the required data",
+                        labels: {
+                            "origin": "db"
+                        }
+                    });
                     return "Patient already has the required data";
                 }
+                logger.error({
+                    message: `Database insertion error ${insert_resp.sqlMessage}`,
+                    labels: {
+                        "origin": "db"
+                    }
+                });
                 return "Database insertion error";
             }
         }
     }
+    logger.info({
+        message: "Patient details inserted",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
 }
 
@@ -149,11 +279,29 @@ export async function has_completed(username: string) {
     let sql_resp = await sq<{ has_completed: yayOrNay }>('select has_completed from login where username=?', [username]);
     if (typeof sql_resp !== "string" && !(sql_resp instanceof mariadb.SqlError)) {
         // is the resp list
-        if (sql_resp.length === 0)
+        if (sql_resp.length === 0) {
+            logger.error({
+                message: "User not found",
+                labels: {
+                    "origin": "db"
+                }
+            });
             return "User not found";
+        }
+        logger.info({
+            message: "Got has_completed",
+            labels: {
+                "origin": "db"
+            }
+        });
         return sql_resp[0].has_completed;
     }
+    logger.error({
+        message: "Cannot get has_completed",
+        labels: {
+            "origin": "db"
+        }
+    });
     return "";
-
 }
 
