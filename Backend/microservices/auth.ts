@@ -4,7 +4,7 @@ import loginRouter from '../src/routes/auth/login.route';
 import registerRouter from '../src/routes/auth/register.route';
 import { errorHandler } from '../src/middlewares/errors.middleware';
 import { get_pool } from '../src/services/db/db-functions';
-
+import { logger } from '../src/utils/logger';
 
 const app = express();
 const port = 3000;
@@ -26,7 +26,12 @@ app.use(errorHandler);
 
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  logger.info({
+    message: `App listening on port ${port}`,
+    labels: {
+      "origin": "system"
+    }
+  })
 })
 
 /* Cleanup */
@@ -40,7 +45,12 @@ type exitOptions = {
 
 function exitHandler(options: exitOptions) {
     if (options.cleanup) {
-      console.log("Closed connection pool");
+      logger.info({
+        message: "Closed connection pool",
+        labels: {
+          "origin": "system"
+        }
+      });
       return get_pool().end().then();
     }
     if (options.exit) process.exit();

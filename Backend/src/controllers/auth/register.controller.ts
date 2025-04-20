@@ -4,6 +4,7 @@ import RegisterError from "../../errors/RegisterError.error";
 import EmptyField from "../../errors/EmptyField.error";
 import { validateUUID } from "../../services/db/auth/db-auth.service";
 import type { registerForm } from "../../types/auth/authentication.type";
+import { logger } from '../../utils/logger'
 
 export async function registerController(req: Request<{}, {}, registerForm>, 
     res: Response, next: NextFunction) {
@@ -30,7 +31,12 @@ export async function registerUUID(req: Request,
         res.status(202).send('<center style="margin: \"auto\"">Email validated! Olé!</center>')
     }
     else {
-        console.error(resp_validate);
+        logger.error({
+            message: resp_validate,
+            labels: {
+                "origin": "controller"
+            }
+        });
         next(new RegisterError({
             message: "Cannot validate uuid"
         }))

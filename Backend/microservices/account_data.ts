@@ -14,12 +14,19 @@ import { sfProtocol } from '../src/services/account_data/socket.io/sfProtocol.se
 import { sockGetMsgs, sockReceiveMsg } from '../src/services/account_data/socket.io/studyChat.service';
 import { getMessageListReq, messageData, messageOverWS } from '../../Common/types';
 import { parseJwt } from '../src/utils/helper.util';
+import { logger } from '../src/utils/logger';
 
 const app = express();
 const port = 3000;
 
 const server = app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  logger.info({
+    message: `App listening on port ${port}`,
+
+    labels: {
+      "origin": "api"
+    }
+  })
 });
 const io = new ServerIO(server, {
   maxHttpBufferSize: 1e8,
@@ -31,14 +38,15 @@ io.on('connection', function (socket) {
       // protocol: sends size and nr of packets first
       // then sends the n nr of packets
       // then an EOS (end of stream) and a checksum
-      console.log("Upload client connected");
+      logger.info({ message: 'Upload client connected', labels: { 'origin': 'socket.io' } });
       let sf: sfProtocol | null = new sfProtocol(socket, app);
       socket.on('disconnect', () => {
         sf = null;
+        logger.info({ message: 'Upload client disconnected', labels: { 'origin': 'socket.io' } });
       });
       break;
     case 'study-chat':
-      console.log("Study chat connected");
+      logger.info({ message: 'Study chat connected', labels: { 'origin': 'socket.io' } });
       socket.join(socket.handshake.headers.study_id as string);
       socket.on('msg-to-serv', (data: messageOverWS) => {
         const token = socket.handshake.headers.authorization?.split('Bearer ')[1];
@@ -53,7 +61,7 @@ io.on('connection', function (socket) {
           io.to(data.study_id).emit('msg-from-srv', messageToChat);
         }
         else {
-          console.error('No token for message req');
+          logger.error({ message: 'No token for message req', labels: { 'origin': 'socket.io' } })
           socket.emit('err', 'No token');
         }
       });
@@ -99,7 +107,10 @@ type exitOptions = {
 
 function exitHandler(options: exitOptions) {
     if (options.cleanup) {
-      console.log("Closed connection pool");
+      logger.info({ 
+        message: 'Closed connection pool', 
+        labels: { 'origin': 'system' }
+      })
       get_pool().end();
     }
     if (options.exit) process.exit();

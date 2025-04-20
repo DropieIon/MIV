@@ -3,6 +3,7 @@ import ControllerError from "../../errors/RegisterError.error";
 import EmptyField from "../../errors/EmptyField.error";
 import type { loginForm, resp_common_services } from "../../types/auth/authentication.type";
 import { loginUser } from "../../services/auth/login.service";
+import { logger } from '../../utils/logger';
 
 export async function loginController(req: Request<{}, {}, loginForm>,
     res: Response, next: NextFunction) {
@@ -22,7 +23,12 @@ export async function loginController(req: Request<{}, {}, loginForm>,
             code: 400
         }))
     } catch (error) {
-        console.error("Login error " + error);
+        logger.error({
+            message: "Login error " + error,
+            labels: {
+                "origin": "controller"
+            }
+        });
 
     }
 }

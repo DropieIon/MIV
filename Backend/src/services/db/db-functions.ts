@@ -1,5 +1,6 @@
 import mariadb from 'mariadb';
 import { db_config } from '../../configs/db.config';
+import { logger } from '../../utils/logger';
 
 const pool = mariadb.createPool(db_config);
 
@@ -12,7 +13,12 @@ export async function sq<T>(sql: string, values?: (string | number)[]): Promise<
         let rez = await pool.query(sql, values);
         return rez;
     } catch (error) {
-        console.error(error);
+        logger.error({
+            message: `Error connecting to mariadb: ${error}`,
+            labels: {
+                "origin": "db"
+            }
+        });
         return error as mariadb.SqlError;
     }
 }

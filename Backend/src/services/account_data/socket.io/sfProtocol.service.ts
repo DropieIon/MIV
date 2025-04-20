@@ -8,6 +8,7 @@ import { extractZip } from "./sZip.service";
 import { parseDICOMFolder } from "./parseUpload.service";
 import { dbCheckUnlimUploads4h, dbCheckUpload } from "../../db/account_data/db-upload.service";
 import { Express } from "express";
+import { logger } from "../../../utils/logger";
 
 export class sfProtocol {
     private size: number = 0;
@@ -33,7 +34,12 @@ export class sfProtocol {
             const pathFolder = `${this.pathToTemp}/${this.folderName}`;
             parseDICOMFolder(pathFolder, this.user, true)
             .then((studyUID) => {
-                    console.log("on-stable", req.params.studyInstanceUID, studyUID);
+                    logger.info({
+                        message: "on-stable",
+                        labels: {
+                            "origin": "svc"
+                        }
+                    });
                     if (req.params.studyInstanceUID === studyUID) {
                         socket.emit('on-stable', {});
                         rmSync(pathFolder, {
@@ -95,7 +101,12 @@ export class sfProtocol {
                                     this.sizeOfPkg = Math.ceil(data.size / data.nrOfPackets * 1.5);
                                     this.folderName = `${this.user}_${uuidv4()}`;
                                     this.zipName = `${this.pathToTemp}/${this.folderName}.zip`;
-                                    console.log("Handshake successfull");
+                                    logger.info({
+                                        message: "Handshake successfull",
+                                        labels: {
+                                            "origin": "svc"
+                                        }
+                                    });
                                     callback({
                                         success: true
                                     });
@@ -134,9 +145,19 @@ export class sfProtocol {
                             this.sock.disconnect(true);
                             unlink(this.zipName, (err) => {
                                 if (err)
-                                    console.error("Err deleting file" + err);
+                                    logger.error({
+                                        message: "Err deleting file" + err,
+                                        labels: {
+                                            "origin": "svc"
+                                        }
+                                    });
                                 else
-                                    console.log("File deleted.");
+                                    logger.info({
+                                        message: "File deleted.",
+                                        labels: {
+                                            "origin": "svc"
+                                        }
+                                    });
                             });
                         }
                         else {
@@ -144,13 +165,28 @@ export class sfProtocol {
                                 .then((md5) => {
                                     if (md5 !== data.md5) {
                                         this.sock.emit('err', { message: 'Corrupted file received' });
-                                        console.log("Corrupted zip received");
+                                        logger.error({
+                                            message: "Corrupted zip received",
+                                            labels: {
+                                                "origin": "svc"
+                                            }
+                                        });
                                         this.sock.disconnect(true);
                                         unlink(this.zipName, (err) => {
                                             if (err)
-                                                console.error("Err deleting file" + err);
+                                                logger.error({
+                                                    message: "Err deleting file" + err,
+                                                    labels: {
+                                                        "origin": "svc"
+                                                    }
+                                                });
                                             else
-                                                console.log("File deleted.");
+                                                logger.info({
+                                                    message: "File deleted.",
+                                                    labels: {
+                                                        "origin": "svc"
+                                                    }
+                                                });
                                         });
                                     }
                                     else {
@@ -158,9 +194,19 @@ export class sfProtocol {
                                             .then(() => {
                                                 unlink(this.zipName, (err) => {
                                                     if (err)
-                                                        console.error("Err deleting file" + err);
+                                                        logger.error({
+                                                            message: "Err deleting file" + err,
+                                                            labels: {
+                                                                "origin": "svc"
+                                                            }
+                                                        });
                                                     else
-                                                        console.log("File deleted.");
+                                                        logger.info({
+                                                            message: "File deleted.",
+                                                            labels: {
+                                                                "origin": "svc"
+                                                            }
+                                                        });
                                                 });
                                                 const pathFolder = `${this.pathToTemp}/${this.folderName}`;
                                                 parseDICOMFolder(pathFolder, this.user, false);
@@ -170,15 +216,24 @@ export class sfProtocol {
                         }
                         break;
                     default:
-                        console.error('Wrong type');
+                        logger.error({
+                            message: 'Wrong type',
+                            labels: {
+                                "origin": "svc"
+                            }
+                        });
                         break;
                 }
             } catch (error) {
-                console.log("Error ws: " + error);
+                logger.error({
+                    message: "Error ws: " + error,
+                    labels: {
+                        "origin": "svc"
+                    }
+                });
                 this.sock.disconnect(true);
 
             }
         });
     }
-
 }

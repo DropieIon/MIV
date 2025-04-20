@@ -1,13 +1,20 @@
 import { messageData, messageOverWS } from "../../../../../Common/types";
 import { Socket } from "socket.io";
 import { dbGetLastMessages, dbStoreMsg } from "../../db/account_data/db-study-chat.service";
+import { logger } from "../../../utils/logger";
 
 export function sockReceiveMsg(socket: Socket, username: string, data: messageOverWS) {
     dbStoreMsg(username, data)
         .then((dbResp: string) => {
             if (dbResp !== "") {
                 socket.emit('err', "Couldn't store message");
-                console.error("Error storing message: " + dbResp);
+                logger.error({
+                    message: "Error storing message: " + dbResp,
+
+                    labels: {
+                        "origin": "api"
+                    }
+                });
             }
         });
     socket.emit('msg-to-client', data.message);
@@ -20,7 +27,12 @@ export function sockGetMsgs(socket: Socket, study_id: string, callback: any) {
             .then((dbResp: string | messageData[]) => {
                 if (typeof dbResp === "string") {
                     socket.emit('err', "Couldn't get messages");
-                    console.error("Error getting messages: " + dbResp);
+                    logger.error({
+                        message: "Error getting messages: " + dbResp,
+                        labels: {
+                            "origin": "svc"
+                        }
+                    });
                     return;
                 }
                 else {
@@ -29,7 +41,12 @@ export function sockGetMsgs(socket: Socket, study_id: string, callback: any) {
             });
     }
     else {
-        console.error('No token for message req');
+        logger.error({
+            message: 'No token for message req',
+            labels: {
+                "origin": "svc"
+            }
+        });
         socket.emit('err', 'No token');
     }
 }

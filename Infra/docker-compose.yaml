@@ -162,6 +162,44 @@ services:
       - kong-net
     volumes:
       - ./kong_gateway/kong.yaml:/kong/declarative/kong.yml
+    
+  loki:
+    image: grafana/loki
+    container_name: loki
+    networks:
+      - shared_loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    networks:
+      - shared_loki
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+
+  grafana-alloy:
+    image: grafana/alloy:latest
+    container_name: grafana-alloy
+    ports:
+      - "12345:12345"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - shared_loki
+      - kong-net
+      - orthanc-db
+      - auth-db
+    volumes:
+      - ./monitoring/alloy-config.hcl:/etc/alloy/config.hcl:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["run", "/etc/alloy/config.hcl"]
 
 
 volumes:
@@ -174,4 +212,6 @@ networks:
   orthanc-db:
     driver: bridge
   auth-db:
+    driver: bridge
+  shared_loki:
     driver: bridge

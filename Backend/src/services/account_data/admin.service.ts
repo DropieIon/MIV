@@ -2,12 +2,11 @@ import { resp_common_services } from "../../types/auth/authentication.type";
 import { dbDemotePat, dbPatIsAssigned, dbPromotePat } from "../db/account_data/db-admin.service";
 import { has_completed } from "../db/auth/db-auth.service";
 
-
 export async function svcPromotePat(patUsername: string): Promise<resp_common_services> {
-    if(await has_completed(patUsername) !== 'Y') {
+    if((await has_completed(patUsername)) !== 'Y') {
         return { ok: false, data: "Patient should complete personal data first" };
     }
-    if(await dbPatIsAssigned(patUsername) !== "") {
+    if((await dbPatIsAssigned(patUsername)) !== "") {
         return { ok: false, data: "Patient is assigned" };
     }
     const respUpdate = await dbPromotePat(patUsername);

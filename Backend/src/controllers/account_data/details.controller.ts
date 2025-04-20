@@ -5,6 +5,7 @@ import { patientForm } from "../../types/auth/authentication.type";
 import { has_completed } from "../../services/db/auth/db-auth.service";
 import { parseJwt } from "../../utils/helper.util";
 import { svcPutPatient_details, svcGetDetails, svcGetPfp, svcGetPfpsStudy } from "../../services/account_data/details.service";
+import { logger } from "../../utils/logger";
 import ControllerError from "../../errors/RegisterError.error";
 
 const get_username = (token: string): string => parseJwt(token)?.username;
@@ -24,7 +25,12 @@ export async function conGetDetailsController(req: Request<{}, {}, {}>,
         res.json(resp_db.data);
         return;
     }
-    console.error(resp_db.data);
+    logger.error({
+        message: resp_db.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new ControllerError({
         message: (resp_db.data as string),
         code: 400
@@ -51,7 +57,12 @@ export async function conPostDetailsController(req: Request<{}, {}, patientForm>
         res.json({ message: resp_insert.data });
         return;
     }
-    console.error(resp_insert.data);
+    logger.error({
+        message: resp_insert.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new RegisterError({
         message: resp_insert.data,
         code: 400
@@ -78,7 +89,12 @@ export async function conUpdateDetailsController(req: Request<{}, {}, patientFor
         res.json({ message: resp_insert.data });
         return;
     }
-    console.error(resp_insert.data);
+    logger.error({
+        message: resp_insert.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new RegisterError({
         message: resp_insert.data,
         code: 400
@@ -159,7 +175,12 @@ export async function conGetPfpsStudy(req: Request<{}, {}, { study_id: string }>
         return;
     }
     // it will always be a string when respPFP.ok is false
-    console.log(respPFP.data);
+    logger.info({
+        message: respPFP.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     
     next(new ControllerError({
         message: (respPFP.data as string),

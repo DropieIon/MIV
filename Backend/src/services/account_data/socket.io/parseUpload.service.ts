@@ -4,6 +4,7 @@ import { extname } from "path";
 import dcmDimse from 'dcmjs-dimse';
 import { parseDicom } from "dicom-parser";
 import { dbCheckStudyID, dbNewStudy } from "../../db/account_data/db-studies.service";
+import { logger } from '../../../utils/logger';
 
 const { Client } = dcmDimse;
 const { CStoreRequest } = dcmDimse.requests;
@@ -41,13 +42,23 @@ function assignStudyID(dicomPath: string, prevSUID: string, patUsername: string)
                         throw new Error("StudyID already assigned");
                 })
                 .catch((err) => {
-                    console.log(err);
+                    logger.error({
+                        message: err,
+                        labels: {
+                            "origin": "svc"
+                        }
+                    });
 
                 });
 
         })
         .catch((err) => {
-            console.log(err);
+            logger.info({
+                message: err,
+                labels: {
+                    "origin": "svc"
+                }
+            });
 
         });
     if(StudyInstanceUID)
@@ -64,10 +75,20 @@ function sendToOrthanc(filePath: string) {
             logCommandDatasets: false,
             logDatasets: false
         });
-        console.log("Ended");
+        logger.info({
+            message: "Ended",
+            labels: {
+                "origin": "svc"
+            }
+        });
         
     } catch (error) {
-        console.error("Uploading file to orthanc err:", error);
+        logger.error({
+            message: "Uploading file to orthanc err:",
+            labels: {
+                "origin": "svc"
+            }
+        });
     }
 }
 
@@ -78,7 +99,12 @@ export async function parseDICOMFolder(path: string, patUsername: string, wantsS
         let dir: string | undefined;
         while (1) {
             dir = dirList.pop();
-            console.log(dir);
+            logger.info({
+                message: `Dicom folder parsed: ${dir}`,
+                labels: {
+                    "origin": "svc"
+                }
+            });
             
             if(!dir)
                 // end of list
@@ -105,7 +131,12 @@ export async function parseDICOMFolder(path: string, patUsername: string, wantsS
             }
         }
     } catch (error) {
-        console.log(error);
+        logger.error({
+            message: error,
+            labels: {
+                "origin": "svc"
+            }
+        });
         
     }
     

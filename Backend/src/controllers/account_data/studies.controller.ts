@@ -5,6 +5,7 @@ import type { assignStudyForm } from '../../types/account_data/studies.type';
 import { svcAssignStudy, svcDeleteStudy, svcUnassignStudy } from "../../services/account_data/studies.service";
 import { parseJwt } from "../../utils/helper.util";
 import ControllerError from "../../errors/RegisterError.error";
+import { logger } from "../../utils/logger";
 
 export async function conAssignStudy(req: Request<{}, {}, assignStudyForm>,
     res: Response, next: NextFunction) {
@@ -35,7 +36,12 @@ export async function conAssignStudy(req: Request<{}, {}, assignStudyForm>,
         res.json({ message: resp_insert.data });
         return;
     }
-    console.error(resp_insert.data);
+    logger.error({
+        message: resp_insert.data,
+        labels: {
+            "origin": "db"
+        }
+    });
     next(new RegisterError({
         message: resp_insert.data,
         code: 400

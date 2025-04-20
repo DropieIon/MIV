@@ -6,7 +6,7 @@ import { has_completed, insert_patient_details } from "../db/auth/db-auth.servic
 
 export async function svcPutPatient_details(username: string, details: patientForm, update: boolean)
     : Promise<resp_common_services> {
-    if(!update && await has_completed(username) === 'Y') {
+    if(!update && (await has_completed(username)) === 'Y') {
         return { ok: false, data: "Data already completed" };
     }
     const resp_insert = await insert_patient_details(username, details, update);

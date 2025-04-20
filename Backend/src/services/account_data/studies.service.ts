@@ -1,11 +1,17 @@
 import { resp_common_services } from "../../types/auth/authentication.type";
 import { dbAssignStudy, dbDeleteStudy, dbUnssignStudy } from "../db/account_data/db-studies.service";
+import { logger } from '../../utils/logger';
 
 export async function svcAssignStudy(studyID: string, patUsername: string)
     : Promise<resp_common_services> {
     const respDB = await dbAssignStudy(studyID, patUsername);
     if(respDB !== "") {
-        console.error(respDB);
+        logger.error({
+            message: respDB,
+            labels: {
+                "origin": "svc"
+            }
+        });
         return {
             ok: false,
             data: respDB

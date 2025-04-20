@@ -1,5 +1,6 @@
 import { sq } from "../db-functions";
 import mariadb from 'mariadb';
+import { logger } from '../../../utils/logger';
 
 export async function dbCheckUpload(patUsername: string, size: number): Promise<string | boolean> {
     // 3Gb
@@ -64,7 +65,12 @@ export async function dbCheckUpload(patUsername: string, size: number): Promise<
             }
             return "Cannot check upload permission.";   
     } catch (error) {
-        console.error('Db err ' + error);
+        logger.error({
+            message: 'Db err ' + error,
+            labels: {
+                "origin": "db"
+            }
+        });
         return 'Db err';
     }
 }
@@ -100,7 +106,12 @@ export async function dbAllowUnlim4h(patUsername: string): Promise<string> {
         [patUsername]
     );
     if (typeof queryResp === "string" || (queryResp instanceof mariadb.SqlError)) {
-        console.error(queryResp);
+        logger.error({
+            message: queryResp,
+            labels: {
+                "origin": "db"
+            }
+        });
         return "Cannot allow patient.";
     }
     return "";

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import type { NextFunction, Request, Response } from 'express';
 import { get_GW_Data } from '../../utils/helper.util';
 import { token_data } from '../../../../Common/types';
+import { logger } from '../../utils/logger';
 
 export async function generateAccessToken(username: string, role: string, canUpload: boolean, unlimitedUp4h: boolean): Promise<string | null> {
     let resp_gateway = await get_GW_Data();
@@ -26,7 +27,12 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     if (token === null || token === undefined) return res.sendStatus(401)
 
     jwt.verify(token, process.env.TOKEN_SECRET as string, (err: any, user: any) => {
-        console.log(err);
+        logger.error({
+            message: err,
+            labels: {
+                "origin": "svc"
+            }
+        });
 
         if (err) return res.sendStatus(403);
         next();
