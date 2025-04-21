@@ -132,12 +132,12 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
     );
     if(typeof sqlResp === "string" || sqlResp instanceof mariadb.SqlError || sqlResp.length === 0){
         logger.error({
-            message: `Error getting salt ${sqlResp}`,
+            message: `Error logging in ${sqlResp}`,
             labels: {
                 "origin": "db"
             }
         });
-        return "Error getting salt";
+        return "Error logging in";
     }
     const salt = sqlResp[0].salt;
     sqlResp = await sq<checkLogin_resp>(

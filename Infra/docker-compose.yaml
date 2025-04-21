@@ -171,12 +171,15 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
     image: grafana/grafana
     container_name: grafana
+    volumes:
+    - ./monitoring/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
     networks:
       - shared_loki
     ports:
@@ -197,7 +200,7 @@ services:
       - orthanc-db
       - auth-db
     volumes:
-      - ./monitoring/alloy-config.hcl:/etc/alloy/config.hcl:ro
+      - ./monitoring/alloy/alloy-config.hcl:/etc/alloy/config.hcl:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: ["run", "/etc/alloy/config.hcl"]
 
