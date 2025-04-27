@@ -130,7 +130,16 @@ export async function checkLogin(loginData: loginForm): Promise<string | checkLo
         where l.username=?',
         [username]
     );
-    if(typeof sqlResp === "string" || sqlResp instanceof mariadb.SqlError || sqlResp.length === 0){
+    if (sqlResp.length === 0) {
+        logger.error({
+            message: "User not found",
+            labels: {
+                "origin": "db"
+            }
+        });
+        return "User not found";
+    }
+    if(typeof sqlResp === "string" || sqlResp instanceof mariadb.SqlError){
         logger.error({
             message: `Error logging in ${sqlResp}`,
             labels: {
